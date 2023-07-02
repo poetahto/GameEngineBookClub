@@ -24,6 +24,7 @@
     <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="globals.cpp" />
     <ClCompile Include="memory_manager.cpp" />
     <ClCompile Include="stack_allocator.cpp" />
   </ItemGroup>

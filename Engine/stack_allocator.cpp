@@ -22,6 +22,18 @@ void* StackAllocator::alloc(size_t bytes)
     return result;
 }
 
+void* StackAllocator::alloc(size_t sizeBytes, Align align)
+{
+    void* pointer = alloc(sizeBytes + align.amount - 1);
+
+    // we have to reinterept our pointer into an integral type that we can perform bitwise operations on.
+    uintptr_t addr = reinterpret_cast<uintptr_t>(pointer);
+    size_t mask = align.amount - 1;
+    assert((align.amount & mask) == 0); // make sure alignment is a power of 2
+    addr = (addr + mask) & ~mask;
+    return reinterpret_cast<void*>(addr);
+}
+
 StackAllocator::Marker StackAllocator::getMarker()
 {
     return m_topOfStack;

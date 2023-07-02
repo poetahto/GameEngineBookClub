@@ -19,6 +19,35 @@ protected:
     char* rawBuffer;
 };
 
+// Adapted from https://stackoverflow.com/questions/42093360/how-to-check-if-a-pointer-points-to-a-properly-aligned-memory-location
+inline bool is_aligned(const void* pointer, size_t align)
+{
+    uintptr_t pointerAddr = reinterpret_cast<uintptr_t>(pointer);
+    return !(pointerAddr % align);
+}
+
+void TestAlignment(StackAllocator& sa, size_t align)
+{
+    void* buffer = sa.alloc(64, Align(align));
+    EXPECT_TRUE(is_aligned(buffer, align));
+}
+
+TEST_F(StackAllocatorTest, CorrectAlignment)
+{
+    TestAlignment(sa, 2);
+    TestAlignment(sa, 4);
+    TestAlignment(sa, 8);
+    TestAlignment(sa, 16);
+    TestAlignment(sa, 128);
+}
+
+TEST_F(StackAllocatorTest, IncorrectAlignment)
+{
+    sa.alloc(1);
+    void* buffer = sa.alloc(2);
+    EXPECT_FALSE(is_aligned(buffer, 2));
+}
+
 TEST_F(StackAllocatorTest, MarkerResetButNoChange)
 {
     size_t size = sa.getMaxSize();
