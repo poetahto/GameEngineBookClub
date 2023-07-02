@@ -2,6 +2,8 @@
 
 #include "types.h"
 
+#define ALLOC_STACK(bytes) g_memoryManager.getStackAllocator()->alloc(bytes)
+
 class StackAllocator
 {
 public:
@@ -12,6 +14,9 @@ public:
     Marker getMarker();
     void freeToMarker(Marker marker);
     void clear();
+    size_t getMaxSize();
+    size_t getRemainingBytes();
+    size_t getAllocatedBytes();
 
 private:
     U8* m_baseAddress;

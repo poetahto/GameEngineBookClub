@@ -38,3 +38,18 @@ void StackAllocator::clear()
 {
     m_topOfStack = 0;
 }
+
+size_t StackAllocator::getMaxSize()
+{
+    return m_maxSizeBytes;
+}
+
+size_t StackAllocator::getRemainingBytes()
+{
+    return m_maxSizeBytes - m_topOfStack;
+}
+
+size_t StackAllocator::getAllocatedBytes()
+{
+    return m_topOfStack;
+}
