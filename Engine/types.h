@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TYPES_H
+#define TYPES_H
 
 #include <cstdint>
 
@@ -27,5 +28,8 @@ typedef uint_fast32_t U32F;
 typedef uint_fast64_t U64F;
 
 // Floating point types
+
 typedef float F32;
 typedef double F64;
+
+#endif // TYPES_H

@@ -1,9 +1,12 @@
-#pragma once
+#ifndef STACK_ALLOCATOR_H
+#define STACK_ALLOCATOR_H
 
 #include "types.h"
 
-// todo: move this somewhere else
+// todo: move this somewhere else? or is it even necesarry?
 #define ALLOC_STACK(bytes) g_memoryManager.getStackAllocator()->alloc(bytes)
+
+// todo: document public api: i think its stable enough to start locking in
 
 struct Align;
 
@@ -29,6 +32,9 @@ private:
     size_t m_maxSizeBytes;
 };
 
+// The reason for wrapping the size inside a struct is readability:
+// it makes it easier to distinguish between the two sizes in the overloaded 
+// alloc function.
 struct Align
 {
     Align(size_t amount) : amount { amount } 
@@ -38,3 +44,4 @@ struct Align
     size_t amount;
 };
 
+#endif // STACK_ALLOCATOR_H 
