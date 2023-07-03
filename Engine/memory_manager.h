@@ -19,15 +19,14 @@ public:
     void shutdown();
 
     StackAllocator* getStackAllocator();
-    size_t getTotalSize();
+    StackAllocator* getOneFrameAllocator();
 
 private:
-    inline void* getBuffer(size_t size);
-    inline void* getBuffer(size_t size, Align align);
-    StackAllocator m_stackAllocator;
     StackAllocator m_internalAllocator;
     void* m_baseAddress;
-    size_t m_totalSize;
+
+    StackAllocator m_stackAllocator;
+    StackAllocator m_oneFrameAllocator;
 };
 
 #endif // MEMORY_MANAGER_H
