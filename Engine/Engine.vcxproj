@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="pool_allocator.cpp">
+      <FileType>CppCode</FileType>
+    </ClCompile>
     <ClInclude Include="memory_manager.h" />
     <ClInclude Include="stack_allocator.h" />
     <ClInclude Include="types.h" />
