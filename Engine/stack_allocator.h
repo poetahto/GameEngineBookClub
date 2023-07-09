@@ -27,7 +27,7 @@ public:
     size_t getAllocatedBytes();
 
 private:
-    U8* m_baseAddress;
+    u8* m_baseAddress;
     Marker m_topOfStack;
     size_t m_maxSizeBytes;
 };

@@ -4,7 +4,7 @@
 
 void StackAllocator::init(void* baseAddress, size_t sizeBytes)
 {
-    m_baseAddress = static_cast<U8*>(baseAddress);
+    m_baseAddress = static_cast<u8*>(baseAddress);
     m_topOfStack = 0;
     m_maxSizeBytes = sizeBytes;
 }

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "memory_manager.h"
+#include "stack_allocator.h"
 
 class StackAllocatorTest : public ::testing::Test {
 public:

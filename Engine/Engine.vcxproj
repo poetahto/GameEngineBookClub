@@ -23,6 +23,7 @@
       <FileType>CppCode</FileType>
     </ClCompile>
     <ClInclude Include="memory_manager.h" />
+    <ClInclude Include="pool_allocator.h" />
     <ClInclude Include="stack_allocator.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
