@@ -23,7 +23,7 @@ public:
     u64 getAllocatedBlocks() const;
 
     // Debugging
-    static u64 getBlockSize();
+    static u64 getBlockSizeBytes();
     void printInfo() const;
 
 private:

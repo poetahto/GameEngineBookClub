@@ -23,6 +23,7 @@ void* PoolAllocator<BlockSizeBytes>::alloc()
 
     void* result = m_firstFreeBlock->data;
     m_firstFreeBlock = m_firstFreeBlock->nextFreeBlock;
+    m_allocatedBlockCount++;
     return result;
 }
 
@@ -33,6 +34,7 @@ void PoolAllocator<BlockSizeBytes>::free(void* buffer)
     PoolBlock* prevFreeBlock = m_firstFreeBlock;
     m_firstFreeBlock = static_cast<PoolBlock*>(buffer);
     m_firstFreeBlock->nextFreeBlock = prevFreeBlock;
+    m_allocatedBlockCount--;
 }
 
 template<u64 BlockSizeBytes>
@@ -48,6 +50,7 @@ void PoolAllocator<BlockSizeBytes>::clear()
 
     m_blocks[numBlocks - 1].nextFreeBlock = nullptr; // The final block has no neighbor.
     m_firstFreeBlock = &m_blocks[0];
+    m_allocatedBlockCount = 0;
 }
 
 // === BYTE USAGE ===
@@ -67,7 +70,7 @@ u64 PoolAllocator<BlockSizeBytes>::getRemainingBytes() const
 template<u64 BlockSizeBytes>
 u64 PoolAllocator<BlockSizeBytes>::getAllocatedBytes() const
 {
-    return getAllocatedBlocks() * BlockSizeBytes;
+    return getAllocatedBlocks() * getBlockSizeBytes();
 }
 
 // === BLOCK USAGE ===
@@ -75,7 +78,7 @@ u64 PoolAllocator<BlockSizeBytes>::getAllocatedBytes() const
 template<u64 BlockSizeBytes>
 u64 PoolAllocator<BlockSizeBytes>::getMaxBlocks() const
 {
-    return getMaxSizeBytes() / getBlockSize();
+    return getMaxSizeBytes() / getBlockSizeBytes();
 }
 
 template<u64 BlockSizeBytes>
@@ -91,7 +94,7 @@ u64 PoolAllocator<BlockSizeBytes>::getRemainingBlocks() const
 }
 
 template <u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getBlockSize() // static
+u64 PoolAllocator<BlockSizeBytes>::getBlockSizeBytes() // static
 {
     return sizeof(PoolBlock);
 }
@@ -102,7 +105,7 @@ void PoolAllocator<BlockSizeBytes>::printInfo() const
     printf("=== POOL ALLOCATOR ===\n");
     printf("bytes: [%llu/%llu] %llu free\n", getAllocatedBytes(), getMaxSizeBytes(), getRemainingBytes());
     printf("blocks: [%llu/%llu] %llu free\n", getAllocatedBlocks(), getMaxBlocks(), getRemainingBlocks());
-    printf("block size: [%llu bytes] data=%llu nextBlock=%llu\n", getBlockSize(), sizeof(u8[BlockSizeBytes]), sizeof(void*));
+    printf("block size: [%llu bytes] data=%llu nextBlock=%llu\n", getBlockSizeBytes(), sizeof(u8[BlockSizeBytes]), sizeof(void*));
     printf("======================\n");
 }
 
