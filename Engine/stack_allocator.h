@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-// todo: move this somewhere else? or is it even necesarry?
+// todo: move this somewhere else? or is it even necessary?
 #define ALLOC_STACK(bytes) g_memoryManager.getStackAllocator()->alloc(bytes)
 
 // todo: document public api: i think its stable enough to start locking in
@@ -13,35 +13,39 @@ struct Align;
 class StackAllocator
 {
 public:
-    typedef size_t Marker;
+    typedef u64 Marker;
 
-    void init(void* baseAddress, size_t maxSizeBytes);
-    void* alloc(size_t sizeBytes);
-    void* alloc(size_t sizeBytes, Align align);
-
-    Marker getMarker();
+    void init(void* baseAddress, u64 maxSizeBytes);
+    void* alloc(u64 sizeBytes);
+    void* alloc(u64 sizeBytes, Align align);
+    Marker getMarker() const;
     void freeToMarker(Marker marker);
     void clear();
-    size_t getMaxSizeBytes();
-    size_t getRemainingBytes();
-    size_t getAllocatedBytes();
+
+    // Bytes usage
+    u64 getMaxSizeBytes() const;
+    u64 getRemainingBytes() const;
+    u64 getAllocatedBytes() const;
+
+    // Debugging
+    void printInfo() const;
 
 private:
-    u8* m_baseAddress;
-    Marker m_topOfStack;
-    size_t m_maxSizeBytes;
+    u8* m_baseAddress{};
+    Marker m_topOfStack{};
+    u64 m_maxSizeBytes{};
 };
 
 // The reason for wrapping the size inside a struct is readability:
-// it makes it easier to distinguish between the two sizes in the overloaded 
+// it makes it easier to distinguish between the two sizes in the overloaded
 // alloc function.
 struct Align
 {
-    Align(size_t amount) : amount { amount } 
+    explicit Align(u64 amount) : amount{amount}
     {
     }
 
-    size_t amount;
+    const u64 amount;
 };
 
-#endif // STACK_ALLOCATOR_H 
+#endif // STACK_ALLOCATOR_H

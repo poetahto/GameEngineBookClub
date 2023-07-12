@@ -1,6 +1,6 @@
+#include <cstdio>
 #include <cassert>
 #include "pool_allocator.h"
-#include <cstdio>
 
 template<u64 BlockSizeBytes>
 void PoolAllocator<BlockSizeBytes>::init(void* baseAddress, u64 maxSizeBytes)
@@ -10,7 +10,7 @@ void PoolAllocator<BlockSizeBytes>::init(void* baseAddress, u64 maxSizeBytes)
 
     // Initializes all blocks to empty states.
     clear();
-};
+}
 
 template<u64 BlockSizeBytes>
 void* PoolAllocator<BlockSizeBytes>::alloc()
@@ -24,7 +24,7 @@ void* PoolAllocator<BlockSizeBytes>::alloc()
     void* result = m_firstFreeBlock->data;
     m_firstFreeBlock = m_firstFreeBlock->nextFreeBlock;
     return result;
-};
+}
 
 template<u64 BlockSizeBytes>
 void PoolAllocator<BlockSizeBytes>::free(void* buffer)
@@ -38,38 +38,34 @@ void PoolAllocator<BlockSizeBytes>::free(void* buffer)
 template<u64 BlockSizeBytes>
 void PoolAllocator<BlockSizeBytes>::clear()
 {
-    u64 numBlocks = getMaxBlocks();
+    const u64 numBlocks = getMaxBlocks();
 
     // Initialize our free list, so every block points to a neighbor.
-    // I think we have to do this for each clear, since we don't track
-    // free blocks.
-    for (int i = 0; i < numBlocks - 1; i++)
+    for (u64 i = 0; i < numBlocks - 1; i++)
     {
         m_blocks[i].nextFreeBlock = &m_blocks[i + 1];
     }
 
-    // The final block has no neighbor.
-    m_blocks[numBlocks - 1].nextFreeBlock = nullptr;
-
+    m_blocks[numBlocks - 1].nextFreeBlock = nullptr; // The final block has no neighbor.
     m_firstFreeBlock = &m_blocks[0];
 }
 
 // === BYTE USAGE ===
 
 template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getMaxSizeBytes()
+u64 PoolAllocator<BlockSizeBytes>::getMaxSizeBytes() const
 {
     return m_maxSizeBytes;
 }
 
 template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getRemainingBytes()
+u64 PoolAllocator<BlockSizeBytes>::getRemainingBytes() const
 {
     return getMaxSizeBytes() - getAllocatedBytes();
 }
 
 template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getAllocatedBytes()
+u64 PoolAllocator<BlockSizeBytes>::getAllocatedBytes() const
 {
     return getAllocatedBlocks() * BlockSizeBytes;
 }
@@ -77,36 +73,36 @@ u64 PoolAllocator<BlockSizeBytes>::getAllocatedBytes()
 // === BLOCK USAGE ===
 
 template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getMaxBlocks()
+u64 PoolAllocator<BlockSizeBytes>::getMaxBlocks() const
 {
     return getMaxSizeBytes() / getBlockSize();
 }
 
 template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getAllocatedBlocks()
+u64 PoolAllocator<BlockSizeBytes>::getAllocatedBlocks() const
 {
     return m_allocatedBlockCount;
 }
 
-template <u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getBlockSize()
-{
-    return sizeof(PoolBlock);
-}
-
 template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getRemainingBlocks()
+u64 PoolAllocator<BlockSizeBytes>::getRemainingBlocks() const
 {
     return getMaxBlocks() - getAllocatedBlocks();
 }
 
 template <u64 BlockSizeBytes>
-void PoolAllocator<BlockSizeBytes>::printInfo()
+u64 PoolAllocator<BlockSizeBytes>::getBlockSize() // static
+{
+    return sizeof(PoolBlock);
+}
+
+template <u64 BlockSizeBytes>
+void PoolAllocator<BlockSizeBytes>::printInfo() const
 {
     printf("=== POOL ALLOCATOR ===\n");
     printf("bytes: [%llu/%llu] %llu free\n", getAllocatedBytes(), getMaxSizeBytes(), getRemainingBytes());
     printf("blocks: [%llu/%llu] %llu free\n", getAllocatedBlocks(), getMaxBlocks(), getRemainingBlocks());
-    printf("block size: [%llu bytes] data=%llu nextBlock=%llu\n", getBlockSize(), sizeof(u8[BlockSizeBytes]), sizeof(PoolBlock*));
+    printf("block size: [%llu bytes] data=%llu nextBlock=%llu\n", getBlockSize(), sizeof(u8[BlockSizeBytes]), sizeof(void*));
     printf("======================\n");
 }
 

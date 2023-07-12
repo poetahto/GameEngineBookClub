@@ -11,7 +11,7 @@ public:
         pa.init(rawBuffer, size);
     }
 
-    ~PoolAllocatorTest()
+    ~PoolAllocatorTest() override
     {
         delete rawBuffer;
     }

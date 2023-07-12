@@ -1,16 +1,17 @@
 #include <gtest/gtest.h>
 #include "stack_allocator.h"
 
-class StackAllocatorTest : public ::testing::Test 
+class StackAllocatorTest : public testing::Test
 {
 public:
     StackAllocatorTest()
     {
-        size_t size = 2048;
+        constexpr size_t size = 2048;
         rawBuffer = new char[size];
         sa.init(rawBuffer, size);
     }
-    ~StackAllocatorTest()
+
+    ~StackAllocatorTest() override
     {
         delete rawBuffer;
     }
@@ -21,43 +22,43 @@ protected:
 };
 
 // Adapted from https://stackoverflow.com/questions/42093360/how-to-check-if-a-pointer-points-to-a-properly-aligned-memory-location
-inline bool is_aligned(const void* pointer, size_t align)
+inline bool isAligned(const void* pointer, size_t align)
 {
     uintptr_t pointerAddr = reinterpret_cast<uintptr_t>(pointer);
     return !(pointerAddr % align);
 }
 
-void TestCorrectAlignment(StackAllocator& sa, size_t align)
+void testCorrectAlignment(StackAllocator& sa, size_t align)
 {
     sa.alloc(align / 2); // Purposely set ourselves up for a misalignment.
     void* buffer = sa.alloc(64, Align(align));
-    EXPECT_TRUE(is_aligned(buffer, align));
+    EXPECT_TRUE(isAligned(buffer, align));
 }
 
-void TestIncorrectAlignment(StackAllocator& sa, size_t align)
+void testIncorrectAlignment(StackAllocator& sa, size_t align)
 {
     sa.alloc(align / 2); // Purposely set ourselves up for a misalignment.
     void* buffer = sa.alloc(64);
-    EXPECT_FALSE(is_aligned(buffer, align));
+    EXPECT_FALSE(isAligned(buffer, align));
 }
 
 TEST_F(StackAllocatorTest, CorrectAlignment)
 {
-    TestCorrectAlignment(sa, 2);
-    TestCorrectAlignment(sa, 4);
-    TestCorrectAlignment(sa, 8);
-    TestCorrectAlignment(sa, 16);
-    TestCorrectAlignment(sa, 128);
+    testCorrectAlignment(sa, 2);
+    testCorrectAlignment(sa, 4);
+    testCorrectAlignment(sa, 8);
+    testCorrectAlignment(sa, 16);
+    testCorrectAlignment(sa, 128);
 }
 
 // Kinda meta-testing to make sure our alignment testing method works.
 TEST_F(StackAllocatorTest, IncorrectAlignment)
 {
-    TestIncorrectAlignment(sa, 2);
-    TestIncorrectAlignment(sa, 4);
-    TestIncorrectAlignment(sa, 8);
-    TestIncorrectAlignment(sa, 16);
-    TestIncorrectAlignment(sa, 128);
+    testIncorrectAlignment(sa, 2);
+    testIncorrectAlignment(sa, 4);
+    testIncorrectAlignment(sa, 8);
+    testIncorrectAlignment(sa, 16);
+    testIncorrectAlignment(sa, 128);
 }
 
 TEST_F(StackAllocatorTest, MarkerResetButNoChange)
@@ -67,7 +68,7 @@ TEST_F(StackAllocatorTest, MarkerResetButNoChange)
     auto marker = sa.getMarker();
     sa.freeToMarker(marker);
 
-    // If we get a marker and immidiately reset to it, our 
+    // If we get a marker and immediately reset to it, our
     // size should not change.
     EXPECT_EQ(sa.getAllocatedBytes(), size);
 }

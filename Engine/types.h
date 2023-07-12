@@ -1,5 +1,6 @@
 #ifndef TYPES_H
 #define TYPES_H
+// ReSharper disable CppInconsistentNaming
 
 #include <cstdint>
 

@@ -13,18 +13,18 @@ public:
     void clear();
 
     // Byte usage
-    u64 getMaxSizeBytes();
-    u64 getRemainingBytes();
-    u64 getAllocatedBytes();
+    u64 getMaxSizeBytes() const;
+    u64 getRemainingBytes() const;
+    u64 getAllocatedBytes() const;
 
     // Block usage
-    u64 getMaxBlocks();
-    u64 getRemainingBlocks();
-    u64 getAllocatedBlocks();
-    u64 getBlockSize();
+    u64 getMaxBlocks() const;
+    u64 getRemainingBlocks() const;
+    u64 getAllocatedBlocks() const;
 
     // Debugging
-    void printInfo();
+    static u64 getBlockSize();
+    void printInfo() const;
 
 private:
     struct PoolBlock;

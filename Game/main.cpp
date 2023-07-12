@@ -1,3 +1,4 @@
+#include <new>
 #include "../Engine/memory_manager.h"
 
 class Foo
