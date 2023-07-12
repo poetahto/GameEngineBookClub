@@ -57,7 +57,7 @@ void StackAllocator::clear()
     m_topOfStack = 0;
 }
 
-size_t StackAllocator::getMaxSize()
+size_t StackAllocator::getMaxSizeBytes()
 {
     return m_maxSizeBytes;
 }

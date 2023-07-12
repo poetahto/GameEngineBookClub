@@ -22,7 +22,7 @@ public:
     Marker getMarker();
     void freeToMarker(Marker marker);
     void clear();
-    size_t getMaxSize();
+    size_t getMaxSizeBytes();
     size_t getRemainingBytes();
     size_t getAllocatedBytes();
 

@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 #include "stack_allocator.h"
 
-class StackAllocatorTest : public ::testing::Test {
+class StackAllocatorTest : public ::testing::Test 
+{
 public:
     StackAllocatorTest()
     {
@@ -61,7 +62,7 @@ TEST_F(StackAllocatorTest, IncorrectAlignment)
 
 TEST_F(StackAllocatorTest, MarkerResetButNoChange)
 {
-    size_t size = sa.getMaxSize();
+    size_t size = sa.getMaxSizeBytes();
     sa.alloc(size);
     auto marker = sa.getMarker();
     sa.freeToMarker(marker);
@@ -92,34 +93,34 @@ TEST_F(StackAllocatorTest, MarkerResetWithChange)
 
 TEST_F(StackAllocatorTest, CantFitTooBig)
 {
-    void* buffer = sa.alloc(sa.getMaxSize() + 1);
+    void* buffer = sa.alloc(sa.getMaxSizeBytes() + 1);
 
     // We shouldn't get a valid result from a failed allocation.
     EXPECT_EQ(buffer, nullptr);
 
     // Nothing should change when we can't fit an item.
     EXPECT_EQ(sa.getAllocatedBytes(), 0);
-    EXPECT_EQ(sa.getRemainingBytes(), sa.getMaxSize());
+    EXPECT_EQ(sa.getRemainingBytes(), sa.getMaxSizeBytes());
 }
 
 TEST_F(StackAllocatorTest, CantAddWhenFull)
 {
     // Try to add something that would overflow the stack.
-    sa.alloc(sa.getMaxSize());
+    sa.alloc(sa.getMaxSizeBytes());
     void* buffer = sa.alloc(1);
 
     // We shouldn't get anything valid back.
     EXPECT_EQ(buffer, nullptr);
 
     // Our size shouldn't change.
-    EXPECT_EQ(sa.getAllocatedBytes(), sa.getMaxSize());
+    EXPECT_EQ(sa.getAllocatedBytes(), sa.getMaxSizeBytes());
     EXPECT_EQ(sa.getRemainingBytes(), 0);
 }
 
 TEST_F(StackAllocatorTest, BarelyEnoughRoom)
 {
     // Try to add something that exactly meeting our capacity.
-    void* buffer = sa.alloc(sa.getMaxSize());
+    void* buffer = sa.alloc(sa.getMaxSizeBytes());
 
     // We should get something valid back.
     EXPECT_NE(buffer, nullptr);
@@ -131,11 +132,11 @@ TEST_F(StackAllocatorTest, BarelyEnoughRoom)
 TEST_F(StackAllocatorTest, AbleToMakeRoom)
 {
     // Fill up all space.
-    sa.alloc(sa.getMaxSize());
+    sa.alloc(sa.getMaxSizeBytes());
 
     // Empty stack and try to fill it again.
     sa.clear();
-    void* buffer = sa.alloc(sa.getMaxSize());
+    void* buffer = sa.alloc(sa.getMaxSizeBytes());
 
     // We should get something valid back.
     EXPECT_NE(buffer, nullptr);
@@ -149,7 +150,7 @@ TEST_F(StackAllocatorTest, ResetToZero)
 
     // We should have nothing left after clearing.
     EXPECT_EQ(sa.getAllocatedBytes(), 0);
-    EXPECT_EQ(sa.getRemainingBytes(), sa.getMaxSize());
+    EXPECT_EQ(sa.getRemainingBytes(), sa.getMaxSizeBytes());
 
     // Both initial buffers should have been stored in the same memory location.
     void* bufferC = sa.alloc(16);
