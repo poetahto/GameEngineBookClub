@@ -8,7 +8,7 @@ class PoolAllocator
 {
 public:
     void init(void* baseAddress, u64 maxSizeBytes);
-    void* alloc();
+    void* alloc(); // todo: alloc based alignment here, like in the book?
     void free(void* buffer);
     void clear();
 
@@ -39,7 +39,7 @@ private:
         union
         {
             u8 data[BlockSizeBytes];
-            PoolBlock* nextFreeBlock;
+            PoolBlock* nextFreeBlock; // todo: look into index-based free list tracking? so no need for 8 byte pointers? MORE templating?
         };
     };
 };

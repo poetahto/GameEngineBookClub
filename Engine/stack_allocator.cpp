@@ -2,6 +2,7 @@
 #include <cstdio>
 #include "stack_allocator.h"
 
+// todo: create double-ended stack allocator (kinda low priority, looks pretty simple and similar to this stack allocator
 
 void StackAllocator::init(void* baseAddress, u64 maxSizeBytes)
 {

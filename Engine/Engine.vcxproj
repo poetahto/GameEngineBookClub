@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="heap_allocator.h" />
     <ClInclude Include="pool_allocator.tpp">
       <FileType>CppCode</FileType>
     </ClInclude>
@@ -29,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="globals.cpp" />
+    <ClCompile Include="heap_allocator.cpp" />
     <ClCompile Include="memory_manager.cpp" />
     <ClCompile Include="stack_allocator.cpp" />
   </ItemGroup>

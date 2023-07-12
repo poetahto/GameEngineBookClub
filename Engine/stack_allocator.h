@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-// todo: move this somewhere else? or is it even necessary?
+// todo: move this somewhere else? or is it even necessary? (also, didn't make for any other allocator)
 #define ALLOC_STACK(bytes) g_memoryManager.getStackAllocator()->alloc(bytes)
 
 // todo: document public api: i think its stable enough to start locking in
@@ -22,7 +22,7 @@ public:
     void freeToMarker(Marker marker);
     void clear();
 
-    // Bytes usage
+    // Byte usage
     u64 getMaxSizeBytes() const;
     u64 getRemainingBytes() const;
     u64 getAllocatedBytes() const;
