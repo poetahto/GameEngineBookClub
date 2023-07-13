@@ -103,7 +103,7 @@ void HeapAllocator::printInfo() const
 
     while (currentBlock != nullptr)
     {
-        printf("\tBlock %p [size %llu]\n", static_cast<void*>(currentBlock), currentBlock->sizeBytes);
+        printf("\tBlock %p [size %llu, free=%i]\n", static_cast<void*>(currentBlock), currentBlock->sizeBytes, currentBlock->isFree);
         currentBlock = currentBlock->next;
     }
 

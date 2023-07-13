@@ -137,6 +137,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="heap_allocator_tests.cpp" />
     <ClCompile Include="pool_allocator_tests.cpp" />
     <ClCompile Include="stack_allocator_tests.cpp" />
     <ClCompile Include="tests_main.cpp" />

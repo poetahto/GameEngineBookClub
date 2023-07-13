@@ -15,6 +15,7 @@ public:
     {
         delete rawBuffer;
     }
+
 protected:
     PoolAllocator<1> pa;
     u8* rawBuffer;
