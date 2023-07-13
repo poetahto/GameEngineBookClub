@@ -4,16 +4,27 @@
 #include <cstring>
 #include "heap_allocator.h"
 
+// todo: im prettttty sure this will break once actually storing data,
+// as it will overwrite the header. To fix, instead store header,
+// right before the actual data, and return a slightly offset pointer?
+
 void HeapAllocator::init(void* baseAddress, u64 maxSizeBytes)
 {
     m_maxSizeBytes = maxSizeBytes;
-    m_firstBlock = new (baseAddress) MemoryBlock;
+    m_firstHeapPointer = new (baseAddress) HeapPointer{ nullptr };
+
+    u64 maxAllocations = maxSizeBytes / (sizeof(MemoryBlock) + sizeof(HeapPointer));
+
+    m_heapPointers.init(m_firstHeapPointer, maxAllocations * sizeof(HeapPointer));
+
+    // Our first block begins after our fixed header for HeapPointers.
+    m_firstBlock = new (m_firstHeapPointer + maxAllocations) MemoryBlock;
 
     // Start off with a clean heap.
     clear();
 }
 
-void* HeapAllocator::alloc(u64 sizeBytes)
+HeapPointer* HeapAllocator::alloc(u64 sizeBytes)
 {
     u64 fullSizeBytes = sizeBytes + sizeof(MemoryBlock);
     m_allocatedBytes += fullSizeBytes;
@@ -41,14 +52,14 @@ void* HeapAllocator::alloc(u64 sizeBytes)
     newFreeBlock->previous = newUsedBlock;
     newFreeBlock->next = oldNext;
 
-    return newUsedBlock;
+    return new (m_heapPointers.alloc()) HeapPointer { newUsedBlock };
 }
 
-void HeapAllocator::free(void* buffer)
+void HeapAllocator::free(HeapPointer* heapPointer)
 {
-    assert(buffer != nullptr);
+    assert(heapPointer != nullptr);
 
-    MemoryBlock* newFreeBlock = static_cast<MemoryBlock*>(buffer);
+    MemoryBlock* newFreeBlock = static_cast<MemoryBlock*>(heapPointer->getPointer());
     newFreeBlock->isFree = true;
     m_allocatedBytes -= newFreeBlock->sizeBytes;
 
@@ -64,6 +75,8 @@ void HeapAllocator::free(void* buffer)
     {
         merge(previousBlock, newFreeBlock);
     }
+
+    m_heapPointers.free(heapPointer);
 }
 
 void HeapAllocator::clear()
@@ -73,11 +86,10 @@ void HeapAllocator::clear()
     m_firstBlock->previous = nullptr;
     m_firstBlock->sizeBytes = m_maxSizeBytes;
 
+    m_heapPointers.clear();
     m_allocatedBytes = 0;
 }
 
-// todo: we need to update the handle table / smart pointers to
-// let people know things got moved around.
 void HeapAllocator::defragment()
 {
     MemoryBlock* oldFreeBlock = getFreeBlock();
@@ -112,6 +124,19 @@ void HeapAllocator::defragment()
         {
             merge(newFreeBlock, potentiallyFreeBlock);
         }
+
+        // Now scan the HeapPointer list, and update the one pointing to the block that just got moved.
+        u64 maxAllocations = m_maxSizeBytes / (sizeof(MemoryBlock) + sizeof(HeapPointer));
+
+        for (u64 i = 0; i < maxAllocations; i++)
+        {
+            if (m_firstHeapPointer[i].m_basePointer == usedBlock)
+            {
+                m_firstHeapPointer[i].m_basePointer = oldFreeBlock;
+                return;
+                // I _think_ its impossible for us to have multiple pointers in our store, so early out.
+            }
+        }
     }
 }
 
@@ -144,9 +169,11 @@ void HeapAllocator::printInfo() const
     while (currentBlock != nullptr)
     {
         u64 offsetFromBase = reinterpret_cast<uintptr_t>(currentBlock) - reinterpret_cast<uintptr_t>(m_firstBlock);
-        printf("\t%p (+%llu):\t%s Block  [%llu bytes]\n", static_cast<void*>(currentBlock), offsetFromBase, currentBlock->isFree ? "Free" : "Used", currentBlock->sizeBytes);
+        printf("\t%p | offset +%-5llu %5s Block [%llu bytes]\n", static_cast<void*>(currentBlock), offsetFromBase, currentBlock->isFree ? "Free" : "Used", currentBlock->sizeBytes);
         currentBlock = currentBlock->next;
     }
+
+    m_heapPointers.printInfo();
 
     printf("======================\n");
 }
@@ -183,4 +210,15 @@ void HeapAllocator::merge(MemoryBlock* first, MemoryBlock* second) // Static
         next,
         previous
     };
+}
+
+// === HEAP POINTER ===
+
+HeapPointer::HeapPointer(void* basePointer) : m_basePointer {basePointer}
+{
+}
+
+void* HeapPointer::getPointer() const
+{
+    return m_basePointer;
 }

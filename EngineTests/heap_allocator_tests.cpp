@@ -23,10 +23,10 @@ protected:
 
 TEST_F(HeapAllocatorTest, Test)
 {
-    void* b1 = heap.alloc(5);
-    void* b2 = heap.alloc(15);
-    void* b3 = heap.alloc(8);
-    void* b4 = heap.alloc(32);
+    HeapPointer* b1 = heap.alloc(5);
+    HeapPointer* b2 = heap.alloc(15);
+    HeapPointer* b3 = heap.alloc(8);
+    HeapPointer* b4 = heap.alloc(32);
     heap.free(b1);
     heap.free(b3);
     heap.printInfo();
