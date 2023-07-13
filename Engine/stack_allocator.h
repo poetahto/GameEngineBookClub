@@ -32,8 +32,8 @@ public:
 
 private:
     u8* m_baseAddress{};
-    Marker m_topOfStack{};
     u64 m_maxSizeBytes{};
+    Marker m_topOfStack{};
 };
 
 // The reason for wrapping the size inside a struct is readability:

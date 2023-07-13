@@ -34,6 +34,7 @@ private:
     u64 m_maxSizeBytes {};
     u64 m_allocatedBlockCount {};
 
+    // todo: look at struct memory layout, explicitly show padding (from book)
     struct PoolBlock
     {
         union

@@ -94,12 +94,6 @@ u64 PoolAllocator<BlockSizeBytes>::getRemainingBlocks() const
 }
 
 template <u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getBlockSizeBytes() // static
-{
-    return sizeof(PoolBlock);
-}
-
-template <u64 BlockSizeBytes>
 void PoolAllocator<BlockSizeBytes>::printInfo() const
 {
     printf("=== POOL ALLOCATOR ===\n");
@@ -107,5 +101,11 @@ void PoolAllocator<BlockSizeBytes>::printInfo() const
     printf("blocks: [%llu/%llu] %llu free\n", getAllocatedBlocks(), getMaxBlocks(), getRemainingBlocks());
     printf("block size: [%llu bytes] data=%llu nextBlock=%llu\n", getBlockSizeBytes(), sizeof(u8[BlockSizeBytes]), sizeof(void*));
     printf("======================\n");
+}
+
+template <u64 BlockSizeBytes>
+u64 PoolAllocator<BlockSizeBytes>::getBlockSizeBytes() // static
+{
+    return sizeof(PoolBlock);
 }
 
