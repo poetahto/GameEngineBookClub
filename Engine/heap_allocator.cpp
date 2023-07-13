@@ -4,10 +4,6 @@
 #include <cstring>
 #include "heap_allocator.h"
 
-// todo: im prettttty sure this will break once actually storing data,
-// as it will overwrite the header. To fix, instead store header,
-// right before the actual data, and return a slightly offset pointer?
-
 void HeapAllocator::init(void* baseAddress, u64 maxSizeBytes)
 {
     m_maxSizeBytes = maxSizeBytes;
@@ -52,14 +48,15 @@ HeapPointer* HeapAllocator::alloc(u64 sizeBytes)
     newFreeBlock->previous = newUsedBlock;
     newFreeBlock->next = oldNext;
 
-    return new (m_heapPointers.alloc()) HeapPointer { newUsedBlock };
+    return new (m_heapPointers.alloc()) HeapPointer { newUsedBuffer + sizeof(MemoryBlock) };
 }
 
 void HeapAllocator::free(HeapPointer* heapPointer)
 {
     assert(heapPointer != nullptr);
 
-    MemoryBlock* newFreeBlock = static_cast<MemoryBlock*>(heapPointer->getPointer());
+    u8* newFreePointer = static_cast<u8*>(heapPointer->getPointer()) - sizeof(MemoryBlock);
+    MemoryBlock* newFreeBlock = reinterpret_cast<MemoryBlock*>(newFreePointer);
     newFreeBlock->isFree = true;
     m_allocatedBytes -= newFreeBlock->sizeBytes;
 
