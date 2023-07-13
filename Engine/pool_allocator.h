@@ -3,6 +3,7 @@
 
 #include "types.h"
 
+// todo: after working on the heap allocator, I don't think this has to be templated
 template<u64 BlockSizeBytes>
 class PoolAllocator
 {

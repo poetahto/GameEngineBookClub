@@ -8,7 +8,7 @@ public:
     {
         u64 size = 2048;
         rawBuffer = new u8[size];
-        ha.init(rawBuffer, size);
+        heap.init(rawBuffer, size);
     }
 
     ~HeapAllocatorTest() override
@@ -17,18 +17,23 @@ public:
     }
 
 protected:
-    HeapAllocator ha;
+    HeapAllocator heap;
     u8* rawBuffer;
 };
 
 TEST_F(HeapAllocatorTest, Test)
 {
-    auto b1 = ha.alloc(5);
-    auto b2 = ha.alloc(15);
-    auto b3 = ha.alloc(8);
-    ha.free(b1);
-    ha.free(b3);
-    ha.free(b2);
+    void* b1 = heap.alloc(5);
+    void* b2 = heap.alloc(15);
+    void* b3 = heap.alloc(8);
+    void* b4 = heap.alloc(32);
+    heap.free(b1);
+    heap.free(b3);
+    heap.printInfo();
 
-    ha.printInfo();
+    heap.defragment();
+    heap.printInfo();
+
+    heap.defragment();
+    heap.printInfo();
 }

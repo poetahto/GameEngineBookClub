@@ -14,6 +14,7 @@ public:
     void* alloc(u64 sizeBytes);
     void free(void* buffer);
     void clear();
+    void defragment();
 
     // Byte usage
     u64 getMaxSizeBytes() const;
@@ -30,7 +31,7 @@ private:
     u64 m_maxSizeBytes {};
     u64 m_allocatedBytes {};
 
-    MemoryBlock* getFreeBlock(u64 sizeBytes) const;
+    MemoryBlock* getFreeBlock(u64 sizeBytes = 0) const;
     static void merge(MemoryBlock* first, MemoryBlock* second);
 
     // todo: look at struct memory layout, explicitly show padding (from book)

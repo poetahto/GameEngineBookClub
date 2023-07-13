@@ -1,6 +1,7 @@
 ﻿#include <cstdio>
 #include <new>
 #include <cassert>
+#include <cstring>
 #include "heap_allocator.h"
 
 void HeapAllocator::init(void* baseAddress, u64 maxSizeBytes)
@@ -75,6 +76,45 @@ void HeapAllocator::clear()
     m_allocatedBytes = 0;
 }
 
+// todo: we need to update the handle table / smart pointers to
+// let people know things got moved around.
+void HeapAllocator::defragment()
+{
+    MemoryBlock* oldFreeBlock = getFreeBlock();
+    MemoryBlock* usedBlock = oldFreeBlock->next;
+
+    if (usedBlock != nullptr)
+    {
+        // Saving important state before we start shuffling stuff
+        u64 oldFreeSize = oldFreeBlock->sizeBytes;
+        MemoryBlock* next = usedBlock->next;
+        MemoryBlock* previous = oldFreeBlock->previous;
+        u8* baseAddress = reinterpret_cast<u8*>(oldFreeBlock);
+        u8* newFreeAddress = baseAddress + usedBlock->sizeBytes;
+
+        memmove(baseAddress, usedBlock, usedBlock->sizeBytes);
+
+        MemoryBlock* newFreeBlock = new (newFreeAddress) MemoryBlock
+        {
+            true,
+            oldFreeSize,
+            next,
+            oldFreeBlock
+        };
+
+        oldFreeBlock->previous = previous;
+        oldFreeBlock->next = newFreeBlock;
+
+        // Now check if the new free space needs to be merged.
+        MemoryBlock* potentiallyFreeBlock = newFreeBlock->next;
+
+        if (potentiallyFreeBlock != nullptr && potentiallyFreeBlock->isFree)
+        {
+            merge(newFreeBlock, potentiallyFreeBlock);
+        }
+    }
+}
+
 // === BYTE USAGE ===
 
 u64 HeapAllocator::getMaxSizeBytes() const
@@ -103,7 +143,8 @@ void HeapAllocator::printInfo() const
 
     while (currentBlock != nullptr)
     {
-        printf("\tBlock %p [size %llu, free=%i]\n", static_cast<void*>(currentBlock), currentBlock->sizeBytes, currentBlock->isFree);
+        u64 offsetFromBase = reinterpret_cast<uintptr_t>(currentBlock) - reinterpret_cast<uintptr_t>(m_firstBlock);
+        printf("\t%p (+%llu):\t%s Block  [%llu bytes]\n", static_cast<void*>(currentBlock), offsetFromBase, currentBlock->isFree ? "Free" : "Used", currentBlock->sizeBytes);
         currentBlock = currentBlock->next;
     }
 
