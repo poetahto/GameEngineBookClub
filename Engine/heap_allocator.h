@@ -5,25 +5,23 @@
 #include "pool_allocator.h"
 
 // todo: ways of measuring fragmentation?
-
-class HeapPointer
+// todo: add debug option of clearing empty bits to an easy-to-read value (this applies to all allocators)
+// todo: look at struct memory layout, explicitly show padding (from book)
+struct MemoryBlock
 {
-public:
-    explicit HeapPointer(void* basePointer);
-    void* getPointer() const;
-
-private:
-    void* m_basePointer;
-
-    friend class HeapAllocator;
+    bool isFree{};
+    u64 sizeBytes{};
+    MemoryBlock* next{};
+    MemoryBlock* previous{};
+    u8* address{};
 };
 
 class HeapAllocator
 {
 public:
     void init(void* baseAddress, u64 maxSizeBytes);
-    HeapPointer* alloc(u64 sizeBytes);
-    void free(HeapPointer* heapPointer);
+    MemoryBlock* alloc(u64 sizeBytes);
+    void free(MemoryBlock* block);
     void clear();
     void defragment();
 
@@ -36,25 +34,15 @@ public:
     void printInfo() const;
 
 private:
-    struct MemoryBlock;
+    PoolAllocator<sizeof(MemoryBlock)> m_memoryBlocks{};
 
-    PoolAllocator<sizeof(HeapPointer)> m_heapPointers{};
-    MemoryBlock* m_firstBlock{};
-    HeapPointer* m_firstHeapPointer{};
+    MemoryBlock* m_firstMemoryBlock{};
+    u64 m_maxAllocations{};
     u64 m_maxSizeBytes{};
     u64 m_allocatedBytes{};
 
     MemoryBlock* getFreeBlock(u64 sizeBytes = 0) const;
-    static void merge(MemoryBlock* first, MemoryBlock* second);
-
-    // todo: look at struct memory layout, explicitly show padding (from book)
-    struct MemoryBlock
-    {
-        bool isFree{};
-        u64 sizeBytes{};
-        MemoryBlock* next{};
-        MemoryBlock* previous{};
-    };
+    void merge(MemoryBlock* first, MemoryBlock* second);
 };
 
 #endif // HEAP_ALLOCATOR_H
