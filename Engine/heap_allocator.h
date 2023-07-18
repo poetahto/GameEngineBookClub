@@ -4,9 +4,18 @@
 #include "types.h"
 #include "pool_allocator.h"
 
-// todo: ways of measuring fragmentation?
 // todo: add debug option of clearing empty bits to an easy-to-read value (this applies to all allocators)
 // todo: look at struct memory layout, explicitly show padding (from book)
+
+/*
+ * alloc() - O(n), constant if no fragmentation
+ * free() - O(n), constant if no fragmentation
+ * defragment() - O(1)
+ *
+ * Bookkeeping overhead / restrictions:
+ * +16 bytes allocated for every free and used block (8 for size, 8 for header)
+ * blocks can only be allocated in 8-byte chunks (so we always have room for free-block metadata)
+ */
 
 struct MemoryBlock
 {
@@ -39,6 +48,7 @@ public:
     u64 getMaxSizeBytes() const;
     u64 getRemainingBytes() const;
     u64 getAllocatedBytes() const;
+    bool isFragmented() const;
 
     // Debugging
     void printInfo() const;
@@ -48,13 +58,13 @@ private:
     PoolAllocator<sizeof(HeapPointer)> m_pointers {};
 
     MemoryBlock* m_freeBlocks {};
+    u64 m_freeBlockCount {};
     u8* m_baseAddress {};
-    u64 m_maxAllocations {};
-    u64 m_maxBlockSize {};
     u64 m_maxSizeBytes {};
+    u64 m_maxAllocations {};
     u64 m_allocatedBytes {};
 
-    static void merge(MemoryBlock* first, MemoryBlock* second);
+    void merge(MemoryBlock* first, MemoryBlock* second);
     static bool areAdjacent(MemoryBlock* first, MemoryBlock* second);
 };
 

@@ -23,19 +23,24 @@ protected:
 
 TEST_F(HeapAllocatorTest, ByteUsage)
 {
+    EXPECT_FALSE(heap.isFragmented());
     auto pointer = heap.alloc(15);
+    EXPECT_FALSE(heap.isFragmented());
     EXPECT_GT(heap.getAllocatedBytes(), 0);
     EXPECT_EQ(heap.getMaxSizeBytes() - heap.getAllocatedBytes(), heap.getRemainingBytes());
     heap.free(pointer);
+    EXPECT_FALSE(heap.isFragmented());
     EXPECT_EQ(heap.getAllocatedBytes(), 0);
     EXPECT_EQ(heap.getRemainingBytes(), heap.getMaxSizeBytes());
     heap.alloc(20);
     heap.alloc(20);
     heap.alloc(20);
     heap.alloc(20);
+    EXPECT_FALSE(heap.isFragmented());
     EXPECT_GT(heap.getAllocatedBytes(), 0);
     EXPECT_EQ(heap.getMaxSizeBytes() - heap.getAllocatedBytes(), heap.getRemainingBytes());
     heap.clear();
+    EXPECT_FALSE(heap.isFragmented());
     EXPECT_EQ(heap.getAllocatedBytes(), 0);
     EXPECT_EQ(heap.getRemainingBytes(), heap.getMaxSizeBytes());
 }
@@ -52,21 +57,25 @@ TEST_F(HeapAllocatorTest, DataIntegrity)
     EXPECT_EQ(*reinterpret_cast<u16*>(ptr1->rawPtr), 5);
     EXPECT_EQ(*reinterpret_cast<u16*>(ptr2->rawPtr), 24);
     EXPECT_EQ(*reinterpret_cast<u16*>(ptr3->rawPtr), 78);
+    EXPECT_FALSE(heap.isFragmented());
 
     heap.free(ptr2);
 
+    EXPECT_TRUE(heap.isFragmented());
     EXPECT_EQ(*reinterpret_cast<u16*>(ptr1->rawPtr), 5);
     EXPECT_EQ(*reinterpret_cast<u16*>(ptr3->rawPtr), 78);
 
     auto ptr4 = heap.alloc(sizeof(u16));
     new (ptr4->rawPtr) u16 { 23 };
 
+    EXPECT_FALSE(heap.isFragmented());
     EXPECT_EQ(*reinterpret_cast<u16*>(ptr1->rawPtr), 5);
     EXPECT_EQ(*reinterpret_cast<u16*>(ptr3->rawPtr), 78);
     EXPECT_EQ(*reinterpret_cast<u16*>(ptr4->rawPtr), 23);
 
     heap.clear();
 
+    EXPECT_FALSE(heap.isFragmented());
     EXPECT_EQ(heap.getAllocatedBytes(), 0);
     EXPECT_EQ(heap.getRemainingBytes(), heap.getMaxSizeBytes());
 }
@@ -79,14 +88,17 @@ TEST_F (HeapAllocatorTest, SmallTuck)
     new (ptr2->rawPtr) u8 { 14 };
     auto ptr3 = heap.alloc(sizeof(u8));
     new (ptr3->rawPtr) u8 { 3 };
+    EXPECT_FALSE(heap.isFragmented());
 
     auto oldPtr2Raw = ptr2->rawPtr;
     heap.free(ptr2);
+    EXPECT_TRUE(heap.isFragmented());
 
     auto ptr4 = heap.alloc(25);
     EXPECT_NE(oldPtr2Raw, ptr4->rawPtr);
     EXPECT_EQ(*ptr1->rawPtr, 5);
     EXPECT_EQ(*ptr3->rawPtr, 3);
+    EXPECT_TRUE(heap.isFragmented());
 
     auto ptr5 = heap.alloc(sizeof(u8));
     new (ptr5->rawPtr) u8 { 122 };
@@ -95,4 +107,5 @@ TEST_F (HeapAllocatorTest, SmallTuck)
     EXPECT_EQ(*ptr3->rawPtr, 3);
     EXPECT_EQ(*ptr5->rawPtr, 122);
     EXPECT_EQ(*oldPtr2Raw, 122);
+    EXPECT_FALSE(heap.isFragmented());
 }
