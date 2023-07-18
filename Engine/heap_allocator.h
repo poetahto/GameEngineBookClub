@@ -10,17 +10,15 @@
 
 struct MemoryBlock
 {
-    // Header
     struct
     {
-        u64 sizeBytes{};
-    } header;
+        u64 sizeBytes;
+    } header {};
 
-    union
+    struct
     {
-        u8* data {};
         MemoryBlock* next;
-    };
+    } freeData {};
 };
 
 struct HeapPointer
@@ -57,6 +55,7 @@ private:
     u64 m_allocatedBytes {};
 
     static void merge(MemoryBlock* first, MemoryBlock* second);
+    static bool areAdjacent(MemoryBlock* first, MemoryBlock* second);
 };
 
 #endif // HEAP_ALLOCATOR_H
