@@ -43,30 +43,30 @@ TEST_F(HeapAllocatorTest, ByteUsage)
 TEST_F(HeapAllocatorTest, DataIntegrity)
 {
     auto ptr1 = heap.alloc(sizeof(u16));
-    new (ptr1->address) u16 { 5 };
+    new (ptr1->rawPtr) u16 { 5 };
     auto ptr2 = heap.alloc(sizeof(u16));
-    new (ptr2->address) u16 { 24 };
+    new (ptr2->rawPtr) u16 { 24 };
     auto ptr3 = heap.alloc(sizeof(u16));
-    new (ptr3->address) u16 { 78 };
+    new (ptr3->rawPtr) u16 { 78 };
     heap.printInfo();
 
-    EXPECT_EQ(*reinterpret_cast<u16*>(ptr1->address), 5);
-    EXPECT_EQ(*reinterpret_cast<u16*>(ptr2->address), 24);
-    EXPECT_EQ(*reinterpret_cast<u16*>(ptr3->address), 78);
+    EXPECT_EQ(*reinterpret_cast<u16*>(ptr1->rawPtr), 5);
+    EXPECT_EQ(*reinterpret_cast<u16*>(ptr2->rawPtr), 24);
+    EXPECT_EQ(*reinterpret_cast<u16*>(ptr3->rawPtr), 78);
 
     heap.free(ptr2);
     heap.printInfo();
 
-    EXPECT_EQ(*reinterpret_cast<u16*>(ptr1->address), 5);
-    EXPECT_EQ(*reinterpret_cast<u16*>(ptr3->address), 78);
+    EXPECT_EQ(*reinterpret_cast<u16*>(ptr1->rawPtr), 5);
+    EXPECT_EQ(*reinterpret_cast<u16*>(ptr3->rawPtr), 78);
 
     auto ptr4 = heap.alloc(sizeof(u16));
-    new (ptr4->address) u16 { 23 };
+    new (ptr4->rawPtr) u16 { 23 };
     heap.printInfo();
 
-    EXPECT_EQ(*reinterpret_cast<u16*>(ptr1->address), 5);
-    EXPECT_EQ(*reinterpret_cast<u16*>(ptr3->address), 78);
-    EXPECT_EQ(*reinterpret_cast<u16*>(ptr4->address), 23);
+    EXPECT_EQ(*reinterpret_cast<u16*>(ptr1->rawPtr), 5);
+    EXPECT_EQ(*reinterpret_cast<u16*>(ptr3->rawPtr), 78);
+    EXPECT_EQ(*reinterpret_cast<u16*>(ptr4->rawPtr), 23);
 
     heap.clear();
 
