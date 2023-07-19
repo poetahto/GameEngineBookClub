@@ -32,17 +32,10 @@ inline u64 getAlignedSize(u64 sizeBytes, Align align = Align(8))
     return sizeBytes + align.amount - 1;
 }
 
-struct AlignmentResult
-{
-    void* alignedPointer;
-    AlignmentAmount bias;
-    u8 pad[1];
-};
-
 // This alignment strategy is adapted from "Game Engine Architecture" pg. 431
 // With some additional compiler-friendly edits thanks to clang
 // https://clang.llvm.org/extra/clang-tidy/checks/performance/no-int-to-ptr.html
-inline AlignmentResult align(u8* basePointer, Align align = Align(8))
+inline u8* align(u8* basePointer, Align align = Align(8))
 {
     const AlignmentAmount mask = align.amount - 1;
     assert((align.amount & mask) == 0); // make sure alignment is a power of 2
@@ -50,12 +43,7 @@ inline AlignmentResult align(u8* basePointer, Align align = Align(8))
     const uintptr_t basePointerAddr = reinterpret_cast<uintptr_t>(basePointer);
     const uintptr_t alignedPointerAddr = basePointerAddr + mask & ~mask; // bitwise magic
     const AlignmentAmount bias = static_cast<AlignmentAmount>(alignedPointerAddr - basePointerAddr);
-
-    return AlignmentResult
-    {
-        basePointer + bias,
-        bias,
-    };
+    return basePointer + bias;
 }
 
 #endif // MEMORY_UTIL_H

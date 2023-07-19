@@ -23,16 +23,13 @@
     <ClCompile Include="pool_allocator.cpp">
       <FileType>CppCode</FileType>
     </ClCompile>
-    <ClInclude Include="memory_manager.h" />
     <ClInclude Include="memory_util.h" />
     <ClInclude Include="pool_allocator.h" />
     <ClInclude Include="stack_allocator.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="globals.cpp" />
     <ClCompile Include="heap_allocator.cpp" />
-    <ClCompile Include="memory_manager.cpp" />
     <ClCompile Include="stack_allocator.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

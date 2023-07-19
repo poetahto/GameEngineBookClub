@@ -24,7 +24,7 @@ void* StackAllocator::alloc(u64 sizeBytes, Align alignment)
     }
 
     m_topOfStack += alignedSize;
-    return align(m_baseAddress + m_topOfStack, alignment).alignedPointer;
+    return align(m_baseAddress + m_topOfStack, alignment);
 }
 
 StackAllocator::Marker StackAllocator::getMarker() const

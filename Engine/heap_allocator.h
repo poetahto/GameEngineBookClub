@@ -2,6 +2,7 @@
 #define HEAP_ALLOCATOR_H
 
 #include "types.h"
+#include "memory_util.h"
 #include "pool_allocator.h"
 
 // todo: add debug option of clearing empty bits to an easy-to-read value (this applies to all allocators)
@@ -39,7 +40,7 @@ class HeapAllocator
 {
 public:
     void init(void* baseAddress, u64 maxSizeBytes);
-    HeapPointer* alloc(u64 sizeBytes);
+    HeapPointer* alloc(u64 sizeBytes, Align alignment = Align(8));
     void free(HeapPointer* pointer);
     void clear();
     void defragment();

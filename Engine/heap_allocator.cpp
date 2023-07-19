@@ -23,10 +23,10 @@ void HeapAllocator::init(void* baseAddress, u64 maxSizeBytes)
 // todo: alignment
 // worst-case O(n) time operation, best-case constant-time operation, n = # of free blocks
 // becomes faster the less fragmented the heap is.
-HeapPointer* HeapAllocator::alloc(u64 sizeBytes)
+HeapPointer* HeapAllocator::alloc(u64 sizeBytes, Align alignment)
 {
     // we only want allocated in chunks the size of our free block - this way we can always have room for free storage
-    u64 trueSizeBytes = static_cast<u64>(ceilf(static_cast<f32>(sizeBytes) / sizeof(MemoryBlock))) * sizeof(MemoryBlock);
+    u64 trueSizeBytes = static_cast<u64>(ceilf(static_cast<f32>(sizeBytes + alignment.amount + sizeof MemoryBlock::header) / sizeof(MemoryBlock))) * sizeof(MemoryBlock);
     m_allocatedBytes += trueSizeBytes + sizeof(HeapPointer);
 
     // find the block to return for our users
@@ -78,15 +78,36 @@ HeapPointer* HeapAllocator::alloc(u64 sizeBytes)
         m_freeBlocks = freeBlock->freeData.next;
     }
 
-    return new (m_pointers.alloc()) HeapPointer { freeBlockDataPointer };
+    // Align our data before returning it (taken from "Game Engine Architecture 3rd" 6.2.1.3)
+    u8* alignedPointer = align(freeBlockDataPointer, alignment);
+
+    if (alignedPointer == freeBlockDataPointer)
+    {
+        alignedPointer += alignment.amount;
+    }
+
+    ptrdiff_t shift = alignedPointer - freeBlockDataPointer;
+    alignedPointer[-1] = static_cast<u8>(shift & 0xFF);
+
+    return new (m_pointers.alloc()) HeapPointer { alignedPointer };
 }
 
 // worst-case O(n) time operation, best-case constant-time operation, n = # of free blocks
 // becomes faster the less fragmented the heap is.
 void HeapAllocator::free(HeapPointer* pointer)
 {
+    // Find base address, from aligned return value.
+    ptrdiff_t shift = pointer->rawPtr[-1];
+
+    if (shift == 0)
+    {
+        shift = 256;
+    }
+
+    u8* basePointer = pointer->rawPtr - shift;
+
     // We get the shifted address back, and must look a bit earlier to find out header information.
-    MemoryBlock* newFreeBlock = reinterpret_cast<MemoryBlock*>(pointer->rawPtr - sizeof MemoryBlock::header);
+    MemoryBlock* newFreeBlock = reinterpret_cast<MemoryBlock*>(basePointer - sizeof MemoryBlock::header);
     m_freeBlockCount++;
 
     m_allocatedBytes -= newFreeBlock->header.sizeBytes + sizeof(HeapPointer);
