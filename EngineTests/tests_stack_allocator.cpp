@@ -23,18 +23,18 @@ protected:
     char* rawBuffer;
 };
 
-void testCorrectAlignment(StackAllocator& sa, size_t align)
+void testCorrectAlignment(StackAllocator& sa, AlignmentAmount alignment)
 {
-    sa.alloc(align / 2); // Purposely set ourselves up for a misalignment.
-    void* buffer = sa.alloc(64, Align(align));
-    EXPECT_TRUE(isAligned(buffer, align));
+    sa.alloc(alignment / 2, Align(1)); // Purposely set ourselves up for a misalignment.
+    void* buffer = sa.alloc(64, Align(alignment));
+    EXPECT_TRUE(isAligned(buffer, alignment));
 }
 
-void testIncorrectAlignment(StackAllocator& sa, size_t align)
+void testIncorrectAlignment(StackAllocator& sa, AlignmentAmount alignment)
 {
-    sa.alloc(align / 2); // Purposely set ourselves up for a misalignment.
-    void* buffer = sa.alloc(64);
-    EXPECT_FALSE(isAligned(buffer, align));
+    sa.alloc(alignment / 2, Align(1)); // Purposely set ourselves up for a misalignment.
+    void* buffer = sa.alloc(64, Align(1));
+    EXPECT_FALSE(isAligned(buffer, alignment));
 }
 
 TEST_F(StackAllocatorTest, CorrectAlignment)
@@ -56,32 +56,36 @@ TEST_F(StackAllocatorTest, IncorrectAlignment)
     testIncorrectAlignment(sa, 128);
 }
 
+void* allocMax(StackAllocator& sa)
+{
+    return sa.alloc(sa.getMaxSizeBytes() - (getAlignedSize(sa.getMaxSizeBytes()) - sa.getMaxSizeBytes()));
+}
+
 TEST_F(StackAllocatorTest, MarkerResetButNoChange)
 {
-    size_t size = sa.getMaxSizeBytes();
-    sa.alloc(size);
+    allocMax(sa);
     auto marker = sa.getMarker();
     sa.freeToMarker(marker);
 
     // If we get a marker and immediately reset to it, our
     // size should not change.
-    EXPECT_EQ(sa.getAllocatedBytes(), size);
+    EXPECT_EQ(sa.getAllocatedBytes(), sa.getMaxSizeBytes());
 }
 
 TEST_F(StackAllocatorTest, MarkerResetWithChange)
 {
     sa.alloc(100);
-    EXPECT_EQ(sa.getAllocatedBytes(), 100);
+    EXPECT_EQ(sa.getAllocatedBytes(), getAlignedSize(100));
     auto marker = sa.getMarker();
     void* bufferA = sa.alloc(100);
 
     // Cumulative allocations should add up.
-    EXPECT_EQ(sa.getAllocatedBytes(), 200);
+    EXPECT_EQ(sa.getAllocatedBytes(), getAlignedSize(100) * 2);
     sa.freeToMarker(marker);
 
     // Freeing via marker should rollback the allocated bytes.
-    EXPECT_EQ(sa.getAllocatedBytes(), 100);
-    void* bufferB = sa.alloc(200);
+    EXPECT_EQ(sa.getAllocatedBytes(), getAlignedSize(100));
+    void* bufferB = sa.alloc(100);
 
     // We should be able to allocate directly into that newly freed memory.
     EXPECT_EQ(bufferA, bufferB);
@@ -102,7 +106,7 @@ TEST_F(StackAllocatorTest, CantFitTooBig)
 TEST_F(StackAllocatorTest, CantAddWhenFull)
 {
     // Try to add something that would overflow the stack.
-    sa.alloc(sa.getMaxSizeBytes());
+    allocMax(sa);
     void* buffer = sa.alloc(1);
 
     // We shouldn't get anything valid back.
@@ -116,7 +120,7 @@ TEST_F(StackAllocatorTest, CantAddWhenFull)
 TEST_F(StackAllocatorTest, BarelyEnoughRoom)
 {
     // Try to add something that exactly meeting our capacity.
-    void* buffer = sa.alloc(sa.getMaxSizeBytes());
+    void* buffer = allocMax(sa);
 
     // We should get something valid back.
     EXPECT_NE(buffer, nullptr);
@@ -128,11 +132,11 @@ TEST_F(StackAllocatorTest, BarelyEnoughRoom)
 TEST_F(StackAllocatorTest, AbleToMakeRoom)
 {
     // Fill up all space.
-    sa.alloc(sa.getMaxSizeBytes());
+    allocMax(sa);
 
     // Empty stack and try to fill it again.
     sa.clear();
-    void* buffer = sa.alloc(sa.getMaxSizeBytes());
+    void* buffer = allocMax(sa);
 
     // We should get something valid back.
     EXPECT_NE(buffer, nullptr);

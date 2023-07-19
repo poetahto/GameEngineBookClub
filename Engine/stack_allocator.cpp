@@ -1,6 +1,8 @@
 #include <cassert>
 #include <cstdio>
+
 #include "stack_allocator.h"
+#include "memory_util.h"
 
 // todo: create double-ended stack allocator (kinda low priority, looks pretty simple and similar to this stack allocator
 
@@ -11,32 +13,18 @@ void StackAllocator::init(void* baseAddress, u64 maxSizeBytes)
     m_topOfStack = 0;
 }
 
-void* StackAllocator::alloc(u64 sizeBytes)
+void* StackAllocator::alloc(u64 sizeBytes, Align alignment)
 {
-    if (m_topOfStack + sizeBytes > m_maxSizeBytes)
+    u64 alignedSize = getAlignedSize(sizeBytes, alignment);
+
+    if (m_topOfStack + alignedSize > m_maxSizeBytes)
     {
-        // todo: logging warnings for this case, once we have logging
+        // todo: logging warnings for this case, once we have logging, also conditionally compile out?
         return nullptr;
     }
 
-    void* result = m_baseAddress + m_topOfStack;
-    m_topOfStack += sizeBytes;
-    return result;
-}
-
-// This alignment strategy is adapted from "Game Engine Architecture" pg. 431
-// With some additional compiler-friendly edits thanks to clang
-// https://clang.llvm.org/extra/clang-tidy/checks/performance/no-int-to-ptr.html
-void* StackAllocator::alloc(u64 sizeBytes, Align align)
-{
-    const u64 mask = align.amount - 1;
-    assert((align.amount & mask) == 0); // make sure alignment is a power of 2
-
-    u8* buffer = static_cast<u8*>(alloc(sizeBytes + align.amount - 1));
-    const uintptr_t bufferAddress = reinterpret_cast<uintptr_t>(buffer);
-    const uintptr_t alignedBufferAddress = bufferAddress + mask & ~mask; // bitwise magic
-    const uintptr_t bias = alignedBufferAddress - bufferAddress;
-    return buffer + bias;
+    m_topOfStack += alignedSize;
+    return align(m_baseAddress + m_topOfStack, alignment).alignedPointer;
 }
 
 StackAllocator::Marker StackAllocator::getMarker() const
