@@ -1,19 +1,20 @@
-#include <cstdio>
+#include <algorithm>
 #include <cassert>
+#include <new>
+
 #include "pool_allocator.h"
 
-template<u64 BlockSizeBytes>
-void PoolAllocator<BlockSizeBytes>::init(void* baseAddress, u64 maxSizeBytes)
+void PoolAllocator::init(void* baseAddress, u64 maxSizeBytes, u64 blockSizeBytes)
 {
     m_maxSizeBytes = maxSizeBytes;
+    m_blockSizeBytes = std::max(blockSizeBytes, sizeof(PoolBlock)) ;
     m_blocks = new (baseAddress) PoolBlock[getMaxBlocks()];
 
     // Initializes all blocks to empty states.
     clear();
 }
 
-template<u64 BlockSizeBytes>
-void* PoolAllocator<BlockSizeBytes>::alloc()
+void* PoolAllocator::alloc()
 {
     if (m_firstFreeBlock == nullptr)
     {
@@ -21,14 +22,13 @@ void* PoolAllocator<BlockSizeBytes>::alloc()
         return nullptr;
     }
 
-    void* result = m_firstFreeBlock->data;
+    void* result = m_firstFreeBlock;
     m_firstFreeBlock = m_firstFreeBlock->nextFreeBlock;
     m_allocatedBlockCount++;
     return result;
 }
 
-template<u64 BlockSizeBytes>
-void PoolAllocator<BlockSizeBytes>::free(void* buffer)
+void PoolAllocator::free(void* buffer)
 {
     assert(buffer != nullptr);
     PoolBlock* prevFreeBlock = m_firstFreeBlock;
@@ -37,8 +37,7 @@ void PoolAllocator<BlockSizeBytes>::free(void* buffer)
     m_allocatedBlockCount--;
 }
 
-template<u64 BlockSizeBytes>
-void PoolAllocator<BlockSizeBytes>::clear()
+void PoolAllocator::clear()
 {
     const u64 numBlocks = getMaxBlocks();
 
@@ -55,57 +54,48 @@ void PoolAllocator<BlockSizeBytes>::clear()
 
 // === BYTE USAGE ===
 
-template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getMaxSizeBytes() const
+u64 PoolAllocator::getMaxSizeBytes() const
 {
     return m_maxSizeBytes;
 }
 
-template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getRemainingBytes() const
+u64 PoolAllocator::getRemainingBytes() const
 {
     return getMaxSizeBytes() - getAllocatedBytes();
 }
 
-template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getAllocatedBytes() const
+u64 PoolAllocator::getAllocatedBytes() const
 {
     return getAllocatedBlocks() * getBlockSizeBytes();
 }
 
 // === BLOCK USAGE ===
 
-template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getMaxBlocks() const
+u64 PoolAllocator::getMaxBlocks() const
 {
     return getMaxSizeBytes() / getBlockSizeBytes();
 }
 
-template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getAllocatedBlocks() const
+u64 PoolAllocator::getAllocatedBlocks() const
 {
     return m_allocatedBlockCount;
 }
 
-template<u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getRemainingBlocks() const
+u64 PoolAllocator::getRemainingBlocks() const
 {
     return getMaxBlocks() - getAllocatedBlocks();
 }
 
-template <u64 BlockSizeBytes>
-void PoolAllocator<BlockSizeBytes>::printInfo() const
+void PoolAllocator::printInfo() const
 {
     printf("=== POOL ALLOCATOR ===\n");
     printf("bytes: [%llu/%llu] %llu free\n", getAllocatedBytes(), getMaxSizeBytes(), getRemainingBytes());
     printf("blocks: [%llu/%llu] %llu free\n", getAllocatedBlocks(), getMaxBlocks(), getRemainingBlocks());
-    printf("block size: [%llu bytes] data=%llu nextBlock=%llu\n", getBlockSizeBytes(), sizeof(u8[BlockSizeBytes]), sizeof(void*));
+    printf("block size: [%llu bytes] nextBlock=%llu\n", getBlockSizeBytes(), sizeof(void*));
     printf("======================\n");
 }
 
-template <u64 BlockSizeBytes>
-u64 PoolAllocator<BlockSizeBytes>::getBlockSizeBytes() // static
+u64 PoolAllocator::getBlockSizeBytes() const
 {
-    return sizeof(PoolBlock);
+    return m_blockSizeBytes;
 }
-

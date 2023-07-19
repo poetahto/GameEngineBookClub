@@ -8,7 +8,7 @@ public:
     {
         u64 size = 2048;
         rawBuffer = new u8[size];
-        pa.init(rawBuffer, size);
+        pa.init(rawBuffer, size, 1);
     }
 
     ~PoolAllocatorTest() override
@@ -17,7 +17,7 @@ public:
     }
 
 protected:
-    PoolAllocator<1> pa;
+    PoolAllocator pa;
     u8* rawBuffer;
 };
 

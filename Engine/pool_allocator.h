@@ -3,12 +3,10 @@
 
 #include "types.h"
 
-// todo: after working on the heap allocator, I don't think this has to be templated
-template<u64 BlockSizeBytes>
 class PoolAllocator
 {
 public:
-    void init(void* baseAddress, u64 maxSizeBytes);
+    void init(void* baseAddress, u64 maxSizeBytes, u64 blockSizeBytes);
     void* alloc(); // todo: alloc based alignment here, like in the book?
     void free(void* buffer);
     void clear();
@@ -24,28 +22,22 @@ public:
     u64 getAllocatedBlocks() const;
 
     // Debugging
-    static u64 getBlockSizeBytes();
     void printInfo() const;
+    u64 getBlockSizeBytes() const;
 
 private:
-    struct PoolBlock;
-
-    PoolBlock* m_blocks {};
-    PoolBlock* m_firstFreeBlock {};
-    u64 m_maxSizeBytes {};
-    u64 m_allocatedBlockCount {};
-
     // todo: look at struct memory layout, explicitly show padding (from book)
     struct PoolBlock
     {
-        union
-        {
-            u8 data[BlockSizeBytes];
-            PoolBlock* nextFreeBlock; // todo: look into index-based free list tracking? so no need for 8 byte pointers? MORE templating?
-        };
+        // todo: look into index-based free list tracking? so no need for 8 byte pointers? MORE templating?
+        PoolBlock* nextFreeBlock;
     };
-};
 
-#include "pool_allocator.tpp"
+    PoolBlock* m_blocks {};
+    PoolBlock* m_firstFreeBlock {};
+    u64 m_blockSizeBytes {};
+    u64 m_maxSizeBytes {};
+    u64 m_allocatedBlockCount {};
+};
 
 #endif // POOL_ALLOCATOR_H

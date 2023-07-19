@@ -55,7 +55,7 @@ public:
 
 private:
     // the buffer for storing relocatable pointers
-    PoolAllocator<sizeof(HeapPointer)> m_pointers {};
+    PoolAllocator m_pointers {};
 
     MemoryBlock* m_freeBlocks {};
     u64 m_freeBlockCount {};
