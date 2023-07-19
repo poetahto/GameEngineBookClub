@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
-
 #include "memory_util.h"
 #include "stack_allocator.h"
+
+using namespace memory;
 
 class StackAllocatorTest : public testing::Test
 {
@@ -23,17 +24,17 @@ protected:
     char* rawBuffer;
 };
 
-void testCorrectAlignment(StackAllocator& sa, AlignmentAmount alignment)
+void testCorrectAlignment(StackAllocator& sa, Alignment alignment)
 {
-    sa.alloc(alignment / 2, Align(1)); // Purposely set ourselves up for a misalignment.
-    void* buffer = sa.alloc(64, Align(alignment));
+    sa.alloc(alignment / 2, 1); // Purposely set ourselves up for a misalignment.
+    void* buffer = sa.alloc(64, alignment);
     EXPECT_TRUE(isAligned(buffer, alignment));
 }
 
-void testIncorrectAlignment(StackAllocator& sa, AlignmentAmount alignment)
+void testIncorrectAlignment(StackAllocator& sa, Alignment alignment)
 {
-    sa.alloc(alignment / 2, Align(1)); // Purposely set ourselves up for a misalignment.
-    void* buffer = sa.alloc(64, Align(1));
+    sa.alloc(alignment / 2, 1); // Purposely set ourselves up for a misalignment.
+    void* buffer = sa.alloc(64, 1);
     EXPECT_FALSE(isAligned(buffer, alignment));
 }
 

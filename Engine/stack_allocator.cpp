@@ -1,8 +1,9 @@
 #include <cassert>
 #include <cstdio>
-
-#include "stack_allocator.h"
 #include "memory_util.h"
+#include "stack_allocator.h"
+
+using namespace memory;
 
 // todo: create double-ended stack allocator (kinda low priority, looks pretty simple and similar to this stack allocator
 
@@ -13,7 +14,7 @@ void StackAllocator::init(void* baseAddress, u64 maxSizeBytes)
     m_topOfStack = 0;
 }
 
-void* StackAllocator::alloc(u64 sizeBytes, Align alignment)
+void* StackAllocator::alloc(u64 sizeBytes, Alignment alignment)
 {
     u64 alignedSize = getAlignedSize(sizeBytes, alignment);
 
@@ -24,7 +25,7 @@ void* StackAllocator::alloc(u64 sizeBytes, Align alignment)
     }
 
     m_topOfStack += alignedSize;
-    return align(m_baseAddress + m_topOfStack, alignment);
+    return alignPointer(m_baseAddress + m_topOfStack, alignment);
 }
 
 StackAllocator::Marker StackAllocator::getMarker() const

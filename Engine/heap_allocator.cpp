@@ -1,10 +1,9 @@
 ﻿#include <cstdio>
-#include <new>
-#include <cassert>
 #include <cstring>
-#include <algorithm>
-
+#include <new>
 #include "heap_allocator.h"
+
+using namespace memory;
 
 void HeapAllocator::init(void* baseAddress, u64 maxSizeBytes)
 {
@@ -20,13 +19,13 @@ void HeapAllocator::init(void* baseAddress, u64 maxSizeBytes)
     clear();
 }
 
-// todo: alignment
 // worst-case O(n) time operation, best-case constant-time operation, n = # of free blocks
 // becomes faster the less fragmented the heap is.
-HeapPointer* HeapAllocator::alloc(u64 sizeBytes, Align alignment)
+HeapPointer* HeapAllocator::alloc(u64 sizeBytes, Alignment alignment)
 {
     // we only want allocated in chunks the size of our free block - this way we can always have room for free storage
-    u64 trueSizeBytes = static_cast<u64>(ceilf(static_cast<f32>(sizeBytes + alignment.amount + sizeof MemoryBlock::header) / sizeof(MemoryBlock))) * sizeof(MemoryBlock);
+    u64 baseSize = sizeBytes + alignment + sizeof(u64); // the u64 is our header information
+    u64 trueSizeBytes = static_cast<u64>(ceilf(static_cast<f32>(baseSize) / sizeof(MemoryBlock))) * sizeof(MemoryBlock);
     m_allocatedBytes += trueSizeBytes + sizeof(HeapPointer);
 
     // find the block to return for our users
@@ -35,13 +34,13 @@ HeapPointer* HeapAllocator::alloc(u64 sizeBytes, Align alignment)
 
     while (freeBlock != nullptr)
     {
-        if (freeBlock->header.sizeBytes >= trueSizeBytes)
+        if (freeBlock->sizeBytes >= trueSizeBytes)
         {
             break;
         }
 
         prevBlock = freeBlock;
-        freeBlock = freeBlock->freeData.next;
+        freeBlock = freeBlock->next;
     }
 
     // We failed to find a free block that's big enough.
@@ -51,39 +50,39 @@ HeapPointer* HeapAllocator::alloc(u64 sizeBytes, Align alignment)
         return nullptr;
     }
 
-    u64 leftoverBytes = freeBlock->header.sizeBytes - trueSizeBytes;
-    freeBlock->header.sizeBytes = trueSizeBytes;
+    u64 leftoverBytes = freeBlock->sizeBytes - trueSizeBytes;
+    freeBlock->sizeBytes = trueSizeBytes;
     m_freeBlockCount--;
-    u8* freeBlockDataPointer = reinterpret_cast<u8*>(&freeBlock->freeData);
+    u8* freeBlockDataPointer = reinterpret_cast<u8*>(&freeBlock->next);
 
     // Check if we need to insert an empty block after the used one.
     if (leftoverBytes > 0)
     {
         void* newFreePointer = reinterpret_cast<u8*>(freeBlock) + trueSizeBytes;
         MemoryBlock* newFreeBlock = new (newFreePointer) MemoryBlock {};
-        newFreeBlock->header.sizeBytes = leftoverBytes;
-        newFreeBlock->freeData.next = freeBlock->freeData.next;
+        newFreeBlock->sizeBytes = leftoverBytes;
+        newFreeBlock->next = freeBlock->next;
         m_freeBlockCount++;
 
-        freeBlock->freeData.next = newFreeBlock;
+        freeBlock->next = newFreeBlock;
     }
 
     // Make sure the linked list remains valid.
     if (prevBlock != nullptr)
     {
-        prevBlock->freeData.next = freeBlock->freeData.next;
+        prevBlock->next = freeBlock->next;
     }
     else // We have no previous element, hence we are the first in the list.
     {
-        m_freeBlocks = freeBlock->freeData.next;
+        m_freeBlocks = freeBlock->next;
     }
 
     // Align our data before returning it (taken from "Game Engine Architecture 3rd" 6.2.1.3)
-    u8* alignedPointer = align(freeBlockDataPointer, alignment);
+    u8* alignedPointer = alignPointer(freeBlockDataPointer, alignment);
 
     if (alignedPointer == freeBlockDataPointer)
     {
-        alignedPointer += alignment.amount;
+        alignedPointer += alignment;
     }
 
     ptrdiff_t shift = alignedPointer - freeBlockDataPointer;
@@ -107,10 +106,10 @@ void HeapAllocator::free(HeapPointer* pointer)
     u8* basePointer = pointer->rawPtr - shift;
 
     // We get the shifted address back, and must look a bit earlier to find out header information.
-    MemoryBlock* newFreeBlock = reinterpret_cast<MemoryBlock*>(basePointer - sizeof MemoryBlock::header);
+    MemoryBlock* newFreeBlock = reinterpret_cast<MemoryBlock*>(basePointer - sizeof(u64));
     m_freeBlockCount++;
 
-    m_allocatedBytes -= newFreeBlock->header.sizeBytes + sizeof(HeapPointer);
+    m_allocatedBytes -= newFreeBlock->sizeBytes + sizeof(HeapPointer);
     m_pointers.free(pointer);
 
     // Check to see if there is a free block following this one.
@@ -119,7 +118,7 @@ void HeapAllocator::free(HeapPointer* pointer)
 
     { // We want to find the free blocks that surround our newly freed block.
         MemoryBlock* current = m_freeBlocks;
-        uintptr_t nextAddr = reinterpret_cast<uintptr_t>(newFreeBlock) + newFreeBlock->header.sizeBytes;
+        uintptr_t nextAddr = reinterpret_cast<uintptr_t>(newFreeBlock) + newFreeBlock->sizeBytes;
 
         while (current != nullptr)
         {
@@ -130,7 +129,7 @@ void HeapAllocator::free(HeapPointer* pointer)
             }
 
             prevBlock = current;
-            current = current->freeData.next;
+            current = current->next;
         }
     }
 
@@ -146,11 +145,11 @@ void HeapAllocator::free(HeapPointer* pointer)
     }
     else if (prevBlock != nullptr) // We have a non-adjacent previous block.
     {
-        prevBlock->freeData.next = newFreeBlock;
+        prevBlock->next = newFreeBlock;
     }
     else // We are the first item in the list.
     {
-        newFreeBlock->freeData.next = m_freeBlocks;
+        newFreeBlock->next = m_freeBlocks;
         m_freeBlocks = newFreeBlock;
     }
 }
@@ -163,8 +162,8 @@ void HeapAllocator::clear()
 
     // Create a new, empty free store right after the pointers.
     m_freeBlocks = new (m_baseAddress + m_pointers.getMaxSizeBytes()) MemoryBlock {};
-    m_freeBlocks->header.sizeBytes = m_maxSizeBytes;
-    m_freeBlocks->freeData.next = nullptr;
+    m_freeBlocks->sizeBytes = m_maxSizeBytes;
+    m_freeBlocks->next = nullptr;
 }
 
 // Constant-time operation.
@@ -173,21 +172,21 @@ void HeapAllocator::clear()
 void HeapAllocator::defragment()
 {
     MemoryBlock* free = m_freeBlocks;
-    MemoryBlock* next = free->freeData.next;
+    MemoryBlock* next = free->next;
 
     if (next != nullptr)
     {
         // Save state before memory shuffles around.
-        u8* usedPointer = reinterpret_cast<u8*>(free) + free->header.sizeBytes;
+        u8* usedPointer = reinterpret_cast<u8*>(free) + free->sizeBytes;
         MemoryBlock* used = reinterpret_cast<MemoryBlock*>(usedPointer);
-        u64 freeSize = free->header.sizeBytes;
+        u64 freeSize = free->sizeBytes;
 
         // Copy over the data from the used block into the free block.
-        memmove(free, used, used->header.sizeBytes);
+        memmove(free, used, used->sizeBytes);
 
         // Re-create the moved free block.
-        MemoryBlock* newFree = new(reinterpret_cast<u8*>(free) + free->header.sizeBytes) MemoryBlock {};
-        newFree->header.sizeBytes = freeSize;
+        MemoryBlock* newFree = new(reinterpret_cast<u8*>(free) + free->sizeBytes) MemoryBlock {};
+        newFree->sizeBytes = freeSize;
 
         // Now check if the new free space needs to be merged.
         if (areAdjacent(newFree, next))
@@ -196,7 +195,7 @@ void HeapAllocator::defragment()
         }
         else // we are not able to be merged, so repair linked list connections.
         {
-            newFree->freeData.next = next;
+            newFree->next = next;
         }
     }
 }
@@ -235,9 +234,8 @@ void HeapAllocator::printInfo() const
     while (currentBlock != nullptr)
     {
         u64 offsetFromBase = reinterpret_cast<uintptr_t>(currentBlock) - reinterpret_cast<uintptr_t>(m_freeBlocks);
-        printf("\t%p | offset +%-5llu Free Block [%llu bytes]\n", static_cast<void*>(currentBlock), offsetFromBase,
-               currentBlock->header.sizeBytes);
-        currentBlock = currentBlock->freeData.next;
+        printf("\t%p | offset +%-5llu Free Block [%llu bytes]\n", static_cast<void*>(currentBlock), offsetFromBase,currentBlock->sizeBytes);
+        currentBlock = currentBlock->next;
     }
 
     m_pointers.printInfo();
@@ -252,10 +250,10 @@ void HeapAllocator::printInfo() const
 void HeapAllocator::merge(MemoryBlock* first, MemoryBlock* second)
 {
     // We should only ever merge consecutive blocks together.
-    assert(reinterpret_cast<u8*>(first) + first->header.sizeBytes == reinterpret_cast<u8*>(second));
+    assert(reinterpret_cast<u8*>(first) + first->sizeBytes == reinterpret_cast<u8*>(second));
 
-    first->header.sizeBytes = first->header.sizeBytes + second->header.sizeBytes;
-    first->freeData.next = second->freeData.next;
+    first->sizeBytes = first->sizeBytes + second->sizeBytes;
+    first->next = second->next;
     m_freeBlockCount--;
 }
 
@@ -269,5 +267,5 @@ bool HeapAllocator::areAdjacent(MemoryBlock* first, MemoryBlock* second) // stat
 
     uintptr_t firstAddr = reinterpret_cast<uintptr_t>(first);
     uintptr_t secondAddr = reinterpret_cast<uintptr_t>(second);
-    return firstAddr + first->header.sizeBytes == secondAddr;
+    return firstAddr + first->sizeBytes == secondAddr;
 }
