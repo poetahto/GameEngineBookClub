@@ -89,7 +89,7 @@ public:
 
 private:
     // the buffer for storing relocatable pointers
-    PoolAllocator<u64> m_pointers{};
+    PoolAllocatorTemplate<u64> m_pointers{};
 
     MemoryBlock* m_freeBlocks{};
     u64 m_freeBlockCount{};

@@ -17,7 +17,7 @@ public:
     }
 
 protected:
-    PoolAllocator<u16> pa;
+    PoolAllocator pa;
     u8* rawBuffer;
 };
 

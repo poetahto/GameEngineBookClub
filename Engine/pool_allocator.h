@@ -5,7 +5,7 @@
 #include "types.h"
 
 template <class T>
-class PoolAllocator
+class PoolAllocatorTemplate
 {
 public:
     void init(void* baseAddress, u64 maxSizeBytes, u64 blockSizeBytes)
@@ -117,5 +117,25 @@ private:
     u64 m_maxSizeBytes{};
     u64 m_allocatedBlockCount{};
 };
+
+/**
+ * \brief A pool allocator that can store a huge amount of items, but wastes at most 7 bytes.
+ * \details This allocator is well suited for large block sizes and large amounts of data.
+ */
+typedef PoolAllocatorTemplate<u64> PoolAllocatorLarge;
+
+/**
+ * \brief A pool allocator that can store 65,536 items, and only wastes at most 1 byte.
+ * \details This is a good general-purpose pool allocator, as long as you don't need a
+ * huge amount of items or store extremely small items.
+ */
+typedef PoolAllocatorTemplate<u16> PoolAllocator;
+
+/**
+ * \brief A pool allocator that can only store 256 items, but wastes no bytes.
+ * \details This is a specialized pool allocator that works only if you need a very small pool,
+ * storing very small items.
+ */
+typedef PoolAllocatorTemplate<u16> PoolAllocatorSmall;
 
 #endif // POOL_ALLOCATOR_H
