@@ -137,10 +137,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="heap_allocator_tests.cpp" />
-    <ClCompile Include="pool_allocator_tests.cpp" />
-    <ClCompile Include="stack_allocator_tests.cpp" />
-    <ClCompile Include="tests_main.cpp" />
+    <ClCompile Include="tests_heap_allocator.cpp" />
+    <ClCompile Include="tests_pool_allocator.cpp" />
+    <ClCompile Include="tests_stack_allocator.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="memory_util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
