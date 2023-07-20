@@ -13,7 +13,7 @@ void HeapAllocator::init(void* baseAddress, u64 maxSizeBytes)
     // Set aside memory for non-relocatable pointers that can be adjusted when defragmentation.
     u64 pointersSize = m_maxAllocations * sizeof(HeapPointer);
     m_maxSizeBytes = maxSizeBytes - pointersSize;
-    m_pointers.init(baseAddress, pointersSize, sizeof(HeapPointer));
+    m_pointers.init<HeapPointer>(baseAddress, pointersSize);
 
     // Start off with a clean heap.
     clear();

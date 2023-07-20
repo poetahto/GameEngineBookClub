@@ -23,6 +23,17 @@ protected:
     u8* rawBuffer;
 };
 
+TEST_F(HeapAllocatorTest, HeapPointerAlignment)
+{
+    auto ptr1 = heap.alloc(15);
+    auto ptr2 = heap.alloc(15);
+    auto ptr3 = heap.alloc(15);
+
+    EXPECT_TRUE(isAligned(ptr1, align<HeapPointer*>()));
+    EXPECT_TRUE(isAligned(ptr2, align<HeapPointer*>()));
+    EXPECT_TRUE(isAligned(ptr3, align<HeapPointer*>()));
+}
+
 TEST_F(HeapAllocatorTest, ByteUsage)
 {
     EXPECT_FALSE(heap.isFragmented());
