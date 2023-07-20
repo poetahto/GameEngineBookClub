@@ -1,9 +1,8 @@
 #ifndef STACK_ALLOCATOR_H
 #define STACK_ALLOCATOR_H
 
+#include "../types.h"
 #include "memory_util.h"
-#include "types.h"
-
 
 /**
  * \brief An allocator that reserves and frees memory based around the stack data structure.

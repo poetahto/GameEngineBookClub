@@ -1,4 +1,5 @@
-﻿#include "memory_util.h"
+﻿#include <cassert>
+#include "memory_util.h"
 
 using namespace memory;
 

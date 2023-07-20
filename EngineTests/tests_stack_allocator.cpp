@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
-#include "memory_util.h"
-#include "stack_allocator.h"
+#include "memory/stack_allocator.h"
 
 using namespace memory;
 

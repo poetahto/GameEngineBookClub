@@ -1,9 +1,9 @@
 ﻿#ifndef HEAP_ALLOCATOR_H
 #define HEAP_ALLOCATOR_H
 
+#include "../types.h"
 #include "memory_util.h"
 #include "pool_allocator.h"
-#include "types.h"
 
 // todo: add debug option of clearing empty bits to an easy-to-read value (this applies to all allocators)
 
@@ -89,7 +89,7 @@ public:
 
 private:
     // the buffer for storing relocatable pointers
-    PoolAllocatorTemplate<u64> m_pointers{};
+    IndexedPoolAllocator<u64> m_pointers{};
 
     MemoryBlock* m_freeBlocks{};
     u64 m_freeBlockCount{};

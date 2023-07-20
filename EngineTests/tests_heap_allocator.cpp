@@ -1,5 +1,5 @@
 ﻿#include <gtest/gtest.h>
-#include "heap_allocator.h"
+#include "memory/heap_allocator.h"
 
 using namespace memory;
 

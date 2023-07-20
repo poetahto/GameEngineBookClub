@@ -1,8 +1,7 @@
 ﻿#ifndef MEMORY_UTIL_H
 #define MEMORY_UTIL_H
 
-#include <cassert>
-#include "types.h"
+#include "../types.h"
 
 namespace memory
 {

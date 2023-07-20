@@ -1,12 +1,13 @@
 #ifndef POOL_ALLOCATOR_H
 #define POOL_ALLOCATOR_H
 
+#include <cassert>
 #include <algorithm>
-#include "types.h"
+#include "../types.h"
 #include "memory_util.h"
 
 template <class TIndex>
-class PoolAllocatorTemplate
+class IndexedPoolAllocator
 {
 public:
     /**
@@ -168,20 +169,20 @@ private:
  * \brief A pool allocator that can store a huge amount of items, but wastes at most 7 bytes.
  * \details This allocator is well suited for large amounts of items.
  */
-typedef PoolAllocatorTemplate<u64> PoolAllocatorLarge; // todo: replace this with a special pointer-based one for infinite items?
+typedef IndexedPoolAllocator<u64> PoolAllocatorLarge; // todo: replace this with a special pointer-based one for infinite items?
 
 /**
  * \brief A pool allocator that can store 65,536 items, and only wastes at most 1 byte.
  * \details This is a good general-purpose pool allocator, as long as you don't need a
  * huge amount of items, or can't afford a small amount of items.
  */
-typedef PoolAllocatorTemplate<u16> PoolAllocator;
+typedef IndexedPoolAllocator<u16> PoolAllocator;
 
 /**
  * \brief A pool allocator that can only store 256 items, but wastes no bytes.
  * \details This is a specialized pool allocator that works only if you
  * can afford a very small number of total items.
  */
-typedef PoolAllocatorTemplate<u8> PoolAllocatorSmall;
+typedef IndexedPoolAllocator<u8> PoolAllocatorSmall;
 
 #endif // POOL_ALLOCATOR_H
