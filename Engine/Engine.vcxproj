@@ -27,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="heap_allocator.cpp" />
+    <ClCompile Include="memory_util.cpp" />
     <ClCompile Include="stack_allocator.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
