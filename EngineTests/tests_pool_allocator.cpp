@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 #include "pool_allocator.h"
 
+using namespace memory;
+
 class PoolAllocatorTest : public testing::Test
 {
 public:
@@ -8,7 +10,7 @@ public:
     {
         u64 size = 2048;
         rawBuffer = new u8[size];
-        pa.init(rawBuffer, size, 1);
+        pa.init<u16>(rawBuffer, size);
     }
 
     ~PoolAllocatorTest() override
@@ -69,6 +71,22 @@ TEST_F(PoolAllocatorTest, TestAlloc)
     EXPECT_EQ(pa.getAllocatedBlocks(), 5);
     EXPECT_EQ(pa.getRemainingBlocks(), pa.getMaxBlocks() - 5);
     EXPECT_EQ(pa.getRemainingBytes(), pa.getMaxSizeBytes() - 5 * pa.getBlockSizeBytes());
+}
+
+TEST_F(PoolAllocatorTest, TestAlignment)
+{
+    auto ptr1 = pa.alloc();
+    auto ptr2 = pa.alloc();
+    auto ptr3 = pa.alloc();
+
+    EXPECT_TRUE(isAligned(ptr1, align<u16>()));
+    EXPECT_TRUE(isAligned(ptr2, align<u16>()));
+    EXPECT_TRUE(isAligned(ptr3, align<u16>()));
+
+    pa.free(ptr2);
+
+    EXPECT_TRUE(isAligned(ptr1, align<u16>()));
+    EXPECT_TRUE(isAligned(ptr3, align<u16>()));
 }
 
 TEST_F(PoolAllocatorTest, TestPlacement1)

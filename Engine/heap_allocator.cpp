@@ -21,10 +21,10 @@ void HeapAllocator::init(void* baseAddress, u64 maxSizeBytes)
 
 // worst-case O(n) time operation, best-case constant-time operation, n = # of free blocks
 // becomes faster the less fragmented the heap is.
-HeapPointer* HeapAllocator::alloc(u64 sizeBytes, Alignment alignment)
+HeapPointer* HeapAllocator::alloc(u64 sizeBytes, Alignment align)
 {
     // we only want allocated in chunks the size of our free block - this way we can always have room for free storage
-    u64 baseSize = sizeBytes + alignment + sizeof(u64); // the u64 is our header information
+    u64 baseSize = sizeBytes + align + sizeof(u64); // the u64 is our header information
     u64 trueSizeBytes = static_cast<u64>(ceilf(static_cast<f32>(baseSize) / sizeof(MemoryBlock))) * sizeof(MemoryBlock);
     m_allocatedBytes += trueSizeBytes + sizeof(HeapPointer);
 
@@ -78,11 +78,11 @@ HeapPointer* HeapAllocator::alloc(u64 sizeBytes, Alignment alignment)
     }
 
     // Align our data before returning it (taken from "Game Engine Architecture 3rd" 6.2.1.3)
-    u8* alignedPointer = alignPointer(freeBlockDataPointer, alignment);
+    u8* alignedPointer = alignPointer(freeBlockDataPointer, align);
 
     if (alignedPointer == freeBlockDataPointer)
     {
-        alignedPointer += alignment;
+        alignedPointer += align;
     }
 
     ptrdiff_t shift = alignedPointer - freeBlockDataPointer;

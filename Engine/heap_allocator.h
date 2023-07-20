@@ -46,12 +46,12 @@ public:
     /**
      * \brief Allocates room on the heap for storing generic data.
      * \param sizeBytes The amount of user-data required.
-     * \param alignment How much the user-data should be aligned.
+     * \param align How much the user-data should be aligned.
      * \return A reserved location on the heap. Access this memory via "HeapPointer->rawPtr",
      * as it may be relocated during defragmentation.
      * \details This operation runs in O(n) time, but approaches O(1) with no fragmentation.
      */
-    HeapPointer* alloc(u64 sizeBytes, memory::Alignment alignment = memory::DEFAULT_ALIGNMENT);
+    HeapPointer* alloc(u64 sizeBytes, memory::Alignment align = memory::DEFAULT_ALIGNMENT);
 
     /**
      * \brief Frees an allocated block from the heap.

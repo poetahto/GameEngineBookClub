@@ -20,9 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="heap_allocator.h" />
-    <ClCompile Include="pool_allocator.cpp">
-      <FileType>CppCode</FileType>
-    </ClCompile>
     <ClInclude Include="memory_util.h" />
     <ClInclude Include="pool_allocator.h" />
     <ClInclude Include="stack_allocator.h" />

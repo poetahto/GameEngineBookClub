@@ -14,9 +14,9 @@ void StackAllocator::init(void* baseAddress, u64 maxSizeBytes)
     m_topOfStack = 0;
 }
 
-void* StackAllocator::alloc(u64 sizeBytes, Alignment alignment)
+void* StackAllocator::alloc(u64 sizeBytes, Alignment align)
 {
-    u64 alignedSize = getAlignedSize(sizeBytes, alignment);
+    u64 alignedSize = getAlignedSize(sizeBytes, align);
 
     if (m_topOfStack + alignedSize > m_maxSizeBytes)
     {
@@ -25,7 +25,7 @@ void* StackAllocator::alloc(u64 sizeBytes, Alignment alignment)
     }
 
     m_topOfStack += alignedSize;
-    return alignPointer(m_baseAddress + m_topOfStack, alignment);
+    return alignPointer(m_baseAddress + m_topOfStack, align);
 }
 
 StackAllocator::Marker StackAllocator::getMarker() const

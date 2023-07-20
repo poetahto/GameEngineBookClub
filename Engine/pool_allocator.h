@@ -3,24 +3,35 @@
 
 #include <algorithm>
 #include "types.h"
+#include "memory_util.h"
 
-template <class T>
+template <class TIndex>
 class PoolAllocatorTemplate
 {
 public:
-    void init(void* baseAddress, u64 maxSizeBytes, u64 blockSizeBytes)
+    void init(void* baseAddress, u64 maxSizeBytes, u64 blockSizeBytes, memory::Alignment align = memory::DEFAULT_ALIGNMENT)
     {
-        m_maxSizeBytes = maxSizeBytes;
+        // Align the base pointer, so that each subsequent element maintains this alignment,
+        u8* alignedBaseAddress = memory::alignPointer(static_cast<u8*>(baseAddress), align);
+        u64 shift = alignedBaseAddress - static_cast<u8*>(baseAddress);
+
+        m_maxSizeBytes = maxSizeBytes - shift;
         m_blockSizeBytes = std::max(blockSizeBytes, sizeof(PoolBlock));
-        m_blocks = new(baseAddress) PoolBlock[getMaxBlocks()];
+        m_blocks = new (baseAddress) PoolBlock[getMaxBlocks()];
 
         // Initializes all blocks to empty states.
         clear();
     }
 
-    // todo: alloc based alignment here, like in the book?
+    template <class TData>
+    void init(void* baseAddress, u64 maxSizeBytes)
+    {
+        init(baseAddress, maxSizeBytes, sizeof(TData), align<TData>());
+    }
+
     void* alloc()
     {
+        // We can't allocate a block if we're out of blocks.
         if (getRemainingBlocks() <= 0)
         {
             // todo: log out of memory
@@ -37,8 +48,8 @@ public:
     {
         assert(buffer != nullptr);
         PoolBlock* newFreeBlock = static_cast<PoolBlock*>(buffer);
-        T newFreeIndex = static_cast<T>(newFreeBlock - m_blocks);
-        T prevFreeIndex = m_firstFreeBlockIndex;
+        TIndex newFreeIndex = static_cast<TIndex>(newFreeBlock - m_blocks);
+        TIndex prevFreeIndex = m_firstFreeBlockIndex;
         m_firstFreeBlockIndex = newFreeIndex;
         newFreeBlock->nextFreeBlockIndex = prevFreeIndex;
         m_allocatedBlockCount--;
@@ -49,7 +60,7 @@ public:
         const u64 numBlocks = getMaxBlocks();
 
         // Initialize our free list, so every block points to a neighbor.
-        for (T i = 0; i < numBlocks - 1; ++i)
+        for (TIndex i = 0; i < numBlocks - 1; ++i)
         {
             m_blocks[i].nextFreeBlockIndex = i + 1;
         }
@@ -58,7 +69,7 @@ public:
         m_allocatedBlockCount = 0;
     }
 
-    // Byte usage
+    // === Byte Usage ===
     u64 getMaxSizeBytes() const
     {
         return m_maxSizeBytes;
@@ -74,7 +85,7 @@ public:
         return getAllocatedBlocks() * getBlockSizeBytes();
     }
 
-    // Block usage
+    // === Block Usage ===
     u64 getMaxBlocks() const
     {
         return getMaxSizeBytes() / getBlockSizeBytes();
@@ -90,7 +101,7 @@ public:
         return m_allocatedBlockCount;
     }
 
-    // Debugging
+    // === Debugging ===
     void printInfo() const
     {
         printf("=== POOL ALLOCATOR ===\n");
@@ -108,11 +119,11 @@ public:
 private:
     struct PoolBlock
     {
-        T nextFreeBlockIndex;
+        TIndex nextFreeBlockIndex;
     };
 
     PoolBlock* m_blocks{};
-    T m_firstFreeBlockIndex{};
+    TIndex m_firstFreeBlockIndex{};
     u64 m_blockSizeBytes{};
     u64 m_maxSizeBytes{};
     u64 m_allocatedBlockCount{};
@@ -120,9 +131,9 @@ private:
 
 /**
  * \brief A pool allocator that can store a huge amount of items, but wastes at most 7 bytes.
- * \details This allocator is well suited for large block sizes and large amounts of data.
+ * \details This allocator is well suited for large amounts of data.
  */
-typedef PoolAllocatorTemplate<u64> PoolAllocatorLarge;
+typedef PoolAllocatorTemplate<u64> PoolAllocatorLarge; // todo: replace this with a special pointer-based one for infinite items?
 
 /**
  * \brief A pool allocator that can store 65,536 items, and only wastes at most 1 byte.
@@ -136,6 +147,6 @@ typedef PoolAllocatorTemplate<u16> PoolAllocator;
  * \details This is a specialized pool allocator that works only if you need a very small pool,
  * storing very small items.
  */
-typedef PoolAllocatorTemplate<u16> PoolAllocatorSmall;
+typedef PoolAllocatorTemplate<u8> PoolAllocatorSmall;
 
 #endif // POOL_ALLOCATOR_H

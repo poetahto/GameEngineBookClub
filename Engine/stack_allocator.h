@@ -28,10 +28,10 @@ public:
     /**
      * \brief Reserves a block of memory for general use.
      * \param sizeBytes The size of the block that should be reserved.
-     * \param alignment The alignment of the reserved memory.
+     * \param align The alignment of the reserved memory.
      * \return A pointer to the newly reserved block, available for general use.
      */
-    void* alloc(u64 sizeBytes, memory::Alignment alignment = memory::DEFAULT_ALIGNMENT);
+    void* alloc(u64 sizeBytes, memory::Alignment align = memory::DEFAULT_ALIGNMENT);
 
     /**
      * \brief Marks a location on the stack that can be used to free all following allocations.
