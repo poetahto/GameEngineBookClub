@@ -9,7 +9,18 @@ template <class TIndex>
 class PoolAllocatorTemplate
 {
 public:
-    void init(void* baseAddress, u64 maxSizeBytes, u64 blockSizeBytes, memory::Alignment align = memory::DEFAULT_ALIGNMENT)
+    /**
+     * \brief Creates a new instance of a stack allocator.
+     * \param baseAddress The starting point for storing allocated data.
+     * \param maxSizeBytes The upper-limit for allocations.
+     * \param blockSizeBytes The size of each block that will store user data.
+     * \param align The alignment requirements for each block of data.
+     */
+    void init(
+        void* baseAddress,
+        u64 maxSizeBytes,
+        u64 blockSizeBytes,
+        memory::Alignment align = memory::DEFAULT_ALIGNMENT)
     {
         // Align the base pointer, so that each subsequent element maintains this alignment,
         u8* alignedBaseAddress = memory::alignPointer(static_cast<u8*>(baseAddress), align);
@@ -23,12 +34,23 @@ public:
         clear();
     }
 
+    /**
+     * \brief Creates a new instance of a stack allocator, with block size and
+     * alignment tuned for storing a certain data type.
+     * \tparam TData The type of data this allocator will store.
+     * \param baseAddress The starting point for storing allocated data.
+     * \param maxSizeBytes The upper-limit for allocations.
+     */
     template <class TData>
     void init(void* baseAddress, u64 maxSizeBytes)
     {
         init(baseAddress, maxSizeBytes, sizeof(TData), align<TData>());
     }
 
+    /**
+     * \brief Reserves a block of memory for general use.
+     * \return A pointer to the memory that has been reserved.
+     */
     void* alloc()
     {
         // We can't allocate a block if we're out of blocks.
@@ -44,6 +66,10 @@ public:
         return result;
     }
 
+    /**
+     * \brief Releases a reserved block of memory, so that it can be reused later.
+     * \param buffer The block of memory that should be freed.
+     */
     void free(void* buffer)
     {
         assert(buffer != nullptr);
@@ -55,6 +81,9 @@ public:
         m_allocatedBlockCount--;
     }
 
+    /**
+     * \brief Releases all blocks of reserved memory.
+     */
     void clear()
     {
         const u64 numBlocks = getMaxBlocks();
@@ -102,7 +131,7 @@ public:
     }
 
     // === Debugging ===
-    void printInfo() const
+    void printInfo() const // todo: logger / better output
     {
         printf("=== POOL ALLOCATOR ===\n");
         printf("bytes: [%llu/%llu] %llu free\n", getAllocatedBytes(), getMaxSizeBytes(), getRemainingBytes());
@@ -117,12 +146,15 @@ public:
     }
 
 private:
+    // An unused block of memory in the allocator.
     struct PoolBlock
     {
         TIndex nextFreeBlockIndex;
     };
 
+    // Pointer to the base address for storing blocks.
     PoolBlock* m_blocks{};
+
     TIndex m_firstFreeBlockIndex{};
     u64 m_blockSizeBytes{};
     u64 m_maxSizeBytes{};
