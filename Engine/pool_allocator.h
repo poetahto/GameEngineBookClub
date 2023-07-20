@@ -50,6 +50,7 @@ public:
     /**
      * \brief Reserves a block of memory for general use.
      * \return A pointer to the memory that has been reserved.
+     * \details This operation runs in O(1) time.
      */
     void* alloc()
     {
@@ -69,6 +70,7 @@ public:
     /**
      * \brief Releases a reserved block of memory, so that it can be reused later.
      * \param buffer The block of memory that should be freed.
+     * \details This operation runs in O(1) time.
      */
     void free(void* buffer)
     {
@@ -83,6 +85,7 @@ public:
 
     /**
      * \brief Releases all blocks of reserved memory.
+     * \details This operation runs in O(n) time, where n == total # of blocks.
      */
     void clear()
     {
@@ -163,21 +166,21 @@ private:
 
 /**
  * \brief A pool allocator that can store a huge amount of items, but wastes at most 7 bytes.
- * \details This allocator is well suited for large amounts of data.
+ * \details This allocator is well suited for large amounts of items.
  */
 typedef PoolAllocatorTemplate<u64> PoolAllocatorLarge; // todo: replace this with a special pointer-based one for infinite items?
 
 /**
  * \brief A pool allocator that can store 65,536 items, and only wastes at most 1 byte.
  * \details This is a good general-purpose pool allocator, as long as you don't need a
- * huge amount of items or store extremely small items.
+ * huge amount of items, or can't afford a small amount of items.
  */
 typedef PoolAllocatorTemplate<u16> PoolAllocator;
 
 /**
  * \brief A pool allocator that can only store 256 items, but wastes no bytes.
- * \details This is a specialized pool allocator that works only if you need a very small pool,
- * storing very small items.
+ * \details This is a specialized pool allocator that works only if you
+ * can afford a very small number of total items.
  */
 typedef PoolAllocatorTemplate<u8> PoolAllocatorSmall;
 

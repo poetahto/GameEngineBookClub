@@ -11,7 +11,9 @@ void StackAllocator::init(void* baseAddress, u64 maxSizeBytes)
 {
     m_baseAddress = static_cast<u8*>(baseAddress);
     m_maxSizeBytes = maxSizeBytes;
-    m_topOfStack = 0;
+
+    // Start off with a clean stack.
+    clear();
 }
 
 void* StackAllocator::alloc(u64 sizeBytes, Alignment align)

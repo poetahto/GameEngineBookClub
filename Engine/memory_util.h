@@ -20,28 +20,28 @@ namespace memory
     /**
      * \brief Checks a pointer to see if it is aligned to a certain value.
      * \param pointer The pointer to check for alignment.
-     * \param alignment The alignment value to be checked for.
+     * \param align The alignment value to be checked for.
      * \return True if the pointer is aligned, false otherwise.
      */
-    bool isAligned(const void* pointer, Alignment alignment);
+    bool isAligned(const void* pointer, Alignment align);
 
     /**
      * \brief Determines the amount of bytes needed to align some data.
      * \param sizeBytes The original size you want to allocate.
-     * \param alignment The alignment value you want to apply.
+     * \param align The alignment value you want to apply.
      * \return The total size needed to align the original data.
      */
-    u64 getAlignedSize(u64 sizeBytes, Alignment alignment = DEFAULT_ALIGNMENT);
+    u64 getAlignedSize(u64 sizeBytes, Alignment align = DEFAULT_ALIGNMENT);
 
     /**
      * \brief Shifts a pointer such that it respects some alignment.
      * \param basePointer The pointer that should be aligned.
-     * \param alignment The alignment to apply to the pointer.
+     * \param align The alignment to apply to the pointer.
      * \return The newly aligned version of basePointer.
      * \details You may want to use "memory::getAlignedSize()" to allocate the pointer
      * that is passed in to this function.
      */
-    u8* alignPointer(u8* basePointer, Alignment alignment = DEFAULT_ALIGNMENT);
+    u8* alignPointer(u8* basePointer, Alignment align = DEFAULT_ALIGNMENT);
 
 } // namespace memory
 
