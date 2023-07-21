@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="math\mat4.h" />
     <ClInclude Include="math\math_util.h" />
     <ClInclude Include="math\vec3.h" />
     <ClInclude Include="memory\heap_allocator.h" />
@@ -28,6 +29,7 @@
     <ClInclude Include="types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="math\mat4.cpp" />
     <ClCompile Include="math\math_util.cpp" />
     <ClCompile Include="math\vec3.cpp" />
     <ClCompile Include="memory\heap_allocator.cpp">

@@ -19,6 +19,7 @@ struct vec3
     vec3 normalized() const;
 };
 
+// todo: namespace this?
 float dot(vec3 first, vec3 second);
 vec3 cross(vec3 first, vec3 second);
 vec3 lerp(vec3 a, vec3 b, float t);
@@ -35,6 +36,7 @@ vec3 operator -(vec3 first, vec3 second); // subtraction
 vec3 operator -=(vec3& a, vec3 b);
 vec3 operator -(vec3 vector); // negation
 
+// todo: namespace this?
 // === Constants ===
 const vec3 ZERO{0, 0, 0};
 const vec3 ONE{1, 1, 1};

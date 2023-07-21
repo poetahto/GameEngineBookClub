@@ -47,6 +47,7 @@ vec3 cross(vec3 first, vec3 second)
     return vec3 { x, y, z };
 }
 
+// todo: add lerp for floats as well?
 vec3 lerp(vec3 a, vec3 b, float t)
 {
     float x = (1 - t) * a.x + t * b.x;

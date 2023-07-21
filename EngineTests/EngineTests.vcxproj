@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tests_heap_allocator.cpp" />
+    <ClCompile Include="tests_mat4.cpp" />
     <ClCompile Include="tests_pool_allocator.cpp" />
     <ClCompile Include="tests_stack_allocator.cpp" />
     <ClCompile Include="main.cpp" />
