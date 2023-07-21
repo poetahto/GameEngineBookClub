@@ -141,6 +141,10 @@
     <ClCompile Include="tests_pool_allocator.cpp" />
     <ClCompile Include="tests_stack_allocator.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="tests_vec3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="tests_math_util.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
