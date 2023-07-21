@@ -1,8 +1,6 @@
-﻿#include "vec3.h"
-
-#include <complex>
-
+﻿#include <complex>
 #include "math_util.h"
+#include "vec3.h"
 
 float vec3::magnitude() const
 {
@@ -87,6 +85,12 @@ vec3 operator *(float k, vec3 vector)
     return vector * k;
 }
 
+vec3 operator*=(vec3& first, float k)
+{
+    first = first * k;
+    return first;
+}
+
 // Addition
 vec3 operator +(vec3 first, vec3 second)
 {
@@ -98,6 +102,12 @@ vec3 operator +(vec3 first, vec3 second)
     };
 }
 
+vec3 operator+=(vec3& a, vec3 b)
+{
+    a = a + b;
+    return a;
+}
+
 // Subtraction
 vec3 operator -(vec3 first, vec3 second)
 {
@@ -107,6 +117,12 @@ vec3 operator -(vec3 first, vec3 second)
         first.y - second.y,
         first.z - second.z,
     };
+}
+
+vec3 operator-=(vec3& a, vec3 b)
+{
+    a = a - b;
+    return a;
 }
 
 // Negation

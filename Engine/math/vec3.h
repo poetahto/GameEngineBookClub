@@ -28,8 +28,11 @@ bool operator ==(vec3 first, vec3 second); // equality
 bool operator !=(vec3 first, vec3 second); // inequality
 vec3 operator *(vec3 vector, float k); // scalar multiplication
 vec3 operator *(float k, vec3 vector);
+vec3 operator *=(vec3& first, float k);
 vec3 operator +(vec3 first, vec3 second); // addition
+vec3 operator +=(vec3& a, vec3 b);
 vec3 operator -(vec3 first, vec3 second); // subtraction
+vec3 operator -=(vec3& a, vec3 b);
 vec3 operator -(vec3 vector); // negation
 
 // === Constants ===
