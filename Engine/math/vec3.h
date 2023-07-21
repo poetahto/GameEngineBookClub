@@ -15,7 +15,13 @@ struct vec3
 
     float magnitude() const;
     float magnitudeSqr() const;
+    void normalize();
+    vec3 normalized() const;
 };
+
+float dot(vec3 first, vec3 second);
+vec3 cross(vec3 first, vec3 second);
+vec3 lerp(vec3 a, vec3 b, float t);
 
 // === Operators ===
 bool operator ==(vec3 first, vec3 second); // equality

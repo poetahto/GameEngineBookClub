@@ -11,13 +11,52 @@ TEST(Vec3Tests, Equality)
     EXPECT_NE(ZERO, ONE);
 }
 
+TEST(Vec3Tests, Normalize)
+{
+    EXPECT_EQ(ZERO.normalized(), ZERO);
+    EXPECT_EQ(vec3(25, 0, 0).normalized(), vec3(1, 0, 0));
+    EXPECT_EQ(vec3(-25, 0, 0).normalized(), vec3(-1, 0, 0));
+    EXPECT_EQ(vec3(0, 10, 0).normalized(), vec3(0, 1, 0));
+    EXPECT_EQ(vec3(0, -10, 0).normalized(), vec3(0, -1, 0));
+    EXPECT_EQ(vec3(0, 0, 10).normalized(), vec3(0, 0, 1));
+    EXPECT_EQ(vec3(0, 0, -10).normalized(), vec3(0, 0, -1));
+}
+
 TEST(Vec3Tests, Magnitude)
 {
     EXPECT_EQ(vec3(5, 0, 0).magnitude(), 5);
+    EXPECT_EQ(vec3(0, 5, 0).magnitude(), 5);
+    EXPECT_EQ(vec3(0, 0, 5).magnitude(), 5);
+    EXPECT_EQ(vec3(-5, 0, 0).magnitude(), 5);
+    EXPECT_EQ(vec3(0, -5, 0).magnitude(), 5);
+    EXPECT_EQ(vec3(0, 0, -5).magnitude(), 5);
     EXPECT_EQ(ZERO.magnitude(), 0);
 
     EXPECT_EQ(ZERO.magnitudeSqr(), 0);
     EXPECT_EQ(vec3(0, 5, 0).magnitudeSqr(), 25);
+}
+
+TEST(Vec3Tests, DotProduct)
+{
+    EXPECT_EQ(dot(vec3(1, 0, 0), vec3(0, 1, 0)), 0);
+    EXPECT_EQ(dot(vec3(5, 0, 0), vec3(5, 0, 0)), 25);
+    EXPECT_EQ(dot(vec3(-5, 0, 0), vec3(5, 0, 0)), -25);
+}
+
+TEST(Vec3Tests, CrossProduct)
+{
+    EXPECT_EQ(cross(ZERO, ZERO), ZERO);
+    EXPECT_EQ(cross(vec3(1, 5, -2), vec3(8, -242, 12)), vec3(-424, -28, -282));
+    EXPECT_EQ(cross(vec3(1, 5, -2), ZERO), ZERO);
+}
+
+TEST(Vec3Tests, Lerp)
+{
+    vec3 a { 10, 0, 0 };
+    vec3 b { 10, 20, 30 };
+    EXPECT_EQ(lerp(a, b, 0), a);
+    EXPECT_EQ(lerp(a, b, 1), b);
+    EXPECT_EQ(lerp(a, b, 0.5f), vec3(10, 10, 15));
 }
 
 TEST(Vec3Tests, Subtraction)

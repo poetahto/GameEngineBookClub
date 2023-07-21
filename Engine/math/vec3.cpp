@@ -14,6 +14,49 @@ float vec3::magnitudeSqr() const
     return x * x + y * y + z * z;
 }
 
+void vec3::normalize()
+{
+    float m = magnitude();
+
+    if (!math::nearlyEqual(m, 0))
+    {
+        x /= m;
+        y /= m;
+        z /= m;
+    }
+}
+
+vec3 vec3::normalized() const
+{
+    vec3 result = vec3(*this);
+    result.normalize();
+    return result;
+}
+
+float dot(vec3 first, vec3 second)
+{
+    return
+        first.x * second.x +
+        first.y * second.y +
+        first.z * second.z;
+}
+
+vec3 cross(vec3 first, vec3 second)
+{
+    float x = first.y * second.z - first.z * second.y;
+    float y = first.z * second.x - first.x * second.z;
+    float z = first.x * second.y - first.y * second.x;
+    return vec3 { x, y, z };
+}
+
+vec3 lerp(vec3 a, vec3 b, float t)
+{
+    float x = (1 - t) * a.x + t * b.x;
+    float y = (1 - t) * a.y + t * b.y;
+    float z = (1 - t) * a.z + t * b.z;
+    return vec3 { x, y, z };
+}
+
 // Equality
 bool operator ==(vec3 first, vec3 second)
 {
@@ -69,5 +112,5 @@ vec3 operator -(vec3 first, vec3 second)
 // Negation
 vec3 operator -(vec3 vector)
 {
-    return vec3 { -vector.x, -vector.y, -vector.z };
+    return vec3{-vector.x, -vector.y, -vector.z};
 }
