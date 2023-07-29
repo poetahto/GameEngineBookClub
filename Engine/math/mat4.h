@@ -14,7 +14,7 @@ struct mat4
 // === Operators ===
 bool operator==(const mat4& a, const mat4& b);
 bool operator!=(const mat4& a, const mat4& b);
-mat4 operator*(mat4 first, mat4 second);
+mat4 operator*(const mat4& first, const mat4& second);
 
 // === Constants ===
 constexpr mat4 IDENTITY
