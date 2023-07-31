@@ -17,12 +17,21 @@ struct vec3
     float magnitudeSqr() const;
     void normalize();
     vec3 normalized() const;
-};
 
-// todo: namespace this?
-float dot(vec3 first, vec3 second);
-vec3 cross(vec3 first, vec3 second);
-vec3 lerp(vec3 a, vec3 b, float t);
+    static float dot(vec3 first, vec3 second);
+    static vec3 cross(vec3 first, vec3 second);
+    static vec3 lerp(vec3 a, vec3 b, float t);
+
+    // === Constants ===
+    static const vec3 ZERO;
+    static const vec3 ONE;
+    static const vec3 UP;
+    static const vec3 DOWN;
+    static const vec3 LEFT;
+    static const vec3 RIGHT;
+    static const vec3 FORWARD;
+    static const vec3 BACK;
+};
 
 // === Operators ===
 bool operator ==(vec3 first, vec3 second); // equality
@@ -35,16 +44,6 @@ vec3 operator +=(vec3& a, vec3 b);
 vec3 operator -(vec3 first, vec3 second); // subtraction
 vec3 operator -=(vec3& a, vec3 b);
 vec3 operator -(vec3 vector); // negation
-
-// todo: namespace this?
-// === Constants ===
-const vec3 ZERO{0, 0, 0};
-const vec3 ONE{1, 1, 1};
-const vec3 UP{0, 1, 0};
-const vec3 DOWN{0, -1, 0};
-const vec3 LEFT{-1, 0, 0};
-const vec3 RIGHT{1, 0, 0};
-const vec3 FORWARD{0, 0, 1};
-const vec3 BACK{0, 0, -1};
+std::ostream& operator<<(std::ostream& os, const vec3& value);
 
 #endif // VECTOR_H
