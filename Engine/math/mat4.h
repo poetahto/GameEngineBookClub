@@ -10,6 +10,7 @@ struct mat4
     vec3 transformPoint(vec3 point) const;
     vec3 transformDirection(vec3 direction) const;
     mat4 transpose() const;
+    bool isIdentity() const;
 
     const f32* operator[](s32 index) const;
     f32* operator[](s32 index);

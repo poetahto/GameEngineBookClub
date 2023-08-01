@@ -76,6 +76,11 @@ mat4 mat4::transpose() const
     };
 }
 
+bool mat4::isIdentity() const
+{
+    return *this == IDENTITY;
+}
+
 const f32* mat4::operator[](s32 index) const
 {
     return data[index];

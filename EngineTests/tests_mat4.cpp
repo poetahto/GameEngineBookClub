@@ -52,6 +52,12 @@ TEST(Mat4Tests, Transpose)
     EXPECT_EQ(m.transpose(), expected);
 }
 
+TEST(MatrixTest, IsIdentity)
+{
+    EXPECT_TRUE(mat4::IDENTITY.isIdentity());
+    EXPECT_FALSE(mat4::ZERO.isIdentity());
+}
+
 TEST(MatrixTest, RotationZ)
 {
     vec3 v{0, 1, 0};
