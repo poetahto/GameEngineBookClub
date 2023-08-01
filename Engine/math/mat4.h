@@ -11,6 +11,9 @@ struct mat4
     vec3 transformDirection(vec3 direction) const;
     mat4 transpose() const;
     bool isIdentity() const;
+    vec3 right() const;
+    vec3 up() const;
+    vec3 forward() const;
 
     const f32* operator[](s32 index) const;
     f32* operator[](s32 index);

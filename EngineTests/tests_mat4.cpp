@@ -58,6 +58,19 @@ TEST(MatrixTest, IsIdentity)
     EXPECT_FALSE(mat4::ZERO.isIdentity());
 }
 
+TEST(MatrixTest, Basis)
+{
+    mat4 m { mat4::IDENTITY };
+    EXPECT_EQ(m.up(), vec3::UP);
+    EXPECT_EQ(m.right(), vec3::RIGHT);
+    EXPECT_EQ(m.forward(), vec3::FORWARD);
+
+    m = m * mat4::rotateY(90 * DEG2RAD) * mat4::translate(4, 29 , 123) * mat4::scale(2);
+    EXPECT_EQ(m.up(), vec3::UP);
+    EXPECT_EQ(m.right(), -vec3::FORWARD);
+    EXPECT_EQ(m.forward(), vec3::RIGHT);
+}
+
 TEST(MatrixTest, RotationZ)
 {
     vec3 v{0, 1, 0};

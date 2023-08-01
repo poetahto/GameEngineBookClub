@@ -8,9 +8,8 @@ using namespace math;
 /*
  * Note: I have 1 more week to finish up matrix stuff.
  * Stuff that still needs implementing:
- * - Transpose
- * - extracting basis vectors?
  * - maybe inverse?
+ * - is it right to normalize the basis? book is confusing by saying "already normalized"
  */
 
 std::ostream& operator<<(std::ostream &os, const mat4 &value)
@@ -79,6 +78,21 @@ mat4 mat4::transpose() const
 bool mat4::isIdentity() const
 {
     return *this == IDENTITY;
+}
+
+vec3 mat4::right() const
+{
+    return vec3 {data[0][0], data[0][1], data[0][2]}.normalized();
+}
+
+vec3 mat4::up() const
+{
+    return vec3 {data[1][0], data[1][1], data[1][2]}.normalized();
+}
+
+vec3 mat4::forward() const
+{
+    return vec3 {data[2][0], data[2][1], data[2][2]}.normalized();
 }
 
 const f32* mat4::operator[](s32 index) const
