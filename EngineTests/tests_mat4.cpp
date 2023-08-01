@@ -25,6 +25,33 @@ TEST(Mat4Tests, ArrayIndex)
     EXPECT_EQ(mat[3][2], 0);
 }
 
+TEST(Mat4Tests, Transpose)
+{
+    EXPECT_EQ(mat4::IDENTITY, mat4::IDENTITY.transpose());
+
+    mat4 m
+    {
+        {
+            {1, 1, 1, 1},
+            {0, 2, 0, 0},
+            {0, 0, 3, 0},
+            {0, 2, 0, 4},
+        }
+    };
+
+    mat4 expected
+    {
+        {
+            {1, 0, 0, 0},
+            {1, 2, 0, 2},
+            {1, 0, 3, 0},
+            {1, 0, 0, 4},
+        }
+    };
+
+    EXPECT_EQ(m.transpose(), expected);
+}
+
 TEST(MatrixTest, RotationZ)
 {
     vec3 v{0, 1, 0};
