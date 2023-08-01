@@ -15,7 +15,10 @@ struct mat4
 
     // === Atomic Transformations ===
     static mat4 translate(vec3 offset);
+    static mat4 translate(f32 x, f32 y, f32 z);
     static mat4 scale(vec3 scale);
+    static mat4 scale(f32 x, f32 y, f32 z);
+    static mat4 scale(f32 amount);
     static mat4 rotateX(f32 amount);
     static mat4 rotateY(f32 amount);
     static mat4 rotateZ(f32 amount);

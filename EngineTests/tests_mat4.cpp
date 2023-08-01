@@ -46,6 +46,20 @@ TEST(MatrixTest, RotationX)
     EXPECT_EQ(mat4::rotateX(90 * DEG2RAD).transformPoint(v), expected);
 }
 
+TEST(MatrixText, Translation)
+{
+    vec3 v{0, 0, 0};
+    vec3 expected{1, 0, 0};
+    EXPECT_EQ(mat4::translate(1, 0, 0).transformPoint(v), expected);
+}
+
+TEST(MatrixTest, Scale)
+{
+    vec3 v{1, 1, 1};
+    vec3 expected{2, 2, 2};
+    EXPECT_EQ(mat4::scale(2).transformPoint(v), expected);
+}
+
 TEST(MatrixTest, Equality)
 {
     mat4 a{mat4::IDENTITY};

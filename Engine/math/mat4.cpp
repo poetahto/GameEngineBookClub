@@ -96,25 +96,40 @@ mat4 operator*(const mat4& first, const mat4& second)
 // === Atomic Transformations ===
 mat4 mat4::translate(vec3 offset)
 {
+    return translate(offset.x, offset.y, offset.z);
+}
+
+mat4 mat4::translate(f32 x, f32 y, f32 z)
+{
     return mat4
     {
         {
             {1, 0, 0, 0},
             {0, 1, 0, 0},
             {0, 0, 1, 0},
-            {offset.x, offset.y, offset.z, 1},
+            {x, y, z, 1},
         }
     };
 }
 
 mat4 mat4::scale(vec3 scale)
 {
+    return mat4::scale(scale.x, scale.y, scale.z);
+}
+
+mat4 mat4::scale(f32 amount)
+{
+    return scale(amount, amount, amount);
+}
+
+mat4 mat4::scale(f32 x, f32 y, f32 z)
+{
     return mat4
     {
         {
-            {scale.x, 0, 0, 0},
-            {0, scale.y, 0, 0},
-            {0, 0, scale.z, 0},
+            {x, 0, 0, 0},
+            {0, y, 0, 0},
+            {0, 0, z, 0},
             {0, 0, 0, 1},
         }
     };
