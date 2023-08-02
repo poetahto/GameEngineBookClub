@@ -52,20 +52,54 @@ TEST(Mat4Tests, Transpose)
     EXPECT_EQ(m.transpose(), expected);
 }
 
-TEST(MatrixTest, IsIdentity)
+TEST(MatrixTest, GetPosition)
 {
-    EXPECT_TRUE(mat4::IDENTITY.isIdentity());
-    EXPECT_FALSE(mat4::ZERO.isIdentity());
+    {
+        mat4 m = mat4::translate(5, 0, 1);
+        EXPECT_EQ(m.getTranslation(), vec3(5, 0, 1));
+    }
+    {
+        mat4 m = mat4::translate(5, 0, 1) * mat4::scale(2);
+        EXPECT_EQ(m.getTranslation(), vec3(10, 0, 2));
+    }
+    {
+        mat4 m = mat4::translate(5, 0, 0) * mat4::rotateY(90 * DEG2RAD);
+        EXPECT_EQ(m.getTranslation(), vec3(0, 0, -5));
+    }
+}
+
+TEST(MatrixTest, Inverse)
+{
+    {
+        mat4 m = mat4::translate(5, 0, 1);
+        EXPECT_EQ(m.inverse() * m, mat4::IDENTITY);
+    }
+    {
+        mat4 m = mat4::rotateY(55 * DEG2RAD);
+        EXPECT_EQ(m.inverse() * m, mat4::IDENTITY);
+    }
+    {
+        mat4 m = mat4::scale(581);
+        EXPECT_EQ(m.inverse() * m, mat4::IDENTITY);
+    }
+    {
+        mat4 m = mat4::scale(581) * mat4::rotateX(23 * DEG2RAD) * mat4::translate(48, 12, -15);
+        EXPECT_EQ(m.inverse() * m, mat4::IDENTITY);
+    }
+    {
+        mat4 m = mat4::rotateY(35 * DEG2RAD) * mat4::rotateX(-25 * DEG2RAD) * mat4::translate(-42, -42, 19) * mat4::scale(5, 2, -1);
+        EXPECT_EQ(m.inverse() * m, mat4::IDENTITY);
+    }
 }
 
 TEST(MatrixTest, Basis)
 {
-    mat4 m { mat4::IDENTITY };
+    mat4 m{mat4::IDENTITY};
     EXPECT_EQ(m.up(), vec3::UP);
     EXPECT_EQ(m.right(), vec3::RIGHT);
     EXPECT_EQ(m.forward(), vec3::FORWARD);
 
-    m = m * mat4::rotateY(90 * DEG2RAD) * mat4::translate(4, 29 , 123) * mat4::scale(2);
+    m = m * mat4::rotateY(90 * DEG2RAD) * mat4::translate(4, 29, 123) * mat4::scale(2);
     EXPECT_EQ(m.up(), vec3::UP);
     EXPECT_EQ(m.right(), -vec3::FORWARD);
     EXPECT_EQ(m.forward(), vec3::RIGHT);

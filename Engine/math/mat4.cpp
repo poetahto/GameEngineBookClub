@@ -5,17 +5,10 @@
 
 using namespace math;
 
-/*
- * Note: I have 1 more week to finish up matrix stuff.
- * Stuff that still needs implementing:
- * - maybe inverse?
- * - is it right to normalize the basis? book is confusing by saying "already normalized"
- */
-
 std::ostream& operator<<(std::ostream &os, const mat4 &value)
 {
     return os << stringFormat(
-        "{%.1f, %.1f, %.1f, %.1f} {%.1f, %.1f, %.1f, %.1f} {%.1f, %.1f, %.1f, %.1f} {%.1f, %.1f, %.1f, %.1f}",
+        "{%f, %f, %f, %f} {%f, %f, %f, %f} {%f, %f, %f, %f} {%f, %f, %f, %f}",
                         value.data[0][0], value.data[0][1], value.data[0][2], value.data[0][3],
                         value.data[1][0], value.data[1][1], value.data[1][2], value.data[1][3],
                         value.data[2][0], value.data[2][1], value.data[2][2], value.data[2][3],
@@ -75,9 +68,63 @@ mat4 mat4::transpose() const
     };
 }
 
-bool mat4::isIdentity() const
+// taken from https://stackoverflow.com/questions/2624422/efficient-4x4-matrix-inverse-affine-transform
+// before this was really being annoying.
+mat4 mat4::inverse() const
 {
-    return *this == IDENTITY;
+    f32 s0 = data[0][0] * data[1][1] - data[1][0] * data[0][1];
+    f32 s1 = data[0][0] * data[1][2] - data[1][0] * data[0][2];
+    f32 s2 = data[0][0] * data[1][3] - data[1][0] * data[0][3];
+    f32 s3 = data[0][1] * data[1][2] - data[1][1] * data[0][2];
+    f32 s4 = data[0][1] * data[1][3] - data[1][1] * data[0][3];
+    f32 s5 = data[0][2] * data[1][3] - data[1][2] * data[0][3];
+
+    f32 c5 = data[2][2] * data[3][3] - data[3][2] * data[2][3];
+    f32 c4 = data[2][1] * data[3][3] - data[3][1] * data[2][3];
+    f32 c3 = data[2][1] * data[3][2] - data[3][1] * data[2][2];
+    f32 c2 = data[2][0] * data[3][3] - data[3][0] * data[2][3];
+    f32 c1 = data[2][0] * data[3][2] - data[3][0] * data[2][2];
+    f32 c0 = data[2][0] * data[3][1] - data[3][0] * data[2][1];
+
+    // Should check for 0 determinant
+    f32 inverseDeterminant = 1.0f / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
+
+    auto b = mat4{};
+
+    b[0][0] = ( data[1][1] * c5 - data[1][2] * c4 + data[1][3] * c3) * inverseDeterminant;
+    b[0][1] = (-data[0][1] * c5 + data[0][2] * c4 - data[0][3] * c3) * inverseDeterminant;
+    b[0][2] = ( data[3][1] * s5 - data[3][2] * s4 + data[3][3] * s3) * inverseDeterminant;
+    b[0][3] = (-data[2][1] * s5 + data[2][2] * s4 - data[2][3] * s3) * inverseDeterminant;
+
+    b[1][0] = (-data[1][0] * c5 + data[1][2] * c2 - data[1][3] * c1) * inverseDeterminant;
+    b[1][1] = ( data[0][0] * c5 - data[0][2] * c2 + data[0][3] * c1) * inverseDeterminant;
+    b[1][2] = (-data[3][0] * s5 + data[3][2] * s2 - data[3][3] * s1) * inverseDeterminant;
+    b[1][3] = ( data[2][0] * s5 - data[2][2] * s2 + data[2][3] * s1) * inverseDeterminant;
+
+    b[2][0] = ( data[1][0] * c4 - data[1][1] * c2 + data[1][3] * c0) * inverseDeterminant;
+    b[2][1] = (-data[0][0] * c4 + data[0][1] * c2 - data[0][3] * c0) * inverseDeterminant;
+    b[2][2] = ( data[3][0] * s4 - data[3][1] * s2 + data[3][3] * s0) * inverseDeterminant;
+    b[2][3] = (-data[2][0] * s4 + data[2][1] * s2 - data[2][3] * s0) * inverseDeterminant;
+
+    b[3][0] = (-data[1][0] * c3 + data[1][1] * c1 - data[1][2] * c0) * inverseDeterminant;
+    b[3][1] = ( data[0][0] * c3 - data[0][1] * c1 + data[0][2] * c0) * inverseDeterminant;
+    b[3][2] = (-data[3][0] * s3 + data[3][1] * s1 - data[3][2] * s0) * inverseDeterminant;
+    b[3][3] = ( data[2][0] * s3 - data[2][1] * s1 + data[2][2] * s0) * inverseDeterminant;
+
+    return b;
+}
+
+vec3 mat4::getScale() const
+{
+    f32 sx = vec3{data[0][0], data[0][1], data[0][2]}.magnitude();
+    f32 sy = vec3{data[1][0], data[1][1], data[1][2]}.magnitude();
+    f32 sz = vec3{data[2][0], data[2][1], data[2][2]}.magnitude();
+    return vec3{sx, sy, sz};
+}
+
+vec3 mat4::getTranslation() const
+{
+    return vec3 { data[3][0], data[3][1], data[3][2] };
 }
 
 vec3 mat4::right() const

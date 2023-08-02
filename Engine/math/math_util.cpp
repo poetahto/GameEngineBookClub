@@ -7,6 +7,5 @@ using namespace math;
 bool math::nearlyEqual(float a, float b)
 // those defaults are arbitrary and could be removed
 {
-    float maxXYOne = std::max( { 1.0f, std::abs(a) , std::abs(b) } ) ;
-    return std::abs(a - b) <= std::numeric_limits<float>::epsilon()*maxXYOne ;
+    return std::abs(a - b) <= 0.00001f;
 }

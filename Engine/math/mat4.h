@@ -10,7 +10,14 @@ struct mat4
     vec3 transformPoint(vec3 point) const;
     vec3 transformDirection(vec3 direction) const;
     mat4 transpose() const;
-    bool isIdentity() const;
+
+    // === Decomposition ===
+    mat4 inverse() const;
+    vec3 getScale() const;
+    vec3 getTranslation() const;
+    // todo: get rotation quaternion when done
+
+    // === Basis ===
     vec3 right() const;
     vec3 up() const;
     vec3 forward() const;
@@ -27,6 +34,8 @@ struct mat4
     static mat4 rotateX(f32 amount);
     static mat4 rotateY(f32 amount);
     static mat4 rotateZ(f32 amount);
+    // todo: more ways to define rotations (probably from quaternion, and really overload them)
+    // todo: projection matrix when doing rendering
 
     // === Constants ===
     static const mat4 IDENTITY;
@@ -34,9 +43,10 @@ struct mat4
 };
 
 // === Operators ===
+std::ostream& operator<<(std::ostream& os, const mat4& value);
 bool operator==(const mat4& a, const mat4& b);
 bool operator!=(const mat4& a, const mat4& b);
 mat4 operator*(const mat4& first, const mat4& second);
-std::ostream& operator<<(std::ostream& os, const mat4& value);
+// todo: operator *=
 
 #endif // MATRIX_H
