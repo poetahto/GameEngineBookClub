@@ -172,6 +172,11 @@ mat4 operator*(const mat4& first, const mat4& second)
     return result;
 }
 
+mat4 operator*=(mat4& a, const mat4& b)
+{
+    return a = a * b;
+}
+
 // === Atomic Transformations ===
 mat4 mat4::translate(vec3 offset)
 {

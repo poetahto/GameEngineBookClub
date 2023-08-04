@@ -47,6 +47,6 @@ std::ostream& operator<<(std::ostream& os, const mat4& value);
 bool operator==(const mat4& a, const mat4& b);
 bool operator!=(const mat4& a, const mat4& b);
 mat4 operator*(const mat4& first, const mat4& second);
-// todo: operator *=
+mat4 operator *=(mat4& a, const mat4& b);
 
 #endif // MATRIX_H

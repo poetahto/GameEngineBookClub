@@ -171,7 +171,8 @@ TEST(MatrixTest, Multiplication)
     EXPECT_EQ(c, expected);
 
     mat4 d = {{{3, 0, 4, 124}, {0, 0, 0, 0}, {0, 6, 0, 0}, {2, 0, 12, 0}}};
-    mat4 e = c * d;
+    mat4 e {mat4::IDENTITY};
+    e *= c * d;
 
     mat4 ex = {
         {{0, 114, 0, 0}, {0, 0, 0, 0}, {-118, 0, -708, 0}, {0, 0, 0, 0}}

@@ -111,8 +111,7 @@ vec3 operator +(vec3 first, vec3 second)
 
 vec3 operator+=(vec3& a, vec3 b)
 {
-    a = a + b;
-    return a;
+    return a = a + b;
 }
 
 // Subtraction
