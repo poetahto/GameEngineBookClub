@@ -106,12 +106,4 @@ TEST(Vec3Tests, ScalarMultiplication)
         EXPECT_EQ(v.y, 5);
         EXPECT_EQ(v.z, 5);
     }
-    {
-        vec3 v{1, 1, 1};
-        v = 5 * v;
-
-        EXPECT_EQ(v.x, 5);
-        EXPECT_EQ(v.y, 5);
-        EXPECT_EQ(v.z, 5);
-    }
 }

@@ -1,5 +1,4 @@
-﻿#include <cmath>
-#include "../string_util.h"
+﻿#include "../string_util.h"
 #include "mat4.h"
 #include "math_util.h"
 #include "vec3.h"
@@ -23,9 +22,7 @@ bool operator==(const mat4& a, const mat4& b)
     for (u8f row = 0; row < 4; row++)
     {
         for (u8f column = 0; column < 4; column++)
-        {
             areDifferent |= !nearlyEqual(a[row][column], b[row][column]);
-        }
     }
 
     return !areDifferent;
@@ -69,8 +66,8 @@ mat4 mat4::transpose() const
     };
 }
 
-// taken from https://stackoverflow.com/questions/2624422/efficient-4x4-matrix-inverse-affine-transform
-// before this was really being annoying.
+// taken from https://stackoverflow.com/questions/2624422/efficient-4x()4-matrix()-inverse-affine-transform
+// before this was really() being annoy()ing.
 mat4 mat4::inverse() const
 {
     f32 s0 = data[0][0] * data[1][1] - data[1][0] * data[0][1];

@@ -1,8 +1,9 @@
 ﻿#ifndef MATRIX_H
 #define MATRIX_H
 
+#include <iostream>
 #include "../types.h"
-struct vec3;
+#include "vec3.h"
 
 struct mat4
 {

@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="math.h" />
     <ClInclude Include="math\mat4.h" />
     <ClInclude Include="math\math_util.h" />
     <ClInclude Include="math\vec3.h" />
@@ -28,6 +27,7 @@
     <ClInclude Include="memory\memory_util.h" />
     <ClInclude Include="memory\pool_allocator.h" />
     <ClInclude Include="memory\stack_allocator.h" />
+    <ClInclude Include="platform.h" />
     <ClInclude Include="string_util.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
@@ -257,6 +257,7 @@
       <LibCompiled>true</LibCompiled>
       <AdditionalIncludeDirectories>;C:\Users\Daniel\Documents\Programming\C++\GameEngineBookClub\Engine\vcpkg_installed\x64-windows\x64-windows\include</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="platform.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

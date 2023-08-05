@@ -24,7 +24,7 @@ namespace math
     T max(T a, T b)
     {
         return a > b ? a : b;
-    };
+    }
 
     constexpr f32 PI { 3.14159265358979323846f };
 
