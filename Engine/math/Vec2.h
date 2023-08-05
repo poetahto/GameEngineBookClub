@@ -7,25 +7,25 @@
 /**
  * \brief A vector of 2 single-precision floating point values.
  */
-struct vec2 : VectorBase<2, f32, vec2>
+struct Vec2 : VectorBase<2, f32, Vec2>
 {
     union { f32 x, data; };
     f32 y;
 
     // === Lifetime ===
-    vec2() = default;
-    vec2(f32 x, f32 y);
+    Vec2() = default;
+    Vec2(f32 x, f32 y);
 
     // === Constants ===
-    static const vec2 ZERO;
-    static const vec2 ONE;
-    static const vec2 UP;
-    static const vec2 DOWN;
-    static const vec2 LEFT;
-    static const vec2 RIGHT;
+    static const Vec2 ZERO;
+    static const Vec2 ONE;
+    static const Vec2 UP;
+    static const Vec2 DOWN;
+    static const Vec2 LEFT;
+    static const Vec2 RIGHT;
 
     // === Operators ===
-    bool operator==(vec2 other) const;
+    bool operator==(Vec2 other) const;
     std::ostream& operator<<(std::ostream& os) const;
 };
 

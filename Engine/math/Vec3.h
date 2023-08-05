@@ -7,31 +7,31 @@
 /**
  * \brief A vector of 3 single-precision floating point values.
  */
-struct vec3 : VectorBase<3, f32, vec3>
+struct Vec3 : VectorBase<3, f32, Vec3>
 {
     union { f32 x, r, data; };
     union { f32 y, g; };
     union { f32 z, b; };
 
     // === Lifetime ===
-    vec3() = default;
-    vec3(f32 x, f32 y, f32 z);
+    Vec3() = default;
+    Vec3(f32 x, f32 y, f32 z);
 
     // === Operations ===
-    static vec3 cross(vec3 first, vec3 second);
+    static Vec3 cross(Vec3 first, Vec3 second);
 
     // === Constants ===
-    static const vec3 ZERO;
-    static const vec3 ONE;
-    static const vec3 UP;
-    static const vec3 DOWN;
-    static const vec3 LEFT;
-    static const vec3 RIGHT;
-    static const vec3 FORWARD;
-    static const vec3 BACK;
+    static const Vec3 ZERO;
+    static const Vec3 ONE;
+    static const Vec3 UP;
+    static const Vec3 DOWN;
+    static const Vec3 LEFT;
+    static const Vec3 RIGHT;
+    static const Vec3 FORWARD;
+    static const Vec3 BACK;
 
     // === Operators ===
-    bool operator==(vec3 other) const;
+    bool operator==(Vec3 other) const;
     std::ostream& operator<<(std::ostream& os) const;
 };
 

@@ -1,7 +1,7 @@
 ﻿#include <gtest/gtest.h>
 #include "math/mat4.h"
-#include "..\Engine\math\vector_base.h"
 #include "math/math_util.h"
+#include "math/vector_base.h"
 
 using namespace math;
 
@@ -57,15 +57,15 @@ TEST(MatrixTest, GetPosition)
 {
     {
         mat4 m = mat4::translate(5, 0, 1);
-        EXPECT_EQ(m.getTranslation(), vec3(5, 0, 1));
+        EXPECT_EQ(m.getTranslation(), Vec3(5, 0, 1));
     }
     {
         mat4 m = mat4::translate(5, 0, 1) * mat4::scale(2);
-        EXPECT_EQ(m.getTranslation(), vec3(10, 0, 2));
+        EXPECT_EQ(m.getTranslation(), Vec3(10, 0, 2));
     }
     {
         mat4 m = mat4::translate(5, 0, 0) * mat4::rotateY(90 * DEG2RAD);
-        EXPECT_EQ(m.getTranslation(), vec3(0, 0, -5));
+        EXPECT_EQ(m.getTranslation(), Vec3(0, 0, -5));
     }
 }
 
@@ -96,48 +96,48 @@ TEST(MatrixTest, Inverse)
 TEST(MatrixTest, Basis)
 {
     mat4 m{mat4::IDENTITY};
-    EXPECT_EQ(m.up(), vec3::UP);
-    EXPECT_EQ(m.right(), vec3::RIGHT);
-    EXPECT_EQ(m.forward(), vec3::FORWARD);
+    EXPECT_EQ(m.up(), Vec3::UP);
+    EXPECT_EQ(m.right(), Vec3::RIGHT);
+    EXPECT_EQ(m.forward(), Vec3::FORWARD);
 
     m = m * mat4::rotateY(90 * DEG2RAD) * mat4::translate(4, 29, 123) * mat4::scale(2);
-    EXPECT_EQ(m.up(), vec3::UP);
-    EXPECT_EQ(m.right(), -vec3::FORWARD);
-    EXPECT_EQ(m.forward(), vec3::RIGHT);
+    EXPECT_EQ(m.up(), Vec3::UP);
+    EXPECT_EQ(m.right(), -Vec3::FORWARD);
+    EXPECT_EQ(m.forward(), Vec3::RIGHT);
 }
 
 TEST(MatrixTest, RotationZ)
 {
-    vec3 v{0, 1, 0};
-    vec3 expected{-1, 0, 0};
+    Vec3 v{0, 1, 0};
+    Vec3 expected{-1, 0, 0};
     EXPECT_EQ(mat4::rotateZ(90 * DEG2RAD).transformPoint(v), expected);
 }
 
 TEST(MatrixTest, RotationY)
 {
-    vec3 v{1, 0, 0};
-    vec3 expected{0, 0, -1};
+    Vec3 v{1, 0, 0};
+    Vec3 expected{0, 0, -1};
     EXPECT_EQ(mat4::rotateY(90 * DEG2RAD).transformPoint(v), expected);
 }
 
 TEST(MatrixTest, RotationX)
 {
-    vec3 v{0, 1, 0};
-    vec3 expected{0, 0, 1};
+    Vec3 v{0, 1, 0};
+    Vec3 expected{0, 0, 1};
     EXPECT_EQ(mat4::rotateX(90 * DEG2RAD).transformPoint(v), expected);
 }
 
 TEST(MatrixText, Translation)
 {
-    vec3 v{0, 0, 0};
-    vec3 expected{1, 0, 0};
+    Vec3 v{0, 0, 0};
+    Vec3 expected{1, 0, 0};
     EXPECT_EQ(mat4::translate(1, 0, 0).transformPoint(v), expected);
 }
 
 TEST(MatrixTest, Scale)
 {
-    vec3 v{1, 1, 1};
-    vec3 expected{2, 2, 2};
+    Vec3 v{1, 1, 1};
+    Vec3 expected{2, 2, 2};
     EXPECT_EQ(mat4::scale(2).transformPoint(v), expected);
 }
 

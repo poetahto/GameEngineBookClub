@@ -7,28 +7,28 @@
 struct mat4
 {
     f32 data[4][4];
-    vec3 transformPoint(vec3 point) const;
-    vec3 transformDirection(vec3 direction) const;
+    Vec3 transformPoint(Vec3 point) const;
+    Vec3 transformDirection(Vec3 direction) const;
     mat4 transpose() const;
 
     // === Decomposition ===
     mat4 inverse() const;
-    vec3 getScale() const;
-    vec3 getTranslation() const;
+    Vec3 getScale() const;
+    Vec3 getTranslation() const;
     // todo: get rotation quaternion when done
 
     // === Basis ===
-    vec3 right() const;
-    vec3 up() const;
-    vec3 forward() const;
+    Vec3 right() const;
+    Vec3 up() const;
+    Vec3 forward() const;
 
     const f32* operator[](s32 index) const;
     f32* operator[](s32 index);
 
     // === Atomic Transformations ===
-    static mat4 translate(vec3 offset);
+    static mat4 translate(Vec3 offset);
     static mat4 translate(f32 x, f32 y, f32 z);
-    static mat4 scale(vec3 scale);
+    static mat4 scale(Vec3 scale);
     static mat4 scale(f32 x, f32 y, f32 z);
     static mat4 scale(f32 amount);
     static mat4 rotateX(f32 amount);

@@ -33,9 +33,9 @@ bool operator!=(const mat4& a, const mat4& b)
     return !(a == b);
 }
 
-vec3 mat4::transformPoint(vec3 point) const
+Vec3 mat4::transformPoint(Vec3 point) const
 {
-    return vec3
+    return Vec3
     {
         data[0][0] * point.x + data[1][0] * point.y + data[2][0] * point.z + data[3][0],
         data[0][1] * point.x + data[1][1] * point.y + data[2][1] * point.z + data[3][1],
@@ -43,9 +43,9 @@ vec3 mat4::transformPoint(vec3 point) const
     };
 }
 
-vec3 mat4::transformDirection(vec3 direction) const
+Vec3 mat4::transformDirection(Vec3 direction) const
 {
-    return vec3
+    return Vec3
     {
         data[0][0] * direction.x + data[1][0] * direction.y + data[2][0] * direction.z,
         data[0][1] * direction.x + data[1][1] * direction.y + data[2][1] * direction.z,
@@ -112,32 +112,32 @@ mat4 mat4::inverse() const
     return b;
 }
 
-vec3 mat4::getScale() const
+Vec3 mat4::getScale() const
 {
-    f32 sx = vec3{data[0][0], data[0][1], data[0][2]}.magnitude();
-    f32 sy = vec3{data[1][0], data[1][1], data[1][2]}.magnitude();
-    f32 sz = vec3{data[2][0], data[2][1], data[2][2]}.magnitude();
-    return vec3{sx, sy, sz};
+    f32 sx = Vec3{data[0][0], data[0][1], data[0][2]}.magnitude();
+    f32 sy = Vec3{data[1][0], data[1][1], data[1][2]}.magnitude();
+    f32 sz = Vec3{data[2][0], data[2][1], data[2][2]}.magnitude();
+    return Vec3{sx, sy, sz};
 }
 
-vec3 mat4::getTranslation() const
+Vec3 mat4::getTranslation() const
 {
-    return vec3 { data[3][0], data[3][1], data[3][2] };
+    return Vec3 { data[3][0], data[3][1], data[3][2] };
 }
 
-vec3 mat4::right() const
+Vec3 mat4::right() const
 {
-    return vec3 {data[0][0], data[0][1], data[0][2]}.normalized();
+    return Vec3 {data[0][0], data[0][1], data[0][2]}.normalized();
 }
 
-vec3 mat4::up() const
+Vec3 mat4::up() const
 {
-    return vec3 {data[1][0], data[1][1], data[1][2]}.normalized();
+    return Vec3 {data[1][0], data[1][1], data[1][2]}.normalized();
 }
 
-vec3 mat4::forward() const
+Vec3 mat4::forward() const
 {
-    return vec3 {data[2][0], data[2][1], data[2][2]}.normalized();
+    return Vec3 {data[2][0], data[2][1], data[2][2]}.normalized();
 }
 
 const f32* mat4::operator[](s32 index) const
@@ -176,7 +176,7 @@ mat4 operator*=(mat4& a, const mat4& b)
 }
 
 // === Atomic Transformations ===
-mat4 mat4::translate(vec3 offset)
+mat4 mat4::translate(Vec3 offset)
 {
     return translate(offset.x, offset.y, offset.z);
 }
@@ -194,7 +194,7 @@ mat4 mat4::translate(f32 x, f32 y, f32 z)
     };
 }
 
-mat4 mat4::scale(vec3 scale)
+mat4 mat4::scale(Vec3 scale)
 {
     return mat4::scale(scale.x, scale.y, scale.z);
 }
