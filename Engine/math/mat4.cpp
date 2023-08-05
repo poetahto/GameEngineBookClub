@@ -1,7 +1,7 @@
 ﻿#include "../string_util.h"
 #include "mat4.h"
 #include "math_util.h"
-#include "vec3.h"
+#include "vector_base.h"
 
 using namespace math;
 

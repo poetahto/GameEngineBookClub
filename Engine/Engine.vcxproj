@@ -21,7 +21,9 @@
   <ItemGroup>
     <ClInclude Include="math\mat4.h" />
     <ClInclude Include="math\math_util.h" />
+    <ClInclude Include="math\vec2.h" />
     <ClInclude Include="math\vec3.h" />
+    <ClInclude Include="math\vector_base.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="memory\heap_allocator.h" />
     <ClInclude Include="memory\memory_util.h" />
@@ -34,6 +36,7 @@
   <ItemGroup>
     <ClCompile Include="math\mat4.cpp" />
     <ClCompile Include="math\math_util.cpp" />
+    <ClCompile Include="math\vec2.cpp" />
     <ClCompile Include="math\vec3.cpp" />
     <ClCompile Include="memory\heap_allocator.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
