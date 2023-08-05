@@ -2,7 +2,7 @@
 #define MATRIX_H
 
 #include "../types.h"
-#include "vec3.h"
+struct vec3;
 
 struct mat4
 {

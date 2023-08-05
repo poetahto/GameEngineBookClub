@@ -2,7 +2,7 @@
 #define POOL_ALLOCATOR_H
 
 #include <cassert>
-#include <algorithm>
+#include "../math/math_util.h"
 #include "../types.h"
 #include "memory_util.h"
 
@@ -28,7 +28,7 @@ public:
         u64 shift = alignedBaseAddress - static_cast<u8*>(baseAddress);
 
         m_maxSizeBytes = maxSizeBytes - shift;
-        m_blockSizeBytes = std::max(blockSizeBytes, sizeof(PoolBlock));
+        m_blockSizeBytes = math::max(blockSizeBytes, sizeof(PoolBlock));
         m_blocks = new (baseAddress) PoolBlock[getMaxBlocks()];
 
         // Initializes all blocks to empty states.

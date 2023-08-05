@@ -2,6 +2,7 @@
 #include "../string_util.h"
 #include "mat4.h"
 #include "math_util.h"
+#include "vec3.h"
 
 using namespace math;
 

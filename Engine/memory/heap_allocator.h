@@ -5,6 +5,7 @@
 #include "memory_util.h"
 #include "pool_allocator.h"
 
+
 // todo: add debug option of clearing empty bits to an easy-to-read value (this applies to all allocators)
 
 /**
