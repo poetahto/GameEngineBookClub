@@ -1,15 +1,14 @@
+#include "rendering/mesh.h"
+#include "rendering/renderer.h"
+#include "rendering/shader.h"
 #include "SDL2/SDL.h"
-#include "SDL2/SDL_opengl.h"
 #undef main
-
-#include "rendering\renderer.h"
 
 int main()
 {
     SDL_SetMainReady();
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600,
-                                          SDL_WINDOW_OPENGL);
+    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
 
     // Set up openGL integration
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -20,18 +19,34 @@ int main()
 
     // Set up the renderer
     renderer::initialize(800, 600);
-    renderer::clearScreen(0, 0, 0);
+
+    Shader shader = Shader::fromFiles("test.vert", "test.frag");
+    Mesh mesh = Mesh::triangle();
 
     // game loop
-    for (;;)
-    {
-        SDL_PumpEvents();
-        SDL_GL_SwapWindow(window);
+    bool wantsToQuit {false};
 
-        if (SDL_QuitRequested())
-            break;
+    while (!wantsToQuit)
+    {
+        // collect input
+        SDL_Event sdlEvent;
+
+        while (SDL_PollEvent(&sdlEvent) != 0)
+        {
+            if (sdlEvent.type == SDL_QUIT)
+                wantsToQuit = true;
+        }
+
+        // render
+        renderer::clearScreen(0, 0, 0);
+        shader.use();
+        mesh.draw();
+        SDL_GL_SwapWindow(window);
     }
 
+    // cleanup
+    shader.free();
+    mesh.free();
     SDL_Quit();
     return 0;
 }

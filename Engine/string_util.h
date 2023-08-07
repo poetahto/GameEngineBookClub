@@ -27,8 +27,8 @@ inline std::string parseBetweenTags(const std::string& input, const std::string&
 inline std::string readFromFile(const char* filePath)
 {
     // todo: own custom platform layer for getting data from a file system?
-    std::ifstream fileStream;
-    std::stringstream stringStream;
+    std::ifstream fileStream{};
+    std::stringstream stringStream{};
 
     // Read the raw text data from a file on the disk.
     fileStream.open(filePath);

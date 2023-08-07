@@ -15,6 +15,16 @@ struct FixedList
         return count * sizeof(T);
     }
 
+    s32 sum() const
+    {
+        s32 result {};
+
+        for (s32 i = 0; i < count; i++)
+            result += data[i];
+
+        return result;
+    }
+
     // === Operators ===
     T& operator[](u32 index)
     {

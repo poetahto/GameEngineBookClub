@@ -170,7 +170,7 @@ MeshHandle renderer::uploadMesh(VertexList vertices, VertexFormat format, IndexL
 
     // Fill our buffers with data.
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, indices.getSize(), &vertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.getSize(), &vertices[0], GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.getSize(), &indices[0], GL_STATIC_DRAW);
@@ -180,8 +180,8 @@ MeshHandle renderer::uploadMesh(VertexList vertices, VertexFormat format, IndexL
 
     for (s32 i = 0; i < format.count; i++)
     {
+        glVertexAttribPointer(i, format.data[i], GL_FLOAT, GL_FALSE, static_cast<s32>(sizeof(f32)) * format.sum(), offset);
         glEnableVertexAttribArray(i);
-        glVertexAttribPointer(i, format.data[i], GL_FLOAT, GL_FALSE, format.getSize(), offset);
         offset += format.data[i];
     }
     // glEnableVertexAttribArray(0);

@@ -224,6 +224,10 @@
     <ClInclude Include="rendering\shader.h" />
     <ClInclude Include="rendering\texture.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test.frag" />
+    <Content Include="test.vert" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

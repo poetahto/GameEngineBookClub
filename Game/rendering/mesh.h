@@ -6,9 +6,11 @@
 struct Mesh
 {
     Mesh(renderer::VertexList vertices, renderer::VertexFormat vertexFormat, renderer::IndexList indices);
-    ~Mesh();
+    void free();
     void draw() const;
     renderer::MeshHandle handle;
+
+    static Mesh triangle();
 };
 
 #endif // MESH_H
