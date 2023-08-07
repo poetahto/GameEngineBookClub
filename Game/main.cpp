@@ -6,25 +6,29 @@
 
 int main()
 {
-    SDL_SetMainReady();
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
+    SDL_Window* window;
 
-    // Set up openGL integration
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_CreateContext(window);
-    SDL_GL_SetSwapInterval(1); // enabling vsync
+    { // Initialization
 
-    // Set up the renderer
-    renderer::initialize(800, 600);
+        SDL_SetMainReady();
+        SDL_Init(SDL_INIT_VIDEO);
+        window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600,SDL_WINDOW_OPENGL);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+        SDL_GL_CreateContext(window);
+        SDL_GL_SetSwapInterval(1); // enabling vsync
+
+        // Set up the renderer
+        renderer::initialize(800, 600);
+    }
 
     Shader shader = Shader::fromFiles("test.vert", "test.frag");
-    Mesh mesh = Mesh::triangle();
+    Mesh mesh = Mesh::quad();
 
     // game loop
-    bool wantsToQuit {false};
+    bool wantsToQuit{false};
+    f32 time{0};
 
     while (!wantsToQuit)
     {
@@ -38,8 +42,10 @@ int main()
         }
 
         // render
+        time += 1.0f / 144.0f; // todo: better delta time stuff
         renderer::clearScreen(0, 0, 0);
         shader.use();
+        shader.setFloat("Time", time);
         mesh.draw();
         SDL_GL_SwapWindow(window);
     }

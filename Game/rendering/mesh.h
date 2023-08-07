@@ -11,6 +11,7 @@ struct Mesh
     renderer::MeshHandle handle;
 
     static Mesh triangle();
+    static Mesh quad();
 };
 
 #endif // MESH_H
