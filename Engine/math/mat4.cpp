@@ -5,7 +5,7 @@
 
 using namespace math;
 
-std::ostream& operator<<(std::ostream &os, const mat4 &value)
+std::ostream& operator<<(std::ostream &os, const Mat4 &value)
 {
     return os << stringFormat(
         "{%f, %f, %f, %f} {%f, %f, %f, %f} {%f, %f, %f, %f} {%f, %f, %f, %f}",
@@ -15,7 +15,7 @@ std::ostream& operator<<(std::ostream &os, const mat4 &value)
                         value.data[3][0], value.data[3][1], value.data[3][2], value.data[3][3]);
 }
 
-bool operator==(const mat4& a, const mat4& b)
+bool operator==(const Mat4& a, const Mat4& b)
 {
     bool areDifferent = false;
 
@@ -28,12 +28,12 @@ bool operator==(const mat4& a, const mat4& b)
     return !areDifferent;
 }
 
-bool operator!=(const mat4& a, const mat4& b)
+bool operator!=(const Mat4& a, const Mat4& b)
 {
     return !(a == b);
 }
 
-Vec3 mat4::transformPoint(Vec3 point) const
+Vec3 Mat4::transformPoint(Vec3 point) const
 {
     return Vec3
     {
@@ -43,7 +43,7 @@ Vec3 mat4::transformPoint(Vec3 point) const
     };
 }
 
-Vec3 mat4::transformDirection(Vec3 direction) const
+Vec3 Mat4::transformDirection(Vec3 direction) const
 {
     return Vec3
     {
@@ -53,9 +53,9 @@ Vec3 mat4::transformDirection(Vec3 direction) const
     };
 }
 
-mat4 mat4::transpose() const
+Mat4 Mat4::transpose() const
 {
-    return mat4
+    return Mat4
     {
         {
             {data[0][0], data[1][0], data[2][0], data[3][0]},
@@ -68,7 +68,7 @@ mat4 mat4::transpose() const
 
 // taken from https://stackoverflow.com/questions/2624422/efficient-4x()4-matrix()-inverse-affine-transform
 // before this was really() being annoy()ing.
-mat4 mat4::inverse() const
+Mat4 Mat4::inverse() const
 {
     f32 s0 = data[0][0] * data[1][1] - data[1][0] * data[0][1];
     f32 s1 = data[0][0] * data[1][2] - data[1][0] * data[0][2];
@@ -87,7 +87,7 @@ mat4 mat4::inverse() const
     // Should check for 0 determinant
     f32 inverseDeterminant = 1.0f / (s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0);
 
-    auto b = mat4{};
+    auto b = Mat4{};
 
     b[0][0] = ( data[1][1] * c5 - data[1][2] * c4 + data[1][3] * c3) * inverseDeterminant;
     b[0][1] = (-data[0][1] * c5 + data[0][2] * c4 - data[0][3] * c3) * inverseDeterminant;
@@ -112,7 +112,7 @@ mat4 mat4::inverse() const
     return b;
 }
 
-Vec3 mat4::getScale() const
+Vec3 Mat4::getScale() const
 {
     f32 sx = Vec3{data[0][0], data[0][1], data[0][2]}.magnitude();
     f32 sy = Vec3{data[1][0], data[1][1], data[1][2]}.magnitude();
@@ -120,39 +120,39 @@ Vec3 mat4::getScale() const
     return Vec3{sx, sy, sz};
 }
 
-Vec3 mat4::getTranslation() const
+Vec3 Mat4::getTranslation() const
 {
     return Vec3 { data[3][0], data[3][1], data[3][2] };
 }
 
-Vec3 mat4::right() const
+Vec3 Mat4::right() const
 {
     return Vec3 {data[0][0], data[0][1], data[0][2]}.normalized();
 }
 
-Vec3 mat4::up() const
+Vec3 Mat4::up() const
 {
     return Vec3 {data[1][0], data[1][1], data[1][2]}.normalized();
 }
 
-Vec3 mat4::forward() const
+Vec3 Mat4::forward() const
 {
     return Vec3 {data[2][0], data[2][1], data[2][2]}.normalized();
 }
 
-const f32* mat4::operator[](s32 index) const
+const f32* Mat4::operator[](s32 index) const
 {
     return data[index];
 }
 
-f32* mat4::operator[](s32 index)
+f32* Mat4::operator[](s32 index)
 {
     return data[index];
 }
 
-mat4 operator*(const mat4& first, const mat4& second)
+Mat4 operator*(const Mat4& first, const Mat4& second)
 {
-    mat4 result{};
+    Mat4 result{};
 
     for (u8f row = 0; row < 4; row++)
     {
@@ -170,20 +170,20 @@ mat4 operator*(const mat4& first, const mat4& second)
     return result;
 }
 
-mat4 operator*=(mat4& a, const mat4& b)
+Mat4 operator*=(Mat4& a, const Mat4& b)
 {
     return a = a * b;
 }
 
 // === Atomic Transformations ===
-mat4 mat4::translate(Vec3 offset)
+Mat4 Mat4::translate(Vec3 offset)
 {
     return translate(offset.x, offset.y, offset.z);
 }
 
-mat4 mat4::translate(f32 x, f32 y, f32 z)
+Mat4 Mat4::translate(f32 x, f32 y, f32 z)
 {
-    return mat4
+    return Mat4
     {
         {
             {1, 0, 0, 0},
@@ -194,19 +194,19 @@ mat4 mat4::translate(f32 x, f32 y, f32 z)
     };
 }
 
-mat4 mat4::scale(Vec3 scale)
+Mat4 Mat4::scale(Vec3 scale)
 {
-    return mat4::scale(scale.x, scale.y, scale.z);
+    return Mat4::scale(scale.x, scale.y, scale.z);
 }
 
-mat4 mat4::scale(f32 amount)
+Mat4 Mat4::scale(f32 amount)
 {
     return scale(amount, amount, amount);
 }
 
-mat4 mat4::scale(f32 x, f32 y, f32 z)
+Mat4 Mat4::scale(f32 x, f32 y, f32 z)
 {
-    return mat4
+    return Mat4
     {
         {
             {x, 0, 0, 0},
@@ -217,9 +217,9 @@ mat4 mat4::scale(f32 x, f32 y, f32 z)
     };
 }
 
-mat4 mat4::rotateX(f32 amount)
+Mat4 Mat4::rotateX(f32 amount)
 {
-    return mat4
+    return Mat4
     {
         {
             {1, 0, 0, 0},
@@ -230,9 +230,9 @@ mat4 mat4::rotateX(f32 amount)
     };
 }
 
-mat4 mat4::rotateY(f32 amount)
+Mat4 Mat4::rotateY(f32 amount)
 {
-    return mat4
+    return Mat4
     {
         {
             {cos(amount), 0, -sin(amount), 0},
@@ -243,9 +243,9 @@ mat4 mat4::rotateY(f32 amount)
     };
 }
 
-mat4 mat4::rotateZ(f32 amount)
+Mat4 Mat4::rotateZ(f32 amount)
 {
-    return mat4
+    return Mat4
     {
         {
             {cos(amount), sin(amount), 0, 0},
@@ -257,7 +257,7 @@ mat4 mat4::rotateZ(f32 amount)
 }
 
 // === Constants ===
-const mat4 mat4::IDENTITY
+const Mat4 Mat4::IDENTITY
 {
     {
         {1, 0, 0, 0},
@@ -267,7 +267,7 @@ const mat4 mat4::IDENTITY
     }
 };
 
-const mat4 mat4::ZERO
+const Mat4 Mat4::ZERO
 {
     {
         {0, 0, 0, 0},

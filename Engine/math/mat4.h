@@ -4,15 +4,15 @@
 #include "../types.h"
 #include "vec3.h"
 
-struct mat4
+struct Mat4
 {
     f32 data[4][4];
     Vec3 transformPoint(Vec3 point) const;
     Vec3 transformDirection(Vec3 direction) const;
-    mat4 transpose() const;
+    Mat4 transpose() const;
 
     // === Decomposition ===
-    mat4 inverse() const;
+    Mat4 inverse() const;
     Vec3 getScale() const;
     Vec3 getTranslation() const;
     // todo: get rotation quaternion when done
@@ -26,27 +26,27 @@ struct mat4
     f32* operator[](s32 index);
 
     // === Atomic Transformations ===
-    static mat4 translate(Vec3 offset);
-    static mat4 translate(f32 x, f32 y, f32 z);
-    static mat4 scale(Vec3 scale);
-    static mat4 scale(f32 x, f32 y, f32 z);
-    static mat4 scale(f32 amount);
-    static mat4 rotateX(f32 amount);
-    static mat4 rotateY(f32 amount);
-    static mat4 rotateZ(f32 amount);
+    static Mat4 translate(Vec3 offset);
+    static Mat4 translate(f32 x, f32 y, f32 z);
+    static Mat4 scale(Vec3 scale);
+    static Mat4 scale(f32 x, f32 y, f32 z);
+    static Mat4 scale(f32 amount);
+    static Mat4 rotateX(f32 amount);
+    static Mat4 rotateY(f32 amount);
+    static Mat4 rotateZ(f32 amount);
     // todo: more ways to define rotations (probably from quaternion, and really overload them)
     // todo: projection matrix when doing rendering
 
     // === Constants ===
-    static const mat4 IDENTITY;
-    static const mat4 ZERO;
+    static const Mat4 IDENTITY;
+    static const Mat4 ZERO;
 };
 
 // === Operators ===
-std::ostream& operator<<(std::ostream& os, const mat4& value);
-bool operator==(const mat4& a, const mat4& b);
-bool operator!=(const mat4& a, const mat4& b);
-mat4 operator*(const mat4& first, const mat4& second);
-mat4 operator *=(mat4& a, const mat4& b);
+std::ostream& operator<<(std::ostream& os, const Mat4& value);
+bool operator==(const Mat4& a, const Mat4& b);
+bool operator!=(const Mat4& a, const Mat4& b);
+Mat4 operator*(const Mat4& first, const Mat4& second);
+Mat4 operator *=(Mat4& a, const Mat4& b);
 
 #endif // MATRIX_H

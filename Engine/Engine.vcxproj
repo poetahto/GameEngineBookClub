@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="containers\fixed_list.h" />
     <ClInclude Include="math\mat4.h" />
     <ClInclude Include="math\math_util.h" />
     <ClInclude Include="math\rect.h" />
@@ -30,7 +31,7 @@
     <ClInclude Include="memory\memory_util.h" />
     <ClInclude Include="memory\pool_allocator.h" />
     <ClInclude Include="memory\stack_allocator.h" />
-    <ClInclude Include="platform.h" />
+    <ClInclude Include="platform\windows_util.h" />
     <ClInclude Include="string_util.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
@@ -262,7 +263,6 @@
       <LibCompiled>true</LibCompiled>
       <AdditionalIncludeDirectories>;C:\Users\Daniel\Documents\Programming\C++\GameEngineBookClub\Engine\vcpkg_installed\x64-windows\x64-windows\include</AdditionalIncludeDirectories>
     </ClCompile>
-    <ClCompile Include="platform.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -367,6 +367,9 @@
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies></AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
