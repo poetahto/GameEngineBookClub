@@ -20,7 +20,7 @@ int main()
     // start SDL
     SDL_SetMainReady();
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
+    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -55,7 +55,7 @@ int main()
             if (sdlEvent.type == SDL_QUIT)
                 wantsToQuit = true;
 
-            if (sdlEvent.type == SDL_WINDOWEVENT_RESIZED)
+            if (sdlEvent.type == SDL_WINDOWEVENT && sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
                 renderer::resize(sdlEvent.window.data1, sdlEvent.window.data2);
         }
 
@@ -79,18 +79,25 @@ int main()
         Mat4 model_to_world = Mat4::scale(scale) * Mat4::rotateZ(rotation * math::DEG2RAD) * Mat4::translate(position);
 
         // === RENDER ===
+        Mat4 world_to_clip;
 
         {
             SDL_DisplayMode display;
             SDL_GetWindowDisplayMode(window, &display);
 
             // This should always happen before scene is rendered.
-            ImGui::Begin("Rendering");
+            static f32 view_size {1};
             static Vec3 backgroundColor{0, 0, 0};
+
+            ImGui::Begin("Rendering");
             ImGui::ColorEdit3("Clear Color", &backgroundColor.data);
             ImGui::Text("Display: %ix%i [%ihz]", display.w, display.h, display.refresh_rate);
             ImGui::Text("Format: %s", SDL_GetPixelFormatName(display.format));
+            ImGui::DragFloat("view size", &view_size, 0.01f);
             ImGui::End();
+            s32 cur_width, cur_height;
+            SDL_GetWindowSize(window, &cur_width, &cur_height);
+            world_to_clip = Mat4::projectOrthographic(0.1f, 10, cur_width, cur_height, view_size);
 
             renderer::clearScreen(backgroundColor);
         }
@@ -127,7 +134,7 @@ int main()
         shader.setFloat("time", elapsedTime);
         shader.setVec3("color", color);
         shader.setVec2("uv_offset", offset);
-        shader.setMat4("model_to_world", model_to_world);
+        shader.setMat4("model_to_world", model_to_world * world_to_clip);
         shader.setTexture("texture0", texture);
         mesh.draw();
 

@@ -5,14 +5,14 @@
 
 using namespace math;
 
-std::ostream& operator<<(std::ostream &os, const Mat4 &value)
+std::ostream& operator<<(std::ostream& os, const Mat4& value)
 {
     return os << stringFormat(
         "{%f, %f, %f, %f} {%f, %f, %f, %f} {%f, %f, %f, %f} {%f, %f, %f, %f}",
-                        value.data[0][0], value.data[0][1], value.data[0][2], value.data[0][3],
-                        value.data[1][0], value.data[1][1], value.data[1][2], value.data[1][3],
-                        value.data[2][0], value.data[2][1], value.data[2][2], value.data[2][3],
-                        value.data[3][0], value.data[3][1], value.data[3][2], value.data[3][3]);
+        value.data[0][0], value.data[0][1], value.data[0][2], value.data[0][3],
+        value.data[1][0], value.data[1][1], value.data[1][2], value.data[1][3],
+        value.data[2][0], value.data[2][1], value.data[2][2], value.data[2][3],
+        value.data[3][0], value.data[3][1], value.data[3][2], value.data[3][3]);
 }
 
 bool operator==(const Mat4& a, const Mat4& b)
@@ -89,25 +89,25 @@ Mat4 Mat4::inverse() const
 
     auto b = Mat4{};
 
-    b[0][0] = ( data[1][1] * c5 - data[1][2] * c4 + data[1][3] * c3) * inverseDeterminant;
+    b[0][0] = (data[1][1] * c5 - data[1][2] * c4 + data[1][3] * c3) * inverseDeterminant;
     b[0][1] = (-data[0][1] * c5 + data[0][2] * c4 - data[0][3] * c3) * inverseDeterminant;
-    b[0][2] = ( data[3][1] * s5 - data[3][2] * s4 + data[3][3] * s3) * inverseDeterminant;
+    b[0][2] = (data[3][1] * s5 - data[3][2] * s4 + data[3][3] * s3) * inverseDeterminant;
     b[0][3] = (-data[2][1] * s5 + data[2][2] * s4 - data[2][3] * s3) * inverseDeterminant;
 
     b[1][0] = (-data[1][0] * c5 + data[1][2] * c2 - data[1][3] * c1) * inverseDeterminant;
-    b[1][1] = ( data[0][0] * c5 - data[0][2] * c2 + data[0][3] * c1) * inverseDeterminant;
+    b[1][1] = (data[0][0] * c5 - data[0][2] * c2 + data[0][3] * c1) * inverseDeterminant;
     b[1][2] = (-data[3][0] * s5 + data[3][2] * s2 - data[3][3] * s1) * inverseDeterminant;
-    b[1][3] = ( data[2][0] * s5 - data[2][2] * s2 + data[2][3] * s1) * inverseDeterminant;
+    b[1][3] = (data[2][0] * s5 - data[2][2] * s2 + data[2][3] * s1) * inverseDeterminant;
 
-    b[2][0] = ( data[1][0] * c4 - data[1][1] * c2 + data[1][3] * c0) * inverseDeterminant;
+    b[2][0] = (data[1][0] * c4 - data[1][1] * c2 + data[1][3] * c0) * inverseDeterminant;
     b[2][1] = (-data[0][0] * c4 + data[0][1] * c2 - data[0][3] * c0) * inverseDeterminant;
-    b[2][2] = ( data[3][0] * s4 - data[3][1] * s2 + data[3][3] * s0) * inverseDeterminant;
+    b[2][2] = (data[3][0] * s4 - data[3][1] * s2 + data[3][3] * s0) * inverseDeterminant;
     b[2][3] = (-data[2][0] * s4 + data[2][1] * s2 - data[2][3] * s0) * inverseDeterminant;
 
     b[3][0] = (-data[1][0] * c3 + data[1][1] * c1 - data[1][2] * c0) * inverseDeterminant;
-    b[3][1] = ( data[0][0] * c3 - data[0][1] * c1 + data[0][2] * c0) * inverseDeterminant;
+    b[3][1] = (data[0][0] * c3 - data[0][1] * c1 + data[0][2] * c0) * inverseDeterminant;
     b[3][2] = (-data[3][0] * s3 + data[3][1] * s1 - data[3][2] * s0) * inverseDeterminant;
-    b[3][3] = ( data[2][0] * s3 - data[2][1] * s1 + data[2][2] * s0) * inverseDeterminant;
+    b[3][3] = (data[2][0] * s3 - data[2][1] * s1 + data[2][2] * s0) * inverseDeterminant;
 
     return b;
 }
@@ -122,22 +122,22 @@ Vec3 Mat4::getScale() const
 
 Vec3 Mat4::getTranslation() const
 {
-    return Vec3 { data[3][0], data[3][1], data[3][2] };
+    return Vec3{data[3][0], data[3][1], data[3][2]};
 }
 
 Vec3 Mat4::right() const
 {
-    return Vec3 {data[0][0], data[0][1], data[0][2]}.normalized();
+    return Vec3{data[0][0], data[0][1], data[0][2]}.normalized();
 }
 
 Vec3 Mat4::up() const
 {
-    return Vec3 {data[1][0], data[1][1], data[1][2]}.normalized();
+    return Vec3{data[1][0], data[1][1], data[1][2]}.normalized();
 }
 
 Vec3 Mat4::forward() const
 {
-    return Vec3 {data[2][0], data[2][1], data[2][2]}.normalized();
+    return Vec3{data[2][0], data[2][1], data[2][2]}.normalized();
 }
 
 const f32* Mat4::operator[](s32 index) const
@@ -252,6 +252,27 @@ Mat4 Mat4::rotateZ(f32 amount)
             {-sin(amount), cos(amount), 0, 0},
             {0, 0, 1, 0},
             {0, 0, 0, 1},
+        }
+    };
+}
+
+Mat4 Mat4::projectOrthographic(f32 near, f32 far, s32 screenWidth, s32 screenHeight, f32 size)
+{
+    f32 view_width = size * (static_cast<f32>(screenWidth) / static_cast<f32>(screenHeight));
+    f32 view_height = size;
+
+    f32 top = view_height / 2;
+    f32 bottom = -view_height / 2;
+    f32 right = view_width / 2;
+    f32 left = -view_width / 2;
+
+    return Mat4
+    {
+        {
+            {2 / (right - left), 0, 0, 0},
+            {0, 2 / (top - bottom), 0, 0},
+            {0, 0, -2 / (far - near), 0},
+            {-(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1}
         }
     };
 }

@@ -34,6 +34,8 @@ struct Mat4
     static Mat4 rotateX(f32 amount);
     static Mat4 rotateY(f32 amount);
     static Mat4 rotateZ(f32 amount);
+    static Mat4 projectPerspective();
+    static Mat4 projectOrthographic(f32 near, f32 far, s32 screenWidth, s32 screenHeight, f32 size); // todo: fov?
     // todo: more ways to define rotations (probably from quaternion, and really overload them)
 
     // === Constants ===
