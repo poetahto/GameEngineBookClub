@@ -32,7 +32,7 @@ int main()
     // === Game Loop ===
 
     Shader shader = Shader::fromFiles("test.vert", "test.frag");
-    Mesh mesh = Mesh::quad();
+    Mesh mesh = Mesh::triangle();
     bool wantsToQuit{false};
     f32 elapsedTime{};
     f32 deltaTime{};
@@ -69,22 +69,44 @@ int main()
         // === RENDER ===
 
         {
+            SDL_DisplayMode display;
+            SDL_GetWindowDisplayMode(window, &display);
+
             // This should always happen before scene is rendered.
             ImGui::Begin("Rendering");
             static Vec3 backgroundColor{0, 0, 0};
             ImGui::ColorEdit3("Clear Color", &backgroundColor.data);
+            ImGui::Text("Display: %ix%i [%ihz]", display.w, display.h, display.refresh_rate);
+            ImGui::Text("Format: %s", SDL_GetPixelFormatName(display.format));
             ImGui::End();
 
             renderer::clearScreen(backgroundColor);
         }
         {
             // Timing Window
+            constexpr int historySize = 120;
+            static f32 remainingTime {0};
+            static f32 view_fps {};
+            static f32 view_fps_history[historySize] {};
+
+            if (remainingTime <= 0)
+            {
+                remainingTime = 0.1f;
+
+                if (deltaTime > 0)
+                    view_fps = 1.0f / deltaTime;
+
+                for (s32 i = historySize - 2; i >= 0; i--)
+                    view_fps_history[i + 1] = view_fps_history[i];
+
+                view_fps_history[0] = view_fps;
+            }
+            else remainingTime -= deltaTime;
+
             ImGui::Begin("Time");
-            ImGui::Text("FPS: %f", 1.0f / deltaTime);
-            ImGui::Text("Delta Time: %f", deltaTime);
+            ImGui::Text("FPS: %f", view_fps);
+            ImGui::PlotLines("##fps graph", view_fps_history, historySize, 0, nullptr, 0, 500, ImVec2(0, 100));
             ImGui::Text("Elapsed Time: %f", elapsedTime);
-            ImGui::Text("Ticks: %llu", frameStartTime);
-            ImGui::Text("Frequency: %llu", SDL_GetPerformanceFrequency());
             ImGui::End();
         }
 
