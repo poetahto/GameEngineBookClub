@@ -21,6 +21,7 @@ struct Shader
     void setInt(const char* name, s32 value);
     void setBool(const char* name, bool value);
     void setVec3(const char* name, const Vec3& value);
+    void setVec4(const char* name, const Vec4& value);
     void setMat4(const char* name, const Mat4& value);
     void setTexture(const char* name, const Texture& value, int slot = 0);
     renderer::ShaderHandle handle;

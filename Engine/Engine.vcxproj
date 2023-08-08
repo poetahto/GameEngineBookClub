@@ -25,6 +25,7 @@
     <ClInclude Include="math\rect.h" />
     <ClInclude Include="math\vec2.h" />
     <ClInclude Include="math\vec3.h" />
+    <ClInclude Include="math\vec4.h" />
     <ClInclude Include="math\vector_base.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="memory\heap_allocator.h" />
@@ -41,6 +42,7 @@
     <ClCompile Include="math\rect.cpp" />
     <ClCompile Include="math\vec2.cpp" />
     <ClCompile Include="math\vec3.cpp" />
+    <ClCompile Include="math\vec4.cpp" />
     <ClCompile Include="memory\heap_allocator.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>

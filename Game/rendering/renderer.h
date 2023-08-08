@@ -5,6 +5,7 @@
 
 struct Mat4;
 struct Vec3;
+struct Vec4;
 
 namespace renderer
 {
@@ -63,6 +64,7 @@ namespace renderer
     void setShaderInt(ShaderHandle handle, const char* name, s32 value);
     void setShaderBool(ShaderHandle handle, const char* name, bool value);
     void setShaderVec3(ShaderHandle handle, const char* name, const Vec3& value);
+    void setShaderVec4(ShaderHandle handle, const char* name, const Vec4& value);
     void setShaderMat4(ShaderHandle handle, const char* name, const Mat4& value);
     void setShaderTexture(ShaderHandle handle, const char* name, TextureHandle value, int slot = 0);
 

@@ -59,6 +59,11 @@ void Shader::setVec3(const char *name, const Vec3& value)
     renderer::setShaderVec3(handle, name, value);
 }
 
+void Shader::setVec4(const char *name, const Vec4& value)
+{
+    renderer::setShaderVec4(handle, name, value);
+}
+
 void Shader::setMat4(const char *name, const Mat4& value)
 {
     renderer::setShaderMat4(handle, name, value);

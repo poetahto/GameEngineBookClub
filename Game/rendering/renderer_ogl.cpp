@@ -3,8 +3,8 @@
 #include <cassert>
 #include "renderer.h"
 #include "math/vec3.h"
+#include "math/vec4.h"
 #include "math/mat4.h"
-#include "string_util.h"
 
 using namespace renderer;
 
@@ -23,7 +23,7 @@ void renderer::initialize(s32 width, s32 height)
         glViewport(0, 0, width, height);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_DEBUG_OUTPUT);
-        glDebugMessageCallback(messageCallback, 0);
+        glDebugMessageCallback(messageCallback, nullptr);
     }
     else // Something went wrong starting GLEW.
     {
@@ -307,6 +307,12 @@ void renderer::setShaderVec3(ShaderHandle handle, const char *name, const Vec3& 
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
     glUniform3f(glGetUniformLocation(handle, name), value.x, value.y, value.z);
+}
+
+void renderer::setShaderVec4(ShaderHandle handle, const char* name, const Vec4& value)
+{
+    assert(s_currentHandle == handle && "Shader must be active before changing values.");
+    glUniform4f(glGetUniformLocation(handle, name), value.x, value.y, value.z, value.w);
 }
 
 void renderer::setShaderMat4(ShaderHandle handle, const char *name, const Mat4& value)
