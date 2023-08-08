@@ -36,9 +36,7 @@ inline std::string readFromFile(const char* filePath)
     fileStream.open(filePath);
 
     if (!fileStream.is_open())
-    {
         printf("Unable to open the file %s to load shader.", filePath);
-    }
 
     stringStream << fileStream.rdbuf();
     fileStream.close();

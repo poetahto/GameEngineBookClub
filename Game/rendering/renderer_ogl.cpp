@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <cassert>
 #include "renderer.h"
+#include "math/vec2.h"
 #include "math/vec3.h"
 #include "math/vec4.h"
 #include "math/mat4.h"
@@ -11,6 +12,16 @@ using namespace renderer;
 // OPENGL RENDERER - the only file here w/ a dependency on ogl
 
 void GLAPIENTRY messageCallback(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*,const void*);
+
+s32 TextureData::getPixels() const
+{
+    return width * height;
+}
+
+s32 TextureData::getDataLength() const
+{
+    return getPixels() * stride;
+}
 
 void renderer::initialize(s32 width, s32 height)
 {
@@ -29,6 +40,11 @@ void renderer::initialize(s32 width, s32 height)
     {
         printf("Error: %s\n", glewGetErrorString(err));
     }
+}
+
+void renderer::resize(s32 width, s32 height)
+{
+    glViewport(0, 0, width, height);
 }
 
 void renderer::clearScreen(float red, float green, float blue)
@@ -82,25 +98,38 @@ TextureHandle renderer::uploadTexture(const TextureData& data, const ImportSetti
     GLenum format {};
     GLenum internalFormat {};
 
-    switch (settings.format)
+    // Flip the image data, since ogl most of the time wants images to read from the bottom left
+    // todo: cleanup logic here
+    u8* flippedData = new u8[data.getDataLength()];
+
+    for (s32 row = 0; row < data.height; row++)
     {
-    case ImportSettings::R:
+        s32 unflippedRow = data.height - 1 - row;
+
+        for (s32 column = 0; column < data.width * data.stride; column++)
+            flippedData[row * data.width * data.stride + column] = data.data[unflippedRow * data.width * data.stride + column];
+    }
+
+    switch (data.format)
+    {
+    case TextureData::R:
         internalFormat = format = GL_RED;
         break;
-    case ImportSettings::Rgb:
-        internalFormat = format = GL_RGB;
+    case TextureData::Rgb:
+        format = GL_RGB;
+        internalFormat = GL_RGB8;
         break;
-    case ImportSettings::Rgba:
+    case TextureData::Rgba:
         internalFormat = format = GL_RGBA;
         break;
-    case ImportSettings::Rgba8:
+    case TextureData::Rgba8:
         format = GL_RGBA8;
         internalFormat = GL_RGBA;
         break;
     }
 
     glBindTexture(GL_TEXTURE_2D, result);
-    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internalFormat), data.width, data.height, 0, format, GL_UNSIGNED_BYTE, data.data);
+    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internalFormat), data.width, data.height, 0, format, GL_UNSIGNED_BYTE, flippedData);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     GLint wrappingX = getWrapping(settings.wrappingX);
@@ -306,6 +335,12 @@ void renderer::setShaderBool(ShaderHandle handle, const char *name, bool value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
     glUniform1i(glGetUniformLocation(handle, name), static_cast<int>(value));
+}
+
+void renderer::setShaderVec2(ShaderHandle handle, const char* name, const Vec2& value)
+{
+    assert(s_currentHandle == handle && "Shader must be active before changing values.");
+    glUniform2f(glGetUniformLocation(handle, name), value.x, value.y);
 }
 
 void renderer::setShaderVec3(ShaderHandle handle, const char *name, const Vec3& value)

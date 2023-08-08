@@ -54,6 +54,11 @@ void Shader::setBool(const char *name, bool value)
     renderer::setShaderBool(handle, name, value);
 }
 
+void Shader::setVec2(const char* name, const Vec2& value)
+{
+    renderer::setShaderVec2(handle, name, value);
+}
+
 void Shader::setVec3(const char *name, const Vec3& value)
 {
     renderer::setShaderVec3(handle, name, value);

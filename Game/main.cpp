@@ -7,16 +7,20 @@
 #include "rendering/shader.h"
 #include "SDL2/SDL.h"
 #include "imgui_wrapper.h"
+#include "math/vec2.h"
+#include "rendering/texture.h"
 #undef main
 
 int main()
 {
     // === Initialization ===
+    s32 width = 800;
+    s32 height = 600;
 
     // start SDL
     SDL_SetMainReady();
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
+    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -24,7 +28,7 @@ int main()
     SDL_GL_SetSwapInterval(1); // enabling vsync
 
     // start OpenGL renderer
-    renderer::initialize(800, 600);
+    renderer::initialize(width, height);
 
     // start ImGui
     ImGuiWrapper imguiWrapper{window, context};
@@ -32,7 +36,8 @@ int main()
     // === Game Loop ===
 
     Shader shader = Shader::fromFiles("test.vert", "test.frag");
-    Mesh mesh = Mesh::triangle();
+    Mesh mesh = Mesh::quad();
+    Texture texture = Texture::fromFile("test.ppm", renderer::ImportSettings{});
     bool wantsToQuit{false};
     f32 elapsedTime{};
     f32 deltaTime{};
@@ -49,6 +54,9 @@ int main()
 
             if (sdlEvent.type == SDL_QUIT)
                 wantsToQuit = true;
+
+            if (sdlEvent.type == SDL_WINDOWEVENT_RESIZED)
+                renderer::resize(sdlEvent.window.data1, sdlEvent.window.data2);
         }
 
         imguiWrapper.renderStart();
@@ -57,11 +65,13 @@ int main()
         static Vec3 color{1, 1, 1};
         static Vec3 position;
         static f32 rotation;
+        static Vec2 offset{};
 
         ImGui::Begin("Triangle State");
         ImGui::DragFloat3("Position", &position.data, 0.001f);
         ImGui::DragFloat("Rotation", &rotation);
         ImGui::ColorEdit3("Color", &color.data);
+        ImGui::DragFloat2("UV Offset", &offset.data, 0.001f);
         ImGui::End();
 
         Mat4 worldFromModel = Mat4::rotateZ(rotation * math::DEG2RAD) * Mat4::translate(position);
@@ -114,7 +124,9 @@ int main()
         shader.use();
         shader.setFloat("Time", elapsedTime);
         shader.setVec3("Color", color);
+        shader.setVec2("UV_Offset", offset);
         shader.setMat4("World_From_Model", worldFromModel);
+        shader.setTexture("Texture", texture);
         mesh.draw();
 
         // This should always happen after scene is rendered.

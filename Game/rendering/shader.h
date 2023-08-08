@@ -3,6 +3,7 @@
 
 #include "renderer.h"
 
+struct Vec2;
 struct Texture;
 
 struct Shader
@@ -20,6 +21,7 @@ struct Shader
     void setDouble(const char* name, f64 value);
     void setInt(const char* name, s32 value);
     void setBool(const char* name, bool value);
+    void setVec2(const char* name, const Vec2& value);
     void setVec3(const char* name, const Vec3& value);
     void setVec4(const char* name, const Vec4& value);
     void setMat4(const char* name, const Mat4& value);
@@ -27,4 +29,4 @@ struct Shader
     renderer::ShaderHandle handle;
 };
 
-#endif
+#endif // SHADER_H

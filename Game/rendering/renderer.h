@@ -3,6 +3,7 @@
 
 #include "containers/fixed_list.h"
 
+struct Vec2;
 struct Mat4;
 struct Vec3;
 struct Vec4;
@@ -19,27 +20,32 @@ namespace renderer
 
     struct TextureData
     {
+        enum Format { R, Rgb, Rgba, Rgba8 };
+        Format format{Rgba};
         s32 width;
         s32 height;
-        const void* data;
+        s32 stride;
+        u8* data;
+
+        s32 getPixels() const;
+        s32 getDataLength() const;
     };
 
     struct ImportSettings
     {
-        enum Format { R, Rgb, Rgba, Rgba8 };
         enum Wrapping { Repeat, MirroredRepeat, ClampEdge, ClampBorder };
         enum Filtering { Point, Bilinear };
 
-        Format format{Rgba};
         Wrapping wrappingX{Repeat};
         Wrapping wrappingY{Repeat};
-        Filtering textureFiltering{Bilinear};
-        Filtering mipmapFiltering{Bilinear};
+        Filtering textureFiltering{Point};
+        Filtering mipmapFiltering{Point};
     };
 
     // General Functions.
 
     void initialize(s32 width, s32 height);
+    void resize(s32 width, s32 height);
     void clearScreen(f32 red, f32 green, f32 blue);
     void clearScreen(Vec3 color);
 
@@ -64,6 +70,7 @@ namespace renderer
     void setShaderDouble(ShaderHandle handle, const char* name, f64 value);
     void setShaderInt(ShaderHandle handle, const char* name, s32 value);
     void setShaderBool(ShaderHandle handle, const char* name, bool value);
+    void setShaderVec2(ShaderHandle handle, const char* name, const Vec2& value);
     void setShaderVec3(ShaderHandle handle, const char* name, const Vec3& value);
     void setShaderVec4(ShaderHandle handle, const char* name, const Vec4& value);
     void setShaderMat4(ShaderHandle handle, const char* name, const Mat4& value);
