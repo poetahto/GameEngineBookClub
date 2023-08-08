@@ -218,14 +218,6 @@ MeshHandle renderer::uploadMesh(VertexList vertices, VertexFormat format, IndexL
         glEnableVertexAttribArray(i);
         offset += format.data[i];
     }
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), static_cast<void*>(nullptr));
-    //
-    // glEnableVertexAttribArray(1);
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, normal));
-    //
-    // glEnableVertexAttribArray(2);
-    // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, texCoords));
 
     // We are done setting up state, so we can unbind our VAO to clean up.
     glBindVertexArray(0);
@@ -358,7 +350,7 @@ void renderer::setShaderVec4(ShaderHandle handle, const char* name, const Vec4& 
 void renderer::setShaderMat4(ShaderHandle handle, const char *name, const Mat4& value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
-    glUniformMatrix4fv(glGetUniformLocation(handle, name), 1, GL_FALSE, &value.data[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(handle, name), 1, GL_TRUE, &value.data[0][0]);
 }
 
 void renderer::setShaderTexture(ShaderHandle handle, const char *name, TextureHandle value, int slot)

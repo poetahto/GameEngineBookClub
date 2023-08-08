@@ -35,7 +35,6 @@ struct Mat4
     static Mat4 rotateY(f32 amount);
     static Mat4 rotateZ(f32 amount);
     // todo: more ways to define rotations (probably from quaternion, and really overload them)
-    // todo: projection matrix when doing rendering
 
     // === Constants ===
     static const Mat4 IDENTITY;

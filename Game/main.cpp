@@ -64,17 +64,19 @@ int main()
         // logic
         static Vec3 color{1, 1, 1};
         static Vec3 position;
+        static Vec3 scale {Vec3::ONE};
         static f32 rotation;
         static Vec2 offset{};
 
         ImGui::Begin("Triangle State");
         ImGui::DragFloat3("Position", &position.data, 0.001f);
         ImGui::DragFloat("Rotation", &rotation);
+        ImGui::DragFloat3("Scale", &scale.data, 0.001f);
         ImGui::ColorEdit3("Color", &color.data);
         ImGui::DragFloat2("UV Offset", &offset.data, 0.001f);
         ImGui::End();
 
-        Mat4 worldFromModel = Mat4::rotateZ(rotation * math::DEG2RAD) * Mat4::translate(position);
+        Mat4 model_to_world = Mat4::scale(scale) * Mat4::rotateZ(rotation * math::DEG2RAD) * Mat4::translate(position);
 
         // === RENDER ===
 
@@ -122,11 +124,11 @@ int main()
 
         // This should change based on scene contents, and materials
         shader.use();
-        shader.setFloat("Time", elapsedTime);
-        shader.setVec3("Color", color);
-        shader.setVec2("UV_Offset", offset);
-        shader.setMat4("World_From_Model", worldFromModel);
-        shader.setTexture("Texture", texture);
+        shader.setFloat("time", elapsedTime);
+        shader.setVec3("color", color);
+        shader.setVec2("uv_offset", offset);
+        shader.setMat4("model_to_world", model_to_world);
+        shader.setTexture("texture0", texture);
         mesh.draw();
 
         // This should always happen after scene is rendered.

@@ -1,12 +1,15 @@
 #version 330 core
 
-uniform mat4 World_From_Model;
-in vec3 Model_Position;
-in vec2 Model_UV;
-out vec2 UV;
+uniform mat4 model_to_world;
+uniform vec2 uv_offset;
+
+in vec3 vert_position_in_model;
+in vec2 vert_uv;
+
+out vec2 uv;
 
 void main()
 {
-    gl_Position = World_From_Model * vec4(Model_Position, 1);
-    UV = Model_UV;
+    gl_Position = vec4(vert_position_in_model, 1) * model_to_world;
+    uv = vert_uv + uv_offset;
 }

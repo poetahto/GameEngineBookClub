@@ -38,8 +38,8 @@ namespace renderer
 
         Wrapping wrappingX{Repeat};
         Wrapping wrappingY{Repeat};
-        Filtering textureFiltering{Point};
-        Filtering mipmapFiltering{Point};
+        Filtering textureFiltering{Bilinear};
+        Filtering mipmapFiltering{Bilinear};
     };
 
     // General Functions.
