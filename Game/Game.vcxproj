@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="imgui_wrapper.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="rendering\mesh.cpp" />
     <ClCompile Include="rendering\renderer_ogl.cpp">
@@ -225,6 +226,7 @@
     <ClInclude Include="rendering\texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="imgui_wrapper" />
     <Content Include="test.frag" />
     <Content Include="test.vert" />
   </ItemGroup>

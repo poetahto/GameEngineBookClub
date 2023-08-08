@@ -1,16 +1,18 @@
+#include <imgui.h>
+
 #include "math/mat4.h"
 #include "math/vec4.h"
 #include "rendering/mesh.h"
 #include "rendering/renderer.h"
 #include "rendering/shader.h"
 #include "SDL2/SDL.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_opengl3.h"
+#include "imgui_wrapper"
 #undef main
 
 int main()
 {
     SDL_Window* window;
+    SDL_GLContext context;
 
     { // Initialization
 
@@ -21,18 +23,14 @@ int main()
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GLContext context = SDL_GL_CreateContext(window);
+        context = SDL_GL_CreateContext(window);
         SDL_GL_SetSwapInterval(1); // enabling vsync
-
-        // Dear ImGui
-        ImGui::CreateContext();
-        ImGui_ImplSDL2_InitForOpenGL(window, context);
-        ImGui_ImplOpenGL3_Init();
 
         // Set up the renderer
         renderer::initialize(800, 600);
     }
 
+    ImGuiWrapper imguiWrapper {window, context};
     Shader shader = Shader::fromFiles("test.vert", "test.frag");
     Mesh mesh = Mesh::quad();
 
@@ -49,26 +47,23 @@ int main()
 
         while (SDL_PollEvent(&sdlEvent) != 0)
         {
-            ImGui_ImplSDL2_ProcessEvent(&sdlEvent);
+            imguiWrapper.processEvent(sdlEvent);
 
             if (sdlEvent.type == SDL_QUIT)
                 wantsToQuit = true;
         }
 
-        // start ImGui
-        ImGui_ImplSDL2_NewFrame();
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui::NewFrame();
+        imguiWrapper.renderStart();
 
         // logic
-        static Vec4 color;
+        static Vec3 color {1, 1, 1};
         static Vec3 position;
         static f32 rotation;
 
         ImGui::Begin("Triangle State");
         ImGui::DragFloat3("Position", &position.data, 0.001f);
         ImGui::DragFloat("Rotation", &rotation);
-        ImGui::ColorPicker4("Color", &color.data);
+        ImGui::ColorEdit3("Color", &color.data);
         ImGui::End();
 
         Mat4 worldFromModel = Mat4::rotateZ(rotation * math::DEG2RAD) * Mat4::translate(position);
@@ -77,13 +72,12 @@ int main()
         renderer::clearScreen(0, 0, 0);
         shader.use();
         shader.setFloat("Time", elapsedTime);
-        shader.setVec4("Color", color);
+        shader.setVec3("Color", color);
         shader.setMat4("World_From_Model", worldFromModel);
         mesh.draw();
 
         // finish render
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        imguiWrapper.renderEnd();
         SDL_GL_SwapWindow(window);
 
         // update timing
@@ -98,9 +92,7 @@ int main()
     }
 
     // cleanup
-    ImGui_ImplSDL2_Shutdown();
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui::DestroyContext();
+    imguiWrapper.free();
     shader.free();
     mesh.free();
     SDL_Quit();
