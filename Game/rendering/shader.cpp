@@ -39,6 +39,11 @@ void Shader::setFloat(const char *name, float value)
     renderer::setShaderFloat(handle, name, value);
 }
 
+void Shader::setDouble(const char* name, f64 value)
+{
+    renderer::setShaderDouble(handle, name, value);
+}
+
 void Shader::setInt(const char *name, int value)
 {
     renderer::setShaderInt(handle, name, value);

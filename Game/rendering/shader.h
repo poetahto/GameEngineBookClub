@@ -16,8 +16,9 @@ struct Shader
     void use() const;
     static void clear();
 
-    void setFloat(const char* name, float value);
-    void setInt(const char* name, int value);
+    void setFloat(const char* name, f32 value);
+    void setDouble(const char* name, f64 value);
+    void setInt(const char* name, s32 value);
     void setBool(const char* name, bool value);
     void setVec3(const char* name, const Vec3& value);
     void setMat4(const char* name, const Mat4& value);

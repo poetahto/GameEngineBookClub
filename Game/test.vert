@@ -1,8 +1,9 @@
 #version 330 core
 
-in vec3 Position;
+in vec3 Model_Position;
+uniform mat4 World_From_Model;
 
 void main()
 {
-    gl_Position = vec4(Position, 1);
+    gl_Position = World_From_Model * vec4(Model_Position, 1);
 }

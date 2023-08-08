@@ -39,7 +39,7 @@ namespace renderer
     // General Functions.
 
     void initialize(s32 width, s32 height);
-    void clearScreen(float red, float green, float blue);
+    void clearScreen(f32 red, f32 green, f32 blue);
 
     // Texture functions.
 
@@ -58,8 +58,9 @@ namespace renderer
     void deleteShader(ShaderHandle handle);
     void useShader(ShaderHandle handle);
     void clearShaders();
-    void setShaderFloat(ShaderHandle handle, const char* name, float value);
-    void setShaderInt(ShaderHandle handle, const char* name, int value);
+    void setShaderFloat(ShaderHandle handle, const char* name, f32 value);
+    void setShaderDouble(ShaderHandle handle, const char* name, f64 value);
+    void setShaderInt(ShaderHandle handle, const char* name, s32 value);
     void setShaderBool(ShaderHandle handle, const char* name, bool value);
     void setShaderVec3(ShaderHandle handle, const char* name, const Vec3& value);
     void setShaderMat4(ShaderHandle handle, const char* name, const Mat4& value);

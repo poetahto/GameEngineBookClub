@@ -8,7 +8,7 @@
 
 using namespace renderer;
 
-// OPENGL RENDERER
+// OPENGL RENDERER - the only file here w/ a dependency on ogl
 
 void GLAPIENTRY messageCallback(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*,const void*);
 
@@ -285,6 +285,12 @@ void renderer::setShaderFloat(ShaderHandle handle, const char *name, float value
     glUniform1f(glGetUniformLocation(handle, name), value);
 }
 
+void renderer::setShaderDouble(ShaderHandle handle, const char* name, f64 value)
+{
+    assert(s_currentHandle == handle && "Shader must be active before changing values.");
+    glUniform1d(glGetUniformLocation(handle, name), value);
+}
+
 void renderer::setShaderInt(ShaderHandle handle, const char *name, int value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
@@ -306,7 +312,7 @@ void renderer::setShaderVec3(ShaderHandle handle, const char *name, const Vec3& 
 void renderer::setShaderMat4(ShaderHandle handle, const char *name, const Mat4& value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
-    glUniformMatrix4fv(glGetUniformLocation(handle, name), 1, GL_TRUE, &value.data[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(handle, name), 1, GL_FALSE, &value.data[0][0]);
 }
 
 void renderer::setShaderTexture(ShaderHandle handle, const char *name, TextureHandle value, int slot)

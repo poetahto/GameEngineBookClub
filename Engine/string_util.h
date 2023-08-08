@@ -6,6 +6,8 @@
 #include <memory>
 #include <sstream>
 
+// todo: put in its own file, clean up
+
 template<typename ... Args>
 std::string stringFormat( const std::string& format, Args ... args )
 {

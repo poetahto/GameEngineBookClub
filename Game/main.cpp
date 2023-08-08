@@ -1,3 +1,4 @@
+#include "math/mat4.h"
 #include "rendering/mesh.h"
 #include "rendering/renderer.h"
 #include "rendering/shader.h"
@@ -28,7 +29,10 @@ int main()
 
     // game loop
     bool wantsToQuit{false};
-    f32 time{0};
+    f32 elapsedTime {};
+    f32 deltaTime {};
+    u64 frameStartTime {SDL_GetPerformanceCounter()};
+    Mat4 worldFromModel = Mat4::translate(0.25f, 0, 0);
 
     while (!wantsToQuit)
     {
@@ -41,13 +45,26 @@ int main()
                 wantsToQuit = true;
         }
 
+        // logic
+        worldFromModel *= Mat4::rotateZ(90 * math::DEG2RAD * deltaTime);
+
         // render
-        time += 1.0f / 144.0f; // todo: better delta time stuff
         renderer::clearScreen(0, 0, 0);
         shader.use();
-        shader.setFloat("Time", time);
+        shader.setFloat("Time", elapsedTime);
+        shader.setMat4("World_From_Model", worldFromModel);
         mesh.draw();
         SDL_GL_SwapWindow(window);
+
+        // update timing
+        u64 frameEndTime = SDL_GetPerformanceCounter();
+        deltaTime = static_cast<f32>(static_cast<f64>(frameEndTime - frameStartTime) / static_cast<f64>(SDL_GetPerformanceFrequency()));
+
+        if (deltaTime >= 1) // clamp deltaTime if it goes too long
+            deltaTime = 1;
+
+        elapsedTime += deltaTime;
+        frameStartTime = frameEndTime;
     }
 
     // cleanup
