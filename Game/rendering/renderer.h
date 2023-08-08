@@ -41,6 +41,7 @@ namespace renderer
 
     void initialize(s32 width, s32 height);
     void clearScreen(f32 red, f32 green, f32 blue);
+    void clearScreen(Vec3 color);
 
     // Texture functions.
 

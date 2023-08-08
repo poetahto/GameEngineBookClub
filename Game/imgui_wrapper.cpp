@@ -1,4 +1,4 @@
-﻿#include "imgui_wrapper"
+﻿#include "imgui_wrapper.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
 #include <SDL2/SDL_video.h>

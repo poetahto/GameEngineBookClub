@@ -226,7 +226,7 @@
     <ClInclude Include="rendering\texture.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="imgui_wrapper" />
+    <ClInclude Include="imgui_wrapper.h" />
     <Content Include="test.frag" />
     <Content Include="test.vert" />
   </ItemGroup>

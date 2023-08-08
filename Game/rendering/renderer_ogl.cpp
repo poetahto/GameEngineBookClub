@@ -37,6 +37,11 @@ void renderer::clearScreen(float red, float green, float blue)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void renderer::clearScreen(Vec3 color)
+{
+    clearScreen(color.r, color.g, color.b);
+}
+
 // A simple callback for handling OpenGL errors.
 void GLAPIENTRY messageCallback(GLenum, GLenum type, GLuint, GLenum severity, GLsizei, const GLchar* message, const void*)
 {

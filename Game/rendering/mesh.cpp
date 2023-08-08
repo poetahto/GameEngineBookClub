@@ -21,12 +21,12 @@ Mesh Mesh::triangle()
 {
     VertexList vertices
     {
-        9,
+        15,
         new f32[]
         {
-            -0.25, 0, 0,
-            0, 0.5, 0,
-            0.25, 0, 0,
+            -0.25, 0, 0, 0, 0,
+            0, 0.5, 0, 1, 1,
+            0.25, 0, 0, 0, 1,
         }
     };
 
@@ -38,8 +38,8 @@ Mesh Mesh::triangle()
 
     VertexFormat format
     {
-        1,
-        new s32[]{3},
+        2,
+        new s32[]{3,2},
     };
 
     return Mesh{vertices, format, indices};
@@ -49,13 +49,13 @@ Mesh Mesh::quad()
 {
     VertexList vertices
     {
-        12,
+        20,
         new f32[]
         {
-            -0.25, 0, 0,
-            -0.25, 0.5, 0,
-            0.25, 0.5, 0,
-            0.25, 0, 0,
+            -0.25, 0, 0, 0, 0,
+            -0.25, 0.5, 0, 0, 1,
+            0.25, 0.5, 0, 1, 1,
+            0.25, 0, 0, 1, 0,
         }
     };
 
@@ -67,8 +67,8 @@ Mesh Mesh::quad()
 
     VertexFormat format
     {
-        1,
-        new s32[]{3},
+        2,
+        new s32[]{3,2},
     };
 
     return Mesh{vertices, format, indices};
