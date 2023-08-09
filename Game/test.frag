@@ -10,4 +10,5 @@ out vec4 finalColor;
 void main()
 {
     finalColor = texture(texture0, uv) * vec4(color, 1);
+//    finalColor = vec4(color, 1);
 }
