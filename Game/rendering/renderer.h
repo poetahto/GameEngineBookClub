@@ -3,6 +3,7 @@
 
 #include "containers/fixed_list.h"
 
+struct Shader;
 struct Vec2;
 struct Mat4;
 struct Vec3;
@@ -40,6 +41,8 @@ namespace renderer
         Wrapping wrappingY{Repeat};
         Filtering textureFiltering{Bilinear};
         Filtering mipmapFiltering{Bilinear};
+
+        static ImportSettings fromFile(const char* fileName);
     };
 
     // General Functions.
@@ -66,6 +69,7 @@ namespace renderer
     void deleteShader(ShaderHandle handle);
     void useShader(ShaderHandle handle);
     void clearShaders();
+
     void setShaderFloat(ShaderHandle handle, const char* name, f32 value);
     void setShaderDouble(ShaderHandle handle, const char* name, f64 value);
     void setShaderInt(ShaderHandle handle, const char* name, s32 value);

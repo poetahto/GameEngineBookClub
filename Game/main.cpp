@@ -21,8 +21,7 @@ int main()
     // start SDL
     SDL_SetMainReady();
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height,
-                                          SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -37,13 +36,8 @@ int main()
 
     // === Game Loop ===
 
-    Shader shader = Shader::fromFiles("test.vert", "test.frag");
+    Shader shader = Shader::fromMaterial("test.material");
     Mesh mesh = Mesh::quad();
-
-    // upload texture
-    Texture texture = Texture::fromFile("test.ppm", renderer::ImportSettings{});
-    shader.use();
-    shader.setTexture("texture0", texture);
 
     bool wantsToQuit{false};
     f32 elapsedTime{};
@@ -72,12 +66,8 @@ int main()
                 if (sdlEvent.key.keysym.sym == SDLK_s) inputDirection.z += sdlEvent.key.state == SDL_PRESSED ? 1 : -1;
                 if (sdlEvent.key.keysym.sym == SDLK_d) inputDirection.x += sdlEvent.key.state == SDL_PRESSED ? 1 : -1;
                 if (sdlEvent.key.keysym.sym == SDLK_a) inputDirection.x += sdlEvent.key.state == SDL_PRESSED ? -1 : 1;
-                if (sdlEvent.key.keysym.sym == SDLK_SPACE) inputDirection.y += sdlEvent.key.state == SDL_PRESSED
-                                                                                   ? 1
-                                                                                   : -1;
-                if (sdlEvent.key.keysym.sym == SDLK_LSHIFT) inputDirection.y += sdlEvent.key.state == SDL_PRESSED
-                    ? -1
-                    : 1;
+                if (sdlEvent.key.keysym.sym == SDLK_SPACE) inputDirection.y += sdlEvent.key.state == SDL_PRESSED ? 1 : -1;
+                if (sdlEvent.key.keysym.sym == SDLK_LSHIFT) inputDirection.y += sdlEvent.key.state == SDL_PRESSED ? -1 : 1;
             }
 
             static bool mouseShown = true;
@@ -90,8 +80,8 @@ int main()
 
             if (sdlEvent.type == SDL_MOUSEMOTION)
             {
-                inputRotation.x += sdlEvent.motion.xrel * deltaTime * sensitivity;
-                inputRotation.y += sdlEvent.motion.yrel * deltaTime * sensitivity;
+                inputRotation.x += static_cast<f32>(sdlEvent.motion.xrel) * deltaTime * sensitivity;
+                inputRotation.y += static_cast<f32>(sdlEvent.motion.yrel) * deltaTime * sensitivity;
             }
 
             if (sdlEvent.type == SDL_WINDOWEVENT && sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
@@ -99,8 +89,6 @@ int main()
         }
 
         imguiWrapper.renderStart();
-
-        // logic
 
         // Player logic.
         Mat4 world_to_view{};
@@ -127,13 +115,10 @@ int main()
 
             Mat4 view_to_world = rotation_transform * Mat4::translate(position);
             world_to_view = view_to_world.inverse();
-            // world_to_view = Mat4::IDENTITY;
-            // world_to_view = view_to_world;
         }
 
         // Quad logic.
         {
-            static Vec3 color{1, 1, 1};
             static Vec3 position;
             static Vec3 scale{Vec3::ONE};
             static f32 rotation;
@@ -146,14 +131,10 @@ int main()
             ImGui::DragFloat3("Scale", &scale.data, 0.001f);
 
             shader.use();
-            shader.setVec3("color", color);
             shader.setVec2("uv_offset", offset);
-            shader.setMat4("model_to_world",
-                           Mat4::scale(scale) * Mat4::rotateZ(rotation * math::DEG2RAD) * Mat4::translate(position));
+            shader.setMat4("model_to_world", Mat4::scale(scale) * Mat4::rotateZ(rotation * math::DEG2RAD) * Mat4::translate(position));
 
-            ImGui::ColorEdit3("Color", &color.data);
             ImGui::DragFloat2("UV Offset", &offset.data, 0.001f);
-
             ImGui::End();
         }
 

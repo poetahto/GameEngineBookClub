@@ -11,6 +11,7 @@ struct Shader
     typedef s32 Location;
 
     explicit Shader(const char* vertexSource, const char* fragmentSource);
+    static Shader fromMaterial(const char* materialFile);
     static Shader fromFiles(const char* vertexSourceFile, const char* fragmentSourceFile);
     static Shader fromSingleFile(const char* combinedSourceFile);
     void free();

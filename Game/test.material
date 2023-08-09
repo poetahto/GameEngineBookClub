@@ -1,0 +1,4 @@
+test.vert
+test.frag
+vec3 color 1 1 1
+texture texture0 test2.ppm test.teximport 0

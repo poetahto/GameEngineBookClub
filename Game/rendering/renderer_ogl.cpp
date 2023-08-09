@@ -1,6 +1,9 @@
 #include <GL/glew.h>
 #include <unordered_map>
 #include <cassert>
+#include <fstream>
+#include <string>
+
 #include "renderer.h"
 #include "math/vec2.h"
 #include "math/vec3.h"
@@ -21,6 +24,53 @@ s32 TextureData::getPixels() const
 s32 TextureData::getDataLength() const
 {
     return getPixels() * stride;
+}
+
+std::unordered_map<std::string, ImportSettings::Wrapping> s_wrappingTable
+{
+    {
+        {"Repeat", ImportSettings::Wrapping::Repeat},
+        {"MirroredRepeat", ImportSettings::Wrapping::MirroredRepeat},
+        {"ClampEdge", ImportSettings::Wrapping::ClampEdge},
+        {"ClampBorder", ImportSettings::Wrapping::ClampBorder},
+    }
+};
+std::unordered_map<std::string, ImportSettings::Filtering> s_filterTable
+{
+    {
+        {"Point", ImportSettings::Filtering::Point},
+        {"Bilinear", ImportSettings::Filtering::Bilinear},
+    }
+};
+
+ImportSettings ImportSettings::fromFile(const char* fileName)
+{
+    std::ifstream stream{};
+    stream.open(fileName);
+
+    if (!stream.is_open())
+        printf("failed to open texture settings %s", fileName);
+
+    ImportSettings settings;
+
+    std::string wrappingX;
+    std::getline(stream, wrappingX);
+
+    std::string wrappingY;
+    std::getline(stream, wrappingY);
+
+    std::string textureFiltering;
+    std::getline(stream, textureFiltering);
+
+    std::string mipmapFiltering;
+    std::getline(stream, mipmapFiltering);
+
+    settings.wrappingX = s_wrappingTable[wrappingX];
+    settings.wrappingY = s_wrappingTable[wrappingY];
+    settings.textureFiltering = s_filterTable[textureFiltering];
+    settings.mipmapFiltering = s_filterTable[mipmapFiltering];
+
+    return settings;
 }
 
 void renderer::initialize(s32 width, s32 height)
