@@ -86,18 +86,20 @@ int main()
             SDL_GetWindowDisplayMode(window, &display);
 
             // This should always happen before scene is rendered.
-            static f32 view_size {1};
+            static f32 view_fov {80};
+            static Vec4 ortho_size {1, 1, 1, 1};
             static Vec3 backgroundColor{0, 0, 0};
 
             ImGui::Begin("Rendering");
             ImGui::ColorEdit3("Clear Color", &backgroundColor.data);
             ImGui::Text("Display: %ix%i [%ihz]", display.w, display.h, display.refresh_rate);
             ImGui::Text("Format: %s", SDL_GetPixelFormatName(display.format));
-            ImGui::DragFloat("view size", &view_size, 0.01f);
+            ImGui::DragFloat("FOV", &view_fov, 0.1f);
+            ImGui::DragFloat4("ortho size", &ortho_size.data, 0.01f);
             ImGui::End();
             s32 cur_width, cur_height;
             SDL_GetWindowSize(window, &cur_width, &cur_height);
-            world_to_clip = Mat4::projectOrthographic(0.1f, 10, cur_width, cur_height, view_size);
+            world_to_clip = Mat4::perspective(0.1f, 10, cur_width, cur_height, view_fov);
 
             renderer::clearScreen(backgroundColor);
         }

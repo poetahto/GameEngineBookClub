@@ -1,5 +1,8 @@
 ﻿#include "../string_util.h"
 #include "mat4.h"
+
+#include <complex>
+
 #include "math_util.h"
 #include "vector_base.h"
 
@@ -256,15 +259,32 @@ Mat4 Mat4::rotateZ(f32 amount)
     };
 }
 
-Mat4 Mat4::projectOrthographic(f32 near, f32 far, s32 screenWidth, s32 screenHeight, f32 size)
+Mat4 Mat4::perspective(f32 near, f32 far, s32 screenWidth, s32 screenHeight, f32 fov)
 {
-    f32 view_width = size * (static_cast<f32>(screenWidth) / static_cast<f32>(screenHeight));
-    f32 view_height = size;
+    f32 aspect_ratio = static_cast<f32>(screenWidth) / static_cast<f32>(screenHeight);
+    f32 top = std::tan(fov * DEG2RAD / 2) * near;
+    f32 bottom = -top;
+    f32 right = top * aspect_ratio;
+    f32 left = -top * aspect_ratio;
 
-    f32 top = view_height / 2;
-    f32 bottom = -view_height / 2;
-    f32 right = view_width / 2;
-    f32 left = -view_width / 2;
+    return Mat4
+    {
+        {
+            {2 * near / (right - left), 0, 0, 0},
+            {0, 2 * near / (top - bottom), 0, 0},
+            {(right + left)/(right - left), (top + bottom)/(top - bottom), -(far + near)/(far - near), -1},
+            {0, 0, -(2 * near * far)/(far - near), 0},
+        }
+    };
+}
+
+Mat4 Mat4::orthographic(f32 near, f32 far, s32 screenWidth, s32 screenHeight, f32 size)
+{
+    f32 aspect_ratio = static_cast<f32>(screenWidth) / static_cast<f32>(screenHeight);
+    f32 right = size * aspect_ratio;
+    f32 top = size;
+    f32 left = -right;
+    f32 bottom = -top;
 
     return Mat4
     {
@@ -272,7 +292,20 @@ Mat4 Mat4::projectOrthographic(f32 near, f32 far, s32 screenWidth, s32 screenHei
             {2 / (right - left), 0, 0, 0},
             {0, 2 / (top - bottom), 0, 0},
             {0, 0, -2 / (far - near), 0},
-            {-(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1}
+            {-(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1},
+        }
+    };
+}
+
+Mat4 Mat4::orthographic(f32 near, f32 far, f32 top, f32 bottom, f32 left, f32 right)
+{
+    return Mat4
+    {
+        {
+            {2 / (right - left), 0, 0, 0},
+            {0, 2 / (top - bottom), 0, 0},
+            {0, 0, -2 / (far - near), 0},
+            {-(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1},
         }
     };
 }
