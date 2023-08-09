@@ -48,6 +48,8 @@ Vec3 Mat4::transformPoint(Vec3 point) const
 
 Vec3 Mat4::transformDirection(Vec3 direction) const
 {
+    direction.z *= -1;
+
     return Vec3
     {
         data[0][0] * direction.x + data[1][0] * direction.y + data[2][0] * direction.z,
@@ -235,6 +237,7 @@ Mat4 Mat4::rotateX(f32 amount)
 
 Mat4 Mat4::rotateY(f32 amount)
 {
+    amount *= -1;
     return Mat4
     {
         {
@@ -248,6 +251,7 @@ Mat4 Mat4::rotateY(f32 amount)
 
 Mat4 Mat4::rotateZ(f32 amount)
 {
+    amount *= -1;
     return Mat4
     {
         {
@@ -257,6 +261,21 @@ Mat4 Mat4::rotateZ(f32 amount)
             {0, 0, 0, 1},
         }
     };
+}
+
+Mat4 Mat4::rotate(f32 x, f32 y, f32 z)
+{
+    return rotateX(x) * rotateY(y) * rotateZ(z);
+}
+
+Mat4 Mat4::rotate(Vec3 euler)
+{
+    return rotate(euler.x, euler.y, euler.z);
+}
+
+Mat4 Mat4::trs(Vec3 offset, Vec3 euler, Vec3 scale)
+{
+    return Mat4::scale(scale) * rotate(euler) * translate(offset);
 }
 
 Mat4 Mat4::perspective(f32 near, f32 far, s32 screenWidth, s32 screenHeight, f32 fov)

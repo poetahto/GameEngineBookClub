@@ -34,10 +34,14 @@ struct Mat4
     static Mat4 rotateX(f32 amount);
     static Mat4 rotateY(f32 amount);
     static Mat4 rotateZ(f32 amount);
+    static Mat4 rotate(f32 x, f32 y, f32 z);
+    static Mat4 rotate(Vec3 euler);
+    static Mat4 trs(Vec3 offset, Vec3 euler, Vec3 scale);
     static Mat4 perspective(f32 near, f32 far, s32 screenWidth, s32 screenHeight, f32 fov);
     static Mat4 orthographic(f32 near, f32 far, s32 screenWidth, s32 screenHeight, f32 size);
     static Mat4 orthographic(f32 near, f32 far, f32 top, f32 bottom, f32 left, f32 right);
     // todo: more ways to define rotations (probably from quaternion, and really overload them)
+    // - TRS matrix
 
     // === Constants ===
     static const Mat4 IDENTITY;

@@ -9,7 +9,6 @@
 #include "SDL2/SDL.h"
 #include "imgui_wrapper.h"
 #include "math/vec2.h"
-#include "rendering/texture.h"
 #undef main
 
 int main()
@@ -21,7 +20,8 @@ int main()
     // start SDL
     SDL_SetMainReady();
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height,
+                                          SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -48,44 +48,59 @@ int main()
     {
         static Vec3 inputDirection{};
         static Vec3 inputRotation{};
-        static f32 sensitivity{15};
+        static f32 sensitivity{8};
 
-        // collect input
-        SDL_Event sdlEvent;
-
-        while (SDL_PollEvent(&sdlEvent) != 0) // todo: i dont like this big switch, but idk if theres a better solution
+        // gather input
         {
-            imguiWrapper.processEvent(sdlEvent);
+            SDL_Event sdlEvent;
 
-            if (sdlEvent.type == SDL_QUIT)
-                wantsToQuit = true;
-
-            if ((sdlEvent.type == SDL_KEYUP || sdlEvent.type == SDL_KEYDOWN) && sdlEvent.key.repeat == 0)
+            while (SDL_PollEvent(&sdlEvent) != 0)
+            // todo: i dont like this big switch, but idk if theres a better solution
             {
-                if (sdlEvent.key.keysym.sym == SDLK_w) inputDirection.z += sdlEvent.key.state == SDL_PRESSED ? -1 : 1;
-                if (sdlEvent.key.keysym.sym == SDLK_s) inputDirection.z += sdlEvent.key.state == SDL_PRESSED ? 1 : -1;
-                if (sdlEvent.key.keysym.sym == SDLK_d) inputDirection.x += sdlEvent.key.state == SDL_PRESSED ? 1 : -1;
-                if (sdlEvent.key.keysym.sym == SDLK_a) inputDirection.x += sdlEvent.key.state == SDL_PRESSED ? -1 : 1;
-                if (sdlEvent.key.keysym.sym == SDLK_SPACE) inputDirection.y += sdlEvent.key.state == SDL_PRESSED ? 1 : -1;
-                if (sdlEvent.key.keysym.sym == SDLK_LSHIFT) inputDirection.y += sdlEvent.key.state == SDL_PRESSED ? -1 : 1;
+                imguiWrapper.processEvent(sdlEvent);
+
+                if (sdlEvent.type == SDL_QUIT)
+                    wantsToQuit = true;
+
+                if ((sdlEvent.type == SDL_KEYUP || sdlEvent.type == SDL_KEYDOWN) && sdlEvent.key.repeat == 0)
+                {
+                    if (sdlEvent.key.keysym.sym == SDLK_w) inputDirection.z += sdlEvent.key.state == SDL_PRESSED
+                                                                                   ? 1
+                                                                                   : -1;
+                    if (sdlEvent.key.keysym.sym == SDLK_s) inputDirection.z += sdlEvent.key.state == SDL_PRESSED
+                                                                                   ? -1
+                                                                                   : 1;
+                    if (sdlEvent.key.keysym.sym == SDLK_d) inputDirection.x += sdlEvent.key.state == SDL_PRESSED
+                                                                                   ? 1
+                                                                                   : -1;
+                    if (sdlEvent.key.keysym.sym == SDLK_a) inputDirection.x += sdlEvent.key.state == SDL_PRESSED
+                                                                                   ? -1
+                                                                                   : 1;
+                    if (sdlEvent.key.keysym.sym == SDLK_SPACE) inputDirection.y += sdlEvent.key.state == SDL_PRESSED
+                        ? 1
+                        : -1;
+                    if (sdlEvent.key.keysym.sym == SDLK_LSHIFT) inputDirection.y += sdlEvent.key.state == SDL_PRESSED
+                        ? -1
+                        : 1;
+                }
+
+                static bool mouseShown = true;
+
+                if (sdlEvent.type == SDL_KEYDOWN && sdlEvent.key.repeat == 0 && sdlEvent.key.keysym.sym == SDLK_ESCAPE)
+                {
+                    SDL_SetRelativeMouseMode(mouseShown ? SDL_TRUE : SDL_FALSE);
+                    mouseShown = !mouseShown;
+                }
+
+                if (sdlEvent.type == SDL_MOUSEMOTION && !mouseShown)
+                {
+                    inputRotation.x += static_cast<f32>(sdlEvent.motion.xrel) * deltaTime * sensitivity * math::DEG2RAD;
+                    inputRotation.y -= static_cast<f32>(sdlEvent.motion.yrel) * deltaTime * sensitivity * math::DEG2RAD;
+                }
+
+                if (sdlEvent.type == SDL_WINDOWEVENT && sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
+                    renderer::resize(sdlEvent.window.data1, sdlEvent.window.data2);
             }
-
-            static bool mouseShown = true;
-
-            if (sdlEvent.type == SDL_KEYDOWN && sdlEvent.key.repeat == 0 && sdlEvent.key.keysym.sym == SDLK_ESCAPE)
-            {
-                SDL_SetRelativeMouseMode(mouseShown ? SDL_TRUE : SDL_FALSE);
-                mouseShown = !mouseShown;
-            }
-
-            if (sdlEvent.type == SDL_MOUSEMOTION)
-            {
-                inputRotation.x += static_cast<f32>(sdlEvent.motion.xrel) * deltaTime * sensitivity;
-                inputRotation.y += static_cast<f32>(sdlEvent.motion.yrel) * deltaTime * sensitivity;
-            }
-
-            if (sdlEvent.type == SDL_WINDOWEVENT && sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
-                renderer::resize(sdlEvent.window.data1, sdlEvent.window.data2);
         }
 
         imguiWrapper.renderStart();
@@ -94,18 +109,23 @@ int main()
         Mat4 world_to_view{};
         {
             static Vec3 position{0, 0, -5};
+            static Vec3 velocity{};
             static f32 speed{1};
+            static f32 acceleration{10};
             ImGui::Begin("Player");
             ImGui::Text("Input: %f %f", inputDirection.x, inputDirection.z);
+            ImGui::Text("Position: %f %f %f", position.x, position.y, position.z);
             ImGui::Text("Rotation: %f %f", inputRotation.x, inputRotation.y);
-            ImGui::DragFloat("speed", &speed);
+            ImGui::DragFloat("speed", &speed, 0.1f);
+            ImGui::DragFloat("acceleration", &acceleration, 0.1f);
             ImGui::DragFloat("sensitivity", &sensitivity);
             ImGui::End();
 
-            Mat4 rotation_transform = Mat4::rotateX(-inputRotation.y * math::DEG2RAD) * Mat4::rotateY(
-                -inputRotation.x * math::DEG2RAD);
+            Mat4 rotation_transform = Mat4::rotate(inputRotation.y, inputRotation.x, 0);
 
-            position += rotation_transform.transformDirection(inputDirection * deltaTime * speed);
+            Vec3 targetVelocity = rotation_transform.transformDirection(inputDirection.normalized() * deltaTime * speed);
+            velocity = Vec3::lerp(velocity, targetVelocity, acceleration * deltaTime);
+            position += velocity;
 
             if (inputRotation.y > 90)
                 inputRotation.y = 90;
@@ -121,21 +141,20 @@ int main()
         {
             static Vec3 position;
             static Vec3 scale{Vec3::ONE};
-            static f32 rotation;
+            static Vec3 rotation;
             static Vec2 offset{};
 
             ImGui::Begin("Quad State");
 
             ImGui::DragFloat3("Position", &position.data, 0.001f);
-            ImGui::DragFloat("Rotation", &rotation);
+            ImGui::DragFloat3("Rotation", &rotation.data);
             ImGui::DragFloat3("Scale", &scale.data, 0.001f);
+            ImGui::DragFloat2("UV Offset", &offset.data, 0.001f);
+            ImGui::End();
 
             shader.use();
             shader.setVec2("uv_offset", offset);
-            shader.setMat4("model_to_world", Mat4::scale(scale) * Mat4::rotateZ(rotation * math::DEG2RAD) * Mat4::translate(position));
-
-            ImGui::DragFloat2("UV Offset", &offset.data, 0.001f);
-            ImGui::End();
+            shader.setMat4("model_to_world", Mat4::trs(position, rotation * math::DEG2RAD, scale));
         }
 
         // Rendering Logic
