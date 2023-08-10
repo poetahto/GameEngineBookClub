@@ -12,9 +12,10 @@ void Mesh::free()
     deleteMesh(handle);
 }
 
-void Mesh::draw() const
+
+void Mesh::draw(DrawMode mode) const
 {
-    drawMesh(handle);
+    drawMesh(handle, mode);
 }
 
 Mesh Mesh::triangle()

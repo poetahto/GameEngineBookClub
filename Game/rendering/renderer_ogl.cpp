@@ -284,11 +284,16 @@ void renderer::deleteMesh(MeshHandle handle)
     g_meshLookup.erase(handle);
 }
 
-void renderer::drawMesh(MeshHandle handle)
+// Ensure this lines up with the order of modes in renderer.h
+GLenum s_modeTable[] = {
+    GL_TRIANGLES, GL_TRIANGLE_STRIP,
+};
+
+void renderer::drawMesh(MeshHandle handle, DrawMode mode)
 {
     GlMeshData data { g_meshLookup[handle] };
     glBindVertexArray(data.vao);
-    glDrawElements(GL_TRIANGLES, data.indexCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(s_modeTable[mode], data.indexCount, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }
 

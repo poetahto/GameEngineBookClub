@@ -4,7 +4,9 @@
 #include <string>
 
 Texture::Texture(const renderer::TextureData& data, const renderer::ImportSettings& settings) :
-    handle {uploadTexture(data, settings) }
+    handle {uploadTexture(data, settings) },
+    data {data},
+    importSettings{settings}
 {
 }
 

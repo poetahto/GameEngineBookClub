@@ -7,7 +7,7 @@ struct Mesh
 {
     Mesh(renderer::VertexList vertices, renderer::VertexFormat vertexFormat, renderer::IndexList indices);
     void free();
-    void draw() const;
+    void draw(renderer::DrawMode mode) const;
     renderer::MeshHandle handle;
 
     static Mesh triangle();

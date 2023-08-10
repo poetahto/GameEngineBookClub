@@ -22,11 +22,19 @@ namespace renderer
     struct TextureData
     {
         enum Format { R, Rgb, Rgba, Rgba8 };
+
         Format format{Rgba};
         s32 width;
         s32 height;
         s32 stride;
         u8* data;
+
+        template <typename T>
+        T* get(s32 x, s32 y) const
+        {
+            s32 index = y * (width * stride) + x * stride;
+            return reinterpret_cast<T*>(&data[index]);
+        }
 
         s32 getPixels() const;
         s32 getDataLength() const;
@@ -35,6 +43,7 @@ namespace renderer
     struct ImportSettings
     {
         enum Wrapping { Repeat, MirroredRepeat, ClampEdge, ClampBorder };
+
         enum Filtering { Point, Bilinear };
 
         Wrapping wrappingX{Repeat};
@@ -59,9 +68,15 @@ namespace renderer
 
     // Mesh functions.
 
+    enum DrawMode
+    {
+        Triangles,
+        TriangleStrips
+    };
+
     MeshHandle uploadMesh(VertexList vertices, VertexFormat format, IndexList indices);
     void deleteMesh(MeshHandle handle);
-    void drawMesh(MeshHandle handle);
+    void drawMesh(MeshHandle handle, DrawMode mode);
 
     // Shader functions.
 
@@ -79,7 +94,6 @@ namespace renderer
     void setShaderVec4(ShaderHandle handle, const char* name, const Vec4& value);
     void setShaderMat4(ShaderHandle handle, const char* name, const Mat4& value);
     void setShaderTexture(ShaderHandle handle, const char* name, TextureHandle value, int slot = 0);
-
 } // namespace renderer
 
 #endif // RENDERER_H
