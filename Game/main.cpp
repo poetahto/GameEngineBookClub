@@ -1,5 +1,6 @@
 #include <imgui.h>
 #include <unordered_map>
+#include <GL/glew.h>
 
 #include "math/mat4.h"
 #include "math/vec4.h"
@@ -21,7 +22,6 @@ public:
         s32 height = heightmap->data.height;
 
         std::vector<f32> vertices;
-        s32 index{};
 
         // Generate all the vertices based on the heightmap image.
         for (s32 x = 0; x < width; x++)
@@ -29,30 +29,31 @@ public:
             for (s32 y = 0; y < height; y++)
             {
                 u8* pixel = heightmap->data.get<u8>(x, y);
+                // Points
                 vertices.push_back(static_cast<f32>(x));
                 vertices.push_back(static_cast<f32>(*pixel) / 255.0f * heightScale);
                 vertices.push_back(static_cast<f32>(y));
-                index += 3;
+                // UVs
+                vertices.push_back(static_cast<f32>(x));
+                vertices.push_back(static_cast<f32>(y));
             }
         }
 
         // Generate all the indices for rendering the triangle strips
         std::vector<u32> indices{};
 
-        for (s32 row = 0; row < height; row++)
+        for (s32 row = 0; row < height - 1; row++)
         {
             for (s32 column = 0; column < width; column++)
             {
                 indices.push_back(row * width + column);
-                indices.push_back((row + 1) * width + column);
+                indices.push_back((row+ 1) * width + column);
             }
 
-            // Degenerate triangle looping
-            indices.push_back((row + 1) * width + (width - 1));
-            indices.push_back(row * width);
+            indices.push_back(UINT_MAX);
         }
 
-        auto vertexFormat = std::vector<s32>{3};
+        auto vertexFormat = std::vector<s32>{3,2};
 
         m_mesh = new Mesh{
             renderer::VertexList::fromList(vertices),
@@ -108,6 +109,7 @@ int main()
     Shader terrainShader = Shader::fromFiles("terrain.vert", "terrain.frag");
     Texture heightmap = Texture::fromFile("heightmap.ppm", renderer::ImportSettings::fromFile("test.teximport"));
     f32 terrain_height = 25;
+    Texture terrain_texture = Texture::fromFile("terrain.ppm", renderer::ImportSettings::fromFile("test.teximport"));
     Terrain terrain {&heightmap, terrain_height};
 
     bool wantsToQuit{false};
@@ -218,10 +220,12 @@ int main()
         // terrain logic
         static Vec3 terrain_bottomColor{3/255.0f, 56/255.0f, 14/255.0f};
         static Vec3 terrain_topColor{36/255.0f, 123/255.0f, 25/255.0f};
+        static float terrain_uv_scale{1};
         {
             ImGui::Begin("Terrain");
             ImGui::ColorEdit3("Terrain Bottom", &terrain_bottomColor.data);
             ImGui::ColorEdit3("Terrain Top", &terrain_topColor.data);
+            ImGui::DragFloat("UV Scale", &terrain_uv_scale);
             ImGui::End();
         }
 
@@ -255,6 +259,7 @@ int main()
             static f32 view_fov{80};
             static Vec4 ortho_size{1, 1, 1, 1};
             static Vec3 backgroundColor{0, 0, 0};
+            static bool wireframe_on {false};
 
             ImGui::Begin("Rendering");
             ImGui::ColorEdit3("Clear Color", &backgroundColor.data);
@@ -262,6 +267,8 @@ int main()
             ImGui::Text("Format: %s", SDL_GetPixelFormatName(display.format));
             ImGui::DragFloat("FOV", &view_fov, 0.1f);
             ImGui::DragFloat4("ortho size", &ortho_size.data, 0.01f);
+            if (ImGui::Checkbox("Wireframe", &wireframe_on))
+                glPolygonMode( GL_FRONT_AND_BACK, wireframe_on ? GL_LINE : GL_FILL );
             ImGui::End();
 
             s32 cur_width, cur_height;
@@ -308,6 +315,8 @@ int main()
         mesh.draw(renderer::Triangles);
 
         terrainShader.use();
+        terrainShader.setFloat("uvScale", terrain_uv_scale);
+        terrainShader.setTexture("texture0", terrain_texture);
         terrainShader.setFloat("height", terrain_height);
         terrainShader.setVec3("topColor", terrain_topColor);
         terrainShader.setVec3("bottomColor", terrain_bottomColor);

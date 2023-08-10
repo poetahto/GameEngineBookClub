@@ -83,6 +83,7 @@ void renderer::initialize(s32 width, s32 height)
         printf("Using GLEW as %s\n", glewGetString(GLEW_VERSION));
         glViewport(0, 0, width, height);
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_PRIMITIVE_RESTART_FIXED_INDEX);
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(messageCallback, nullptr);
     }
