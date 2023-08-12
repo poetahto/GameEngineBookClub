@@ -29,9 +29,9 @@ const Vec3 Vec3::BACK(0, 0, -1);
 // === Operators ===
 bool Vec3::operator==(Vec3 other) const
 {
-    return math::nearlyEqual(x, other.x)
-        && math::nearlyEqual(y, other.y)
-        && math::nearlyEqual(z, other.z);
+    return Math::nearlyEqual(x, other.x)
+        && Math::nearlyEqual(y, other.y)
+        && Math::nearlyEqual(z, other.z);
 }
 
 std::ostream& Vec3::operator<<(std::ostream& os) const

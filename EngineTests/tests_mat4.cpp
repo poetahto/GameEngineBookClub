@@ -3,7 +3,7 @@
 #include "math/math_util.h"
 #include "math/vector_base.h"
 
-using namespace math;
+using namespace Math;
 
 TEST(Mat4Tests, Equality)
 {

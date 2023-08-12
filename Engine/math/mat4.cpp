@@ -6,7 +6,7 @@
 #include "math_util.h"
 #include "vector_base.h"
 
-using namespace math;
+using namespace Math;
 
 std::ostream& operator<<(std::ostream& os, const Mat4& value)
 {

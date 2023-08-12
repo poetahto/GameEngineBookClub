@@ -5,13 +5,13 @@
 
 struct Texture
 {
-    Texture(const renderer::TextureData& data, const renderer::ImportSettings& settings);
+    Texture(const Renderer::TextureData& data, const Renderer::ImportSettings& settings);
     void free();
-    static Texture fromFile(const char* file, const renderer::ImportSettings& settings);
+    static Texture fromFile(const char* file, const Renderer::ImportSettings& settings);
 
-    renderer::TextureHandle handle;
-    renderer::TextureData data;
-    renderer::ImportSettings importSettings;
+    Renderer::TextureHandle handle;
+    Renderer::TextureData data;
+    Renderer::ImportSettings importSettings;
 };
 
 #endif // TEXTURE_H

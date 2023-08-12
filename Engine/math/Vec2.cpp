@@ -9,8 +9,8 @@ Vec2::Vec2(f32 x, f32 y) : x{x}, y{y}
 // === Operators ===
 bool Vec2::operator==(Vec2 other) const
 {
-    return math::nearlyEqual(x, other.x)
-        && math::nearlyEqual(y, other.y);
+    return Math::nearlyEqual(x, other.x)
+        && Math::nearlyEqual(y, other.y);
 }
 
 std::ostream& Vec2::operator<<(std::ostream& os) const

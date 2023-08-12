@@ -7,7 +7,7 @@
 #include "math/vec3.h"
 
 Shader::Shader(const char* vertexSource, const char* fragmentSource) :
-    handle{renderer::uploadShader(vertexSource, fragmentSource)}
+    handle{Renderer::uploadShader(vertexSource, fragmentSource)}
 {
 }
 
@@ -47,7 +47,7 @@ void texturePropertyApplier(const char* name, const std::string& rawValue, Shade
 
     std::string importFile;
     std::getline(stream, importFile, ' ');
-    renderer::ImportSettings settings = renderer::ImportSettings::fromFile(importFile.c_str());
+    Renderer::ImportSettings settings = Renderer::ImportSettings::fromFile(importFile.c_str());
 
     Texture texture = Texture::fromFile(textureFile.c_str(), settings);
 
@@ -134,60 +134,60 @@ Shader Shader::fromSingleFile(const char* combinedSourceFile)
 
 void Shader::free()
 {
-    renderer::deleteShader(handle);
+    Renderer::deleteShader(handle);
 }
 
 void Shader::use() const
 {
-    renderer::useShader(handle);
+    Renderer::useShader(handle);
 }
 
 void Shader::setFloat(const char* name, float value)
 {
-    renderer::setShaderFloat(handle, name, value);
+    Renderer::setShaderFloat(handle, name, value);
 }
 
 void Shader::setDouble(const char* name, f64 value)
 {
-    renderer::setShaderDouble(handle, name, value);
+    Renderer::setShaderDouble(handle, name, value);
 }
 
 void Shader::setInt(const char* name, int value)
 {
-    renderer::setShaderInt(handle, name, value);
+    Renderer::setShaderInt(handle, name, value);
 }
 
 void Shader::setBool(const char* name, bool value)
 {
-    renderer::setShaderBool(handle, name, value);
+    Renderer::setShaderBool(handle, name, value);
 }
 
 void Shader::setVec2(const char* name, const Vec2& value)
 {
-    renderer::setShaderVec2(handle, name, value);
+    Renderer::setShaderVec2(handle, name, value);
 }
 
 void Shader::setVec3(const char* name, const Vec3& value)
 {
-    renderer::setShaderVec3(handle, name, value);
+    Renderer::setShaderVec3(handle, name, value);
 }
 
 void Shader::setVec4(const char* name, const Vec4& value)
 {
-    renderer::setShaderVec4(handle, name, value);
+    Renderer::setShaderVec4(handle, name, value);
 }
 
 void Shader::setMat4(const char* name, const Mat4& value)
 {
-    renderer::setShaderMat4(handle, name, value);
+    Renderer::setShaderMat4(handle, name, value);
 }
 
 void Shader::setTexture(const char* name, const Texture& value, int slot)
 {
-    renderer::setShaderTexture(handle, name, value.handle, slot);
+    Renderer::setShaderTexture(handle, name, value.handle, slot);
 }
 
 void Shader::clear()
 {
-    renderer::clearShaders();
+    Renderer::clearShaders();
 }

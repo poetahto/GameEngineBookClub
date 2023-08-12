@@ -2,6 +2,7 @@
 #define RENDERER_H
 
 #include "containers/fixed_list.h"
+#include "platform/application.h"
 
 struct Shader;
 struct Vec2;
@@ -9,7 +10,7 @@ struct Mat4;
 struct Vec3;
 struct Vec4;
 
-namespace renderer
+namespace Renderer
 {
     typedef u32 MeshHandle;
     typedef u32 TextureHandle;
@@ -56,7 +57,7 @@ namespace renderer
 
     // General Functions.
 
-    void initialize(s32 width, s32 height);
+    void init(s32 width = Application::Settings::DEFAULT_WIDTH, s32 height = Application::Settings::DEFAULT_HEIGHT);
     void resize(s32 width, s32 height);
     void clearScreen(f32 red, f32 green, f32 blue);
     void clearScreen(Vec3 color);

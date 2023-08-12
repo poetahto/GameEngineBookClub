@@ -1,6 +1,6 @@
 ﻿#include "mesh.h"
 
-using namespace renderer;
+using namespace Renderer;
 
 Mesh::Mesh(VertexList vertices, VertexFormat vertexFormat, IndexList indices) :
     handle{uploadMesh(vertices, vertexFormat, indices)}

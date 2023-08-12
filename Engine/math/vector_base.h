@@ -45,7 +45,7 @@ struct VectorBase
     {
         f32 m = magnitude();
 
-        if (!math::nearlyEqual(m, 0))
+        if (!Math::nearlyEqual(m, 0))
         {
             for (u8f i = 0; i < Length; i++)
                 (*this)[i] /= m;

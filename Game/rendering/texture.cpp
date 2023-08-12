@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 
-Texture::Texture(const renderer::TextureData& data, const renderer::ImportSettings& settings) :
+Texture::Texture(const Renderer::TextureData& data, const Renderer::ImportSettings& settings) :
     handle {uploadTexture(data, settings) },
     data {data},
     importSettings{settings}
@@ -12,10 +12,10 @@ Texture::Texture(const renderer::TextureData& data, const renderer::ImportSettin
 
 void Texture::free()
 {
-    renderer::deleteTexture(handle);
+    Renderer::deleteTexture(handle);
 }
 
-Texture Texture::fromFile(const char* file, const renderer::ImportSettings& settings)
+Texture Texture::fromFile(const char* file, const Renderer::ImportSettings& settings)
 {
     std::ifstream fileStream {};
     fileStream.open(file, std::ifstream::in | std::ifstream::binary);
@@ -24,8 +24,8 @@ Texture Texture::fromFile(const char* file, const renderer::ImportSettings& sett
         printf("Failed to open texture from file %s", file);
 
     char buffer[500] {};
-    renderer::TextureData data;
-    data.format = renderer::TextureData::Rgb;
+    Renderer::TextureData data;
+    data.format = Renderer::TextureData::Rgb;
 
     fileStream.seekg(3); // skip the magic number?
 

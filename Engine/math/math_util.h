@@ -3,7 +3,7 @@
 
 #include "../types.h"
 
-namespace math
+namespace Math
 {
     /**
      * \brief Compares two floating point values to see if they are nearly equal.

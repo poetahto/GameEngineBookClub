@@ -1,7 +1,7 @@
 ﻿#include <gtest/gtest.h>
 #include "math/math_util.h"
 
-using namespace math;
+using namespace Math;
 
 // todo: infinity comparisons weird, generally float comparisons are terrible
 

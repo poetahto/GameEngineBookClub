@@ -5,10 +5,10 @@
 
 struct Mesh
 {
-    Mesh(renderer::VertexList vertices, renderer::VertexFormat vertexFormat, renderer::IndexList indices);
+    Mesh(Renderer::VertexList vertices, Renderer::VertexFormat vertexFormat, Renderer::IndexList indices);
     void free();
-    void draw(renderer::DrawMode mode) const;
-    renderer::MeshHandle handle;
+    void draw(Renderer::DrawMode mode) const;
+    Renderer::MeshHandle handle;
 
     static Mesh triangle();
     static Mesh quad();

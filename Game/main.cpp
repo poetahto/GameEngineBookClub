@@ -8,8 +8,10 @@
 #include "rendering/renderer.h"
 #include "rendering/shader.h"
 #include "SDL2/SDL.h"
-#include "imgui_wrapper.h"
+#include "sdl_imgui.h"
+#include "math/Rect.h"
 #include "math/vec2.h"
+#include "platform/application.h"
 #include "rendering/texture.h"
 #undef main
 
@@ -56,9 +58,9 @@ public:
         auto vertexFormat = std::vector<s32>{3,2};
 
         m_mesh = new Mesh{
-            renderer::VertexList::fromList(vertices),
-            renderer::VertexFormat::fromList(vertexFormat),
-            renderer::IndexList::fromList(indices)
+            Renderer::VertexList::fromList(vertices),
+            Renderer::VertexFormat::fromList(vertexFormat),
+            Renderer::IndexList::fromList(indices)
         };
     }
 
@@ -69,37 +71,20 @@ public:
 
     void draw() const
     {
-        m_mesh->draw(renderer::TriangleStrips);
+        m_mesh->draw(Renderer::TriangleStrips);
     }
 
 private:
     Mesh* m_mesh;
 };
 
+
 int main()
 {
     // === Initialization ===
-
-    // start SDL
-    SDL_SetMainReady();
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_Rect rect;
-    SDL_GetDisplayUsableBounds(0, &rect);
-    s32 width = rect.w;
-    s32 height = rect.h;
-    SDL_Window* window = SDL_CreateWindow("Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height,
-                                          SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GLContext context = SDL_GL_CreateContext(window);
-    SDL_GL_SetSwapInterval(1); // enabling vsync
-
-    // start OpenGL renderer
-    renderer::initialize(width, height);
-
-    // start ImGui
-    ImGuiWrapper imguiWrapper{window, context};
+    Application::init();
+    Renderer::init();
+    ImGui::custom_init();
 
     // === Game Loop ===
 
@@ -107,9 +92,9 @@ int main()
     Mesh mesh = Mesh::quad();
 
     Shader terrainShader = Shader::fromFiles("terrain.vert", "terrain.frag");
-    Texture heightmap = Texture::fromFile("heightmap.ppm", renderer::ImportSettings::fromFile("test.teximport"));
+    Texture heightmap = Texture::fromFile("heightmap.ppm", Renderer::ImportSettings::fromFile("test.teximport"));
     f32 terrain_height = 25;
-    Texture terrain_texture = Texture::fromFile("terrain.ppm", renderer::ImportSettings::fromFile("test.teximport"));
+    Texture terrain_texture = Texture::fromFile("terrain.ppm", Renderer::ImportSettings::fromFile("test.teximport"));
     Terrain terrain {&heightmap, terrain_height};
 
     bool wantsToQuit{false};
@@ -130,8 +115,6 @@ int main()
             while (SDL_PollEvent(&sdlEvent) != 0)
             // todo: i dont like this big switch, but idk if theres a better solution
             {
-                imguiWrapper.processEvent(sdlEvent);
-
                 if (sdlEvent.type == SDL_QUIT)
                     wantsToQuit = true;
 
@@ -173,16 +156,16 @@ int main()
 
                 if (sdlEvent.type == SDL_MOUSEMOTION && !mouseShown)
                 {
-                    inputRotation.x += static_cast<f32>(sdlEvent.motion.xrel) * deltaTime * sensitivity * math::DEG2RAD;
-                    inputRotation.y -= static_cast<f32>(sdlEvent.motion.yrel) * deltaTime * sensitivity * math::DEG2RAD;
+                    inputRotation.x += static_cast<f32>(sdlEvent.motion.xrel) * (1/144.0f) * sensitivity * Math::DEG2RAD;
+                    inputRotation.y -= static_cast<f32>(sdlEvent.motion.yrel) * (1/144.0f) * sensitivity * Math::DEG2RAD;
                 }
 
                 if (sdlEvent.type == SDL_WINDOWEVENT && sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
-                    renderer::resize(sdlEvent.window.data1, sdlEvent.window.data2);
+                    Renderer::resize(sdlEvent.window.data1, sdlEvent.window.data2);
             }
         }
 
-        imguiWrapper.renderStart();
+        ImGui::custom_renderStart();
 
         // Player logic.
         Mat4 world_to_view{};
@@ -220,7 +203,7 @@ int main()
         // terrain logic
         static Vec3 terrain_bottomColor{3/255.0f, 56/255.0f, 14/255.0f};
         static Vec3 terrain_topColor{36/255.0f, 123/255.0f, 25/255.0f};
-        static float terrain_uv_scale{1};
+        static float terrain_uv_scale{0.025f};
         {
             ImGui::Begin("Terrain");
             ImGui::ColorEdit3("Terrain Bottom", &terrain_bottomColor.data);
@@ -246,36 +229,32 @@ int main()
 
             shader.use();
             shader.setVec2("uv_offset", offset);
-            shader.setMat4("model_to_world", Mat4::trs(position, rotation * math::DEG2RAD, scale));
+            shader.setMat4("model_to_world", Mat4::trs(position, rotation * Math::DEG2RAD, scale));
         }
 
         // Rendering Logic
         Mat4 view_to_clip;
         {
-            SDL_DisplayMode display;
-            SDL_GetWindowDisplayMode(window, &display);
-
             // This should always happen before scene is rendered.
             static f32 view_fov{80};
             static Vec4 ortho_size{1, 1, 1, 1};
             static Vec3 backgroundColor{0, 0, 0};
             static bool wireframe_on {false};
 
+            Vec2 size = Application::getSize();
+
             ImGui::Begin("Rendering");
             ImGui::ColorEdit3("Clear Color", &backgroundColor.data);
-            ImGui::Text("Display: %ix%i [%ihz]", display.w, display.h, display.refresh_rate);
-            ImGui::Text("Format: %s", SDL_GetPixelFormatName(display.format));
+            ImGui::Text("Display: %fx%f [%ihz]", size.x, size.y, Application::getRefreshRate());
             ImGui::DragFloat("FOV", &view_fov, 0.1f);
             ImGui::DragFloat4("ortho size", &ortho_size.data, 0.01f);
             if (ImGui::Checkbox("Wireframe", &wireframe_on))
                 glPolygonMode( GL_FRONT_AND_BACK, wireframe_on ? GL_LINE : GL_FILL );
             ImGui::End();
 
-            s32 cur_width, cur_height;
-            SDL_GetWindowSize(window, &cur_width, &cur_height);
-            view_to_clip = Mat4::perspective(0.1f, 1000, cur_width, cur_height, view_fov);
+            view_to_clip = Mat4::perspective(0.1f, 1000, static_cast<s32>(size.x), static_cast<s32>(size.y), view_fov);
 
-            renderer::clearScreen(backgroundColor);
+            Renderer::clearScreen(backgroundColor);
         }
 
         // Timing Window
@@ -312,7 +291,7 @@ int main()
         shader.setFloat("time", elapsedTime);
         shader.setMat4("world_to_view", world_to_view);
         shader.setMat4("view_to_clip", view_to_clip);
-        mesh.draw(renderer::Triangles);
+        mesh.draw(Renderer::Triangles);
 
         terrainShader.use();
         terrainShader.setFloat("uvScale", terrain_uv_scale);
@@ -325,8 +304,8 @@ int main()
         terrain.draw();
 
         // This should always happen after scene is rendered.
-        imguiWrapper.renderEnd();
-        SDL_GL_SwapWindow(window);
+        ImGui::custom_renderEnd();
+        Application::swapBuffers();
 
         // === TIME ===
 
@@ -343,9 +322,9 @@ int main()
 
     // === CLEANUP ===
 
-    imguiWrapper.free();
+    ImGui::custom_free();
     shader.free();
     mesh.free();
-    SDL_Quit();
+    Application::free();
     return 0;
 }

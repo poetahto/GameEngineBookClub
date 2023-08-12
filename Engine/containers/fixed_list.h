@@ -29,7 +29,7 @@ struct FixedList
 
     static FixedList fromList(std::vector<T> list)
     {
-        s32 size = list.size();
+        s32 size = static_cast<s32>(list.size());
         T* data = new T[size]; // todo: custom allocator support?
 
         for (s32 i = 0; i < size; i++)

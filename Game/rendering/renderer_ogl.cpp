@@ -10,7 +10,7 @@
 #include "math/vec4.h"
 #include "math/mat4.h"
 
-using namespace renderer;
+using namespace Renderer;
 
 // OPENGL RENDERER - the only file here w/ a dependency on ogl
 
@@ -73,7 +73,7 @@ ImportSettings ImportSettings::fromFile(const char* fileName)
     return settings;
 }
 
-void renderer::initialize(s32 width, s32 height)
+void Renderer::init(s32 width, s32 height)
 {
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
@@ -93,18 +93,18 @@ void renderer::initialize(s32 width, s32 height)
     }
 }
 
-void renderer::resize(s32 width, s32 height)
+void Renderer::resize(s32 width, s32 height)
 {
     glViewport(0, 0, width, height);
 }
 
-void renderer::clearScreen(float red, float green, float blue)
+void Renderer::clearScreen(float red, float green, float blue)
 {
     glClearColor(red, green, blue, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void renderer::clearScreen(Vec3 color)
+void Renderer::clearScreen(Vec3 color)
 {
     clearScreen(color.r, color.g, color.b);
 }
@@ -142,7 +142,7 @@ GLint getWrapping(ImportSettings::Wrapping wrapping)
     return result;
 }
 
-TextureHandle renderer::uploadTexture(const TextureData& data, const ImportSettings& settings)
+TextureHandle Renderer::uploadTexture(const TextureData& data, const ImportSettings& settings)
 {
     TextureHandle result {};
     glGenTextures(1, &result);
@@ -223,7 +223,7 @@ TextureHandle renderer::uploadTexture(const TextureData& data, const ImportSetti
     return result;
 }
 
-void renderer::deleteTexture(TextureHandle handle)
+void Renderer::deleteTexture(TextureHandle handle)
 {
     glDeleteTextures(1, &handle);
 }
@@ -241,7 +241,7 @@ struct GlMeshData
 std::unordered_map<MeshHandle, GlMeshData> g_meshLookup {};
 MeshHandle g_nextHandle {};
 
-MeshHandle renderer::uploadMesh(VertexList vertices, VertexFormat format, IndexList indices)
+MeshHandle Renderer::uploadMesh(VertexList vertices, VertexFormat format, IndexList indices)
 {
     unsigned int vao, vbo, ebo;
 
@@ -280,7 +280,7 @@ MeshHandle renderer::uploadMesh(VertexList vertices, VertexFormat format, IndexL
     return result;
 }
 
-void renderer::deleteMesh(MeshHandle handle)
+void Renderer::deleteMesh(MeshHandle handle)
 {
     g_meshLookup.erase(handle);
 }
@@ -290,7 +290,7 @@ GLenum s_modeTable[] = {
     GL_TRIANGLES, GL_TRIANGLE_STRIP,
 };
 
-void renderer::drawMesh(MeshHandle handle, DrawMode mode)
+void Renderer::drawMesh(MeshHandle handle, DrawMode mode)
 {
     GlMeshData data { g_meshLookup[handle] };
     glBindVertexArray(data.vao);
@@ -300,7 +300,7 @@ void renderer::drawMesh(MeshHandle handle, DrawMode mode)
 
 // Shaders
 
-void renderer::clearShaders()
+void Renderer::clearShaders()
 {
     useShader(0);
 }
@@ -330,7 +330,7 @@ unsigned int createShader(const char *source, GLenum type)
     return shader;
 }
 
-ShaderHandle renderer::uploadShader(const char* vertexSource, const char* fragmentSource)
+ShaderHandle Renderer::uploadShader(const char* vertexSource, const char* fragmentSource)
 {
     unsigned int vertexShader { createShader(vertexSource, GL_VERTEX_SHADER) };
     unsigned int fragmentShader { createShader(fragmentSource, GL_FRAGMENT_SHADER) };
@@ -348,68 +348,68 @@ ShaderHandle renderer::uploadShader(const char* vertexSource, const char* fragme
     return result;
 }
 
-void renderer::deleteShader(ShaderHandle handle)
+void Renderer::deleteShader(ShaderHandle handle)
 {
     glDeleteProgram(handle);
 }
 
 unsigned int s_currentHandle{ 0 };
 
-void renderer::useShader(ShaderHandle handle)
+void Renderer::useShader(ShaderHandle handle)
 {
     glUseProgram(handle);
     s_currentHandle = handle;
 }
 
-void renderer::setShaderFloat(ShaderHandle handle, const char *name, float value)
+void Renderer::setShaderFloat(ShaderHandle handle, const char *name, float value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
     glUniform1f(glGetUniformLocation(handle, name), value);
 }
 
-void renderer::setShaderDouble(ShaderHandle handle, const char* name, f64 value)
+void Renderer::setShaderDouble(ShaderHandle handle, const char* name, f64 value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
     glUniform1d(glGetUniformLocation(handle, name), value);
 }
 
-void renderer::setShaderInt(ShaderHandle handle, const char *name, int value)
+void Renderer::setShaderInt(ShaderHandle handle, const char *name, int value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
     glUniform1i(glGetUniformLocation(handle, name), value);
 }
 
-void renderer::setShaderBool(ShaderHandle handle, const char *name, bool value)
+void Renderer::setShaderBool(ShaderHandle handle, const char *name, bool value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
     glUniform1i(glGetUniformLocation(handle, name), static_cast<int>(value));
 }
 
-void renderer::setShaderVec2(ShaderHandle handle, const char* name, const Vec2& value)
+void Renderer::setShaderVec2(ShaderHandle handle, const char* name, const Vec2& value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
     glUniform2f(glGetUniformLocation(handle, name), value.x, value.y);
 }
 
-void renderer::setShaderVec3(ShaderHandle handle, const char *name, const Vec3& value)
+void Renderer::setShaderVec3(ShaderHandle handle, const char *name, const Vec3& value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
     glUniform3f(glGetUniformLocation(handle, name), value.x, value.y, value.z);
 }
 
-void renderer::setShaderVec4(ShaderHandle handle, const char* name, const Vec4& value)
+void Renderer::setShaderVec4(ShaderHandle handle, const char* name, const Vec4& value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
     glUniform4f(glGetUniformLocation(handle, name), value.x, value.y, value.z, value.w);
 }
 
-void renderer::setShaderMat4(ShaderHandle handle, const char *name, const Mat4& value)
+void Renderer::setShaderMat4(ShaderHandle handle, const char *name, const Mat4& value)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
     glUniformMatrix4fv(glGetUniformLocation(handle, name), 1, GL_TRUE, &value.data[0][0]);
 }
 
-void renderer::setShaderTexture(ShaderHandle handle, const char *name, TextureHandle value, int slot)
+void Renderer::setShaderTexture(ShaderHandle handle, const char *name, TextureHandle value, int slot)
 {
     assert(s_currentHandle == handle && "Shader must be active before changing values.");
 

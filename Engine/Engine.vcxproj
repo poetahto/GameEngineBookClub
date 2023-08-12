@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config.h" />
     <ClInclude Include="containers\fixed_list.h" />
     <ClInclude Include="math\mat4.h" />
     <ClInclude Include="math\math_util.h" />
@@ -32,6 +33,7 @@
     <ClInclude Include="memory\memory_util.h" />
     <ClInclude Include="memory\pool_allocator.h" />
     <ClInclude Include="memory\stack_allocator.h" />
+    <ClInclude Include="platform\application.h" />
     <ClInclude Include="platform\windows_util.h" />
     <ClInclude Include="string_util.h" />
     <ClInclude Include="types.h" />
@@ -265,6 +267,7 @@
       <LibCompiled>true</LibCompiled>
       <AdditionalIncludeDirectories>;C:\Users\Daniel\Documents\Programming\C++\GameEngineBookClub\Engine\vcpkg_installed\x64-windows\x64-windows\include</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="platform\windows\windows_display.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -363,6 +366,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalUsingDirectories></AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(_ZVcpkgCurrentInstalledDir)include;.</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
