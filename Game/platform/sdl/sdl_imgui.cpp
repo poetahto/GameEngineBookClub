@@ -1,9 +1,8 @@
 ﻿#include <SDL2/SDL_events.h>
-
-#include "sdl_imgui.h"
+#include <SDL2/SDL_video.h>
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
-#include <SDL2/SDL_video.h>
+#include "platform/custom_imgui.h"
 
 int processEvent(void*, SDL_Event* event)
 {
@@ -11,13 +10,13 @@ int processEvent(void*, SDL_Event* event)
     return 0;
 }
 
-void ImGui::custom_init()
+void CustomImGui::init()
 {
     // We need to assume a window + context has been set up before us.
     SDL_GLContext context = SDL_GL_GetCurrentContext();
     SDL_Window* window = SDL_GL_GetCurrentWindow();
 
-    CreateContext();
+    ImGui::CreateContext();
     ImGui_ImplSDL2_InitForOpenGL(window, context);
     ImGui_ImplOpenGL3_Init();
 
@@ -25,22 +24,22 @@ void ImGui::custom_init()
     SDL_AddEventWatch(processEvent, nullptr);
 }
 
-void ImGui::custom_free()
+void CustomImGui::free()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
-    DestroyContext();
+    ImGui::DestroyContext();
 }
 
-void ImGui::custom_renderStart()
+void CustomImGui::renderStart()
 {
     ImGui_ImplSDL2_NewFrame();
     ImGui_ImplOpenGL3_NewFrame();
-    NewFrame();
+    ImGui::NewFrame();
 }
 
-void ImGui::custom_renderEnd()
+void CustomImGui::renderEnd()
 {
-    Render();
-    ImGui_ImplOpenGL3_RenderDrawData(GetDrawData());
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

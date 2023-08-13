@@ -4,7 +4,6 @@
 #include <SDL2/SDL.h>
 #include "math/vec2.h"
 #include "platform/application.h"
-#undef main
 
 static SDL_Window* g_window{nullptr};
 
@@ -68,6 +67,7 @@ void Application::setTitle(const char* title)
     SDL_SetWindowTitle(g_window, title);
 }
 
+// todo: vec2int for this.
 // Position Access
 Vec2 Application::getPosition()
 {
@@ -91,6 +91,7 @@ Vec2 Application::getSize()
     return Vec2{static_cast<f32>(width), static_cast<f32>(height)};
 }
 
+// todo: vec2int for this.
 void Application::setSize(Vec2 size)
 {
     s32 width = static_cast<s32>(size.x);

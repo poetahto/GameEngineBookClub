@@ -10,6 +10,8 @@ struct Mat4;
 struct Vec3;
 struct Vec4;
 
+// todo: not really happy w/ how this renderer platform layer came out, I feel like its too high level.
+// expose more low-level gd stuff, reference other abstraction libraries (sokol, veldrid)
 namespace Renderer
 {
     typedef u32 MeshHandle;

@@ -1,20 +1,20 @@
-#include <imgui.h>
-#include <unordered_map>
 #include <GL/glew.h>
-
+#include <imgui.h>
+#include <SDL2/SDL.h>
+#undef main // lil bit of weirdness, thanks SDL. We don't want your custom entrypoint right now.
+#include <unordered_map>
 #include "math/mat4.h"
+#include "math/rect.h"
+#include "math/vec2.h"
 #include "math/vec4.h"
 #include "rendering/mesh.h"
 #include "rendering/renderer.h"
 #include "rendering/shader.h"
-#include "SDL2/SDL.h"
-#include "sdl_imgui.h"
-#include "math/Rect.h"
-#include "math/vec2.h"
-#include "platform/application.h"
 #include "rendering/texture.h"
-#undef main
+#include "platform/application.h"
+#include "platform/custom_imgui.h"
 
+// todo: find better home for this logic, doesnt really need to be a class
 class Terrain
 {
 public:
@@ -78,19 +78,18 @@ private:
     Mesh* m_mesh;
 };
 
-
 int main()
 {
     // === Initialization ===
     Application::init();
     Renderer::init();
-    ImGui::custom_init();
+    CustomImGui::init();
 
     // === Game Loop ===
 
+    // todo: stop loading everything directly from files on disk, need better asset pipeline
     Shader shader = Shader::fromMaterial("test.material");
     Mesh mesh = Mesh::quad();
-
     Shader terrainShader = Shader::fromFiles("terrain.vert", "terrain.frag");
     Texture heightmap = Texture::fromFile("heightmap.ppm", Renderer::ImportSettings::fromFile("test.teximport"));
     f32 terrain_height = 25;
@@ -165,7 +164,7 @@ int main()
             }
         }
 
-        ImGui::custom_renderStart();
+        CustomImGui::renderStart();
 
         // Player logic.
         Mat4 world_to_view{};
@@ -201,8 +200,8 @@ int main()
         }
 
         // terrain logic
-        static Vec3 terrain_bottomColor{3/255.0f, 56/255.0f, 14/255.0f};
-        static Vec3 terrain_topColor{36/255.0f, 123/255.0f, 25/255.0f};
+        static Vec3 terrain_bottomColor{1/255.0f, 21/255.0f, 5/255.0f};
+        static Vec3 terrain_topColor{29/255.0f, 255/255.0f, 0/255.0f};
         static float terrain_uv_scale{0.025f};
         {
             ImGui::Begin("Terrain");
@@ -304,11 +303,12 @@ int main()
         terrain.draw();
 
         // This should always happen after scene is rendered.
-        ImGui::custom_renderEnd();
+        CustomImGui::renderEnd();
         Application::swapBuffers();
 
         // === TIME ===
 
+        // todo: move time to platform layer
         u64 frameEndTime = SDL_GetPerformanceCounter();
         deltaTime = static_cast<f32>(static_cast<f64>(frameEndTime - frameStartTime) / static_cast<f64>(
             SDL_GetPerformanceFrequency()));
@@ -322,8 +322,9 @@ int main()
 
     // === CLEANUP ===
 
-    ImGui::custom_free();
-    shader.free();
+    // todo: some opengl / imgui thing is throwing an error right here in cleanup when you click the X to close window, fix it.
+    CustomImGui::free();
+    shader.free(); // todo: this shouldn't happen here.
     mesh.free();
     Application::free();
     return 0;
