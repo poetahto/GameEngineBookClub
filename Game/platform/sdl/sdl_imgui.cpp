@@ -28,7 +28,6 @@ void CustomImGui::free()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
 }
 
 void CustomImGui::renderStart()

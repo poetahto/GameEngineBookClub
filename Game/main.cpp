@@ -49,13 +49,13 @@ public:
             for (s32 column = 0; column < width; column++)
             {
                 indices.push_back(row * width + column);
-                indices.push_back((row+ 1) * width + column);
+                indices.push_back((row + 1) * width + column);
             }
 
             indices.push_back(UINT_MAX);
         }
 
-        auto vertexFormat = std::vector<s32>{3,2};
+        auto vertexFormat = std::vector<s32>{3, 2};
 
         m_mesh = new Mesh{
             Renderer::VertexList::fromList(vertices),
@@ -84,6 +84,7 @@ int main()
     Application::init();
     Renderer::init();
     CustomImGui::init();
+    Input::setResizeHandler(Renderer::resize);
 
     // === Game Loop ===
 
@@ -94,7 +95,7 @@ int main()
     Texture heightmap = Texture::fromFile("heightmap.ppm", Renderer::ImportSettings::fromFile("test.teximport"));
     f32 terrain_height = 25;
     Texture terrain_texture = Texture::fromFile("terrain.ppm", Renderer::ImportSettings::fromFile("test.teximport"));
-    Terrain terrain {&heightmap, terrain_height};
+    Terrain terrain{&heightmap, terrain_height};
 
     bool wantsToQuit{false};
     f32 elapsedTime{};
@@ -108,60 +109,26 @@ int main()
         static f32 sensitivity{8};
 
         // gather input
+        Input::pollInput();
+        wantsToQuit = Input::wantsToQuit();
+
+        static bool mouseShown{true};
+
+        if (getKeyDown(Input::Escape))
         {
-            SDL_Event sdlEvent;
+            SDL_SetRelativeMouseMode(mouseShown ? SDL_TRUE : SDL_FALSE);
+            mouseShown = !mouseShown;
+        }
 
-            while (SDL_PollEvent(&sdlEvent) != 0)
-            // todo: i dont like this big switch, but idk if theres a better solution
-            {
-                if (sdlEvent.type == SDL_QUIT)
-                    wantsToQuit = true;
+        inputDirection.x = getAxis(Input::D, Input::A);
+        inputDirection.y = getAxis(Input::Space, Input::LeftShift);
+        inputDirection.z = getAxis(Input::W, Input::S);
 
-                if ((sdlEvent.type == SDL_KEYUP || sdlEvent.type == SDL_KEYDOWN) && sdlEvent.key.repeat == 0)
-                {
-                    if (sdlEvent.key.keysym.sym == SDLK_w)
-                        inputDirection.z += sdlEvent.key.state == SDL_PRESSED
-                                                ? 1
-                                                : -1;
-                    if (sdlEvent.key.keysym.sym == SDLK_s)
-                        inputDirection.z += sdlEvent.key.state == SDL_PRESSED
-                                                ? -1
-                                                : 1;
-                    if (sdlEvent.key.keysym.sym == SDLK_d)
-                        inputDirection.x += sdlEvent.key.state == SDL_PRESSED
-                                                ? 1
-                                                : -1;
-                    if (sdlEvent.key.keysym.sym == SDLK_a)
-                        inputDirection.x += sdlEvent.key.state == SDL_PRESSED
-                                                ? -1
-                                                : 1;
-                    if (sdlEvent.key.keysym.sym == SDLK_SPACE)
-                        inputDirection.y += sdlEvent.key.state == SDL_PRESSED
-                                                ? 1
-                                                : -1;
-                    if (sdlEvent.key.keysym.sym == SDLK_LSHIFT)
-                        inputDirection.y += sdlEvent.key.state == SDL_PRESSED
-                                                ? -1
-                                                : 1;
-                }
-
-                static bool mouseShown = true;
-
-                if (sdlEvent.type == SDL_KEYDOWN && sdlEvent.key.repeat == 0 && sdlEvent.key.keysym.sym == SDLK_ESCAPE)
-                {
-                    SDL_SetRelativeMouseMode(mouseShown ? SDL_TRUE : SDL_FALSE);
-                    mouseShown = !mouseShown;
-                }
-
-                if (sdlEvent.type == SDL_MOUSEMOTION && !mouseShown)
-                {
-                    inputRotation.x += static_cast<f32>(sdlEvent.motion.xrel) * (1/144.0f) * sensitivity * Math::DEG2RAD;
-                    inputRotation.y -= static_cast<f32>(sdlEvent.motion.yrel) * (1/144.0f) * sensitivity * Math::DEG2RAD;
-                }
-
-                if (sdlEvent.type == SDL_WINDOWEVENT && sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
-                    Renderer::resize(sdlEvent.window.data1, sdlEvent.window.data2);
-            }
+        if (!mouseShown)
+        {
+            Vec2 mouseDelta = Input::getMouseDelta() * (1 / 144.0f) * sensitivity * Math::DEG2RAD;
+            inputRotation.x += mouseDelta.x;
+            inputRotation.y += mouseDelta.y;
         }
 
         CustomImGui::renderStart();
@@ -200,8 +167,8 @@ int main()
         }
 
         // terrain logic
-        static Vec3 terrain_bottomColor{1/255.0f, 21/255.0f, 5/255.0f};
-        static Vec3 terrain_topColor{29/255.0f, 255/255.0f, 0/255.0f};
+        static Vec3 terrain_bottomColor{1 / 255.0f, 21 / 255.0f, 5 / 255.0f};
+        static Vec3 terrain_topColor{29 / 255.0f, 255 / 255.0f, 0 / 255.0f};
         static float terrain_uv_scale{0.025f};
         {
             ImGui::Begin("Terrain");
@@ -238,7 +205,7 @@ int main()
             static f32 view_fov{80};
             static Vec4 ortho_size{1, 1, 1, 1};
             static Vec3 backgroundColor{0, 0, 0};
-            static bool wireframe_on {false};
+            static bool wireframe_on{false};
 
             Vec2 size = Application::getSize();
 
@@ -248,7 +215,7 @@ int main()
             ImGui::DragFloat("FOV", &view_fov, 0.1f);
             ImGui::DragFloat4("ortho size", &ortho_size.data, 0.01f);
             if (ImGui::Checkbox("Wireframe", &wireframe_on))
-                glPolygonMode( GL_FRONT_AND_BACK, wireframe_on ? GL_LINE : GL_FILL );
+                glPolygonMode(GL_FRONT_AND_BACK, wireframe_on ? GL_LINE : GL_FILL);
             ImGui::End();
 
             view_to_clip = Mat4::perspective(0.1f, 1000, static_cast<s32>(size.x), static_cast<s32>(size.y), view_fov);
@@ -307,11 +274,9 @@ int main()
         Application::swapBuffers();
 
         // === TIME ===
-
-        // todo: move time to platform layer
-        u64 frameEndTime = SDL_GetPerformanceCounter();
+        u64 frameEndTime = Application::getPerformanceCounter();
         deltaTime = static_cast<f32>(static_cast<f64>(frameEndTime - frameStartTime) / static_cast<f64>(
-            SDL_GetPerformanceFrequency()));
+            Application::getPerformanceFrequency()));
 
         if (deltaTime >= 1) // clamp deltaTime if it goes too long
             deltaTime = 1;
@@ -322,7 +287,6 @@ int main()
 
     // === CLEANUP ===
 
-    // todo: some opengl / imgui thing is throwing an error right here in cleanup when you click the X to close window, fix it.
     CustomImGui::free();
     shader.free(); // todo: this shouldn't happen here.
     mesh.free();

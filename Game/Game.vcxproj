@@ -293,6 +293,7 @@
       </AdditionalUsingDirectories>
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
+    <ClCompile Include="platform\sdl\sdl_input.cpp" />
     <ClCompile Include="rendering\mesh.cpp" />
     <ClCompile Include="rendering\renderer_ogl.cpp">
       <RuntimeLibrary>MultiThreadedDebugDll</RuntimeLibrary>

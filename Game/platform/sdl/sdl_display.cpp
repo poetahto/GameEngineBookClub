@@ -123,4 +123,14 @@ void Application::setRefreshRate(s32 rate)
         showSdlError();
 }
 
+u64 Application::getPerformanceCounter()
+{
+    return SDL_GetPerformanceCounter();
+}
+
+u64 Application::getPerformanceFrequency()
+{
+    return SDL_GetPerformanceFrequency();
+}
+
 #endif // PLATFORM_SDL

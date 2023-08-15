@@ -34,7 +34,6 @@
     <ClInclude Include="memory\pool_allocator.h" />
     <ClInclude Include="memory\stack_allocator.h" />
     <ClInclude Include="platform\application.h" />
-    <ClInclude Include="platform\windows_util.h" />
     <ClInclude Include="string_util.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
