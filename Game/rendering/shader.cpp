@@ -69,6 +69,7 @@ std::unordered_map<std::string, MaterialPropertyApplier> s_applierTable
     }
 };
 
+// todo: this is fundamentally broken, cus property stuff needs to be reset before drawing every time.
 Shader Shader::fromMaterial(const char* materialFile)
 {
     /* Example material file:

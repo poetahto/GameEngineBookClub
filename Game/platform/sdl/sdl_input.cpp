@@ -48,7 +48,7 @@ void Input::pollInput()
 
         if (sdlEvent.type == SDL_MOUSEMOTION)
         {
-            g_mouseDelta.x = static_cast<f32>(sdlEvent.motion.xrel);
+            g_mouseDelta.x = static_cast<f32>(-sdlEvent.motion.xrel);
             g_mouseDelta.y = static_cast<f32>(-sdlEvent.motion.yrel);
             receivedMouseUpdate = true;
         }

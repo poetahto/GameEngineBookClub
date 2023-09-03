@@ -237,7 +237,7 @@ Mat4 Mat4::rotateX(f32 amount)
 
 Mat4 Mat4::rotateY(f32 amount)
 {
-    amount *= -1;
+    // amount *= -1;
     return Mat4
     {
         {
@@ -251,7 +251,7 @@ Mat4 Mat4::rotateY(f32 amount)
 
 Mat4 Mat4::rotateZ(f32 amount)
 {
-    amount *= -1;
+    // amount *= -1;
     return Mat4
     {
         {

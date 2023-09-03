@@ -10,6 +10,13 @@ Texture::Texture(const Renderer::TextureData& data, const Renderer::ImportSettin
 {
 }
 
+Texture::Texture(const Renderer::TextureData& data) :
+    handle {uploadTexture(data, Renderer::ImportSettings{})},
+    data {data},
+    importSettings({Renderer::ImportSettings{}})
+{
+}
+
 void Texture::free()
 {
     Renderer::deleteTexture(handle);
@@ -43,4 +50,10 @@ Texture Texture::fromFile(const char* file, const Renderer::ImportSettings& sett
     data.data = reinterpret_cast<u8*>(dataBuffer);
 
     return Texture{data, settings};
+}
+
+Texture Texture::fromFile(const char* file)
+{
+    auto settings = Renderer::ImportSettings{};
+    return fromFile(file, settings);
 }

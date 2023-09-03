@@ -92,15 +92,15 @@ int main()
     Shader shader = Shader::fromMaterial("test.material");
     Mesh mesh = Mesh::quad();
     Shader terrainShader = Shader::fromFiles("terrain.vert", "terrain.frag");
-    Texture heightmap = Texture::fromFile("heightmap.ppm", Renderer::ImportSettings::fromFile("test.teximport"));
+    Texture heightmap = Texture::fromFile("heightmap.ppm");
     f32 terrain_height = 25;
-    Texture terrain_texture = Texture::fromFile("terrain.ppm", Renderer::ImportSettings::fromFile("test.teximport"));
+    Texture terrain_texture = Texture::fromFile("terrain.ppm");
     Terrain terrain{&heightmap, terrain_height};
 
     bool wantsToQuit{false};
     f32 elapsedTime{};
     f32 deltaTime{};
-    u64 frameStartTime{SDL_GetPerformanceCounter()};
+    u64 frameStartTime{Application::getPerformanceCounter()};
 
     while (!wantsToQuit)
     {

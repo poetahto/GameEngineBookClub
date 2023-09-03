@@ -7,5 +7,6 @@ using namespace Math;
 bool Math::nearlyEqual(float a, float b)
 // those defaults are arbitrary and could be removed
 {
+    // i honestly gave up
     return std::abs(a - b) <= 0.00001f;
 }

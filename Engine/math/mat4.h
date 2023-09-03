@@ -41,7 +41,6 @@ struct Mat4
     static Mat4 orthographic(f32 near, f32 far, s32 screenWidth, s32 screenHeight, f32 size);
     static Mat4 orthographic(f32 near, f32 far, f32 top, f32 bottom, f32 left, f32 right);
     // todo: more ways to define rotations (probably from quaternion, and really overload them)
-    // - TRS matrix
 
     // === Constants ===
     static const Mat4 IDENTITY;
