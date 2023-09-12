@@ -378,11 +378,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="platform\custom_imgui.h" />
-    <ClInclude Include="rendering\mesh.h" />
-    <ClInclude Include="rendering\renderer.h" />
-    <ClInclude Include="rendering\shader.h" />
-    <ClInclude Include="rendering\texture.h" />
+    <ClInclude Include="platform\custom_imgui.hpp" />
+    <ClInclude Include="rendering\mesh.hpp" />
+    <ClInclude Include="rendering\renderer.hpp" />
+    <ClInclude Include="rendering\shader.hpp" />
+    <ClInclude Include="rendering\texture.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="terrain.frag" />

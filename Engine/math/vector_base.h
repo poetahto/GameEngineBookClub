@@ -1,8 +1,8 @@
 ﻿#ifndef VECTOR_H
 #define VECTOR_H
 
-#include "../types.h"
-#include "math_util.h"
+#include "..\types.hpp"
+#include "math_util.hpp"
 
 /**
  * \brief A templated base for vectors, allowing types and sizes to be swapped

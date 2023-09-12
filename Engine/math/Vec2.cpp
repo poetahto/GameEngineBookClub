@@ -1,5 +1,5 @@
-﻿#include "vec2.h"
-#include "../string_util.h"
+﻿#include "vec2.hpp"
+#include "..\string_util.hpp"
 
 // === Lifetime ===
 Vec2::Vec2(f32 x, f32 y) : x{x}, y{y}

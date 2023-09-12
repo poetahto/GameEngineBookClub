@@ -1,10 +1,10 @@
-﻿#include "shader.h"
+﻿#include "shader.hpp"
 
 #include <unordered_map>
 
-#include "string_util.h"
-#include "texture.h"
-#include "math/vec3.h"
+#include "..\..\Engine\string_util.hpp"
+#include "texture.hpp"
+#include "..\..\Engine\math\vec3.hpp"
 
 Shader::Shader(const char* vertexSource, const char* fragmentSource) :
     handle{Renderer::uploadShader(vertexSource, fragmentSource)}

@@ -1,6 +1,6 @@
-﻿#include "../string_util.h"
-#include "math_util.h"
-#include "vec3.h"
+﻿#include "..\string_util.hpp"
+#include "math_util.hpp"
+#include "vec3.hpp"
 
 // === Lifetime ===
 Vec3::Vec3(f32 x, f32 y, f32 z) : x {x}, y {y}, z{z}

@@ -1,4 +1,4 @@
-﻿#include "config.h"
+﻿#include "..\..\config.hpp"
 #ifdef PLATFORM_WIN32
 
 #include "math/Rect.h"

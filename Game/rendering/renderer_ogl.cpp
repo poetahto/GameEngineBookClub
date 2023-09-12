@@ -4,11 +4,11 @@
 #include <fstream>
 #include <string>
 
-#include "renderer.h"
-#include "math/vec2.h"
-#include "math/vec3.h"
-#include "math/vec4.h"
-#include "math/mat4.h"
+#include "renderer.hpp"
+#include "..\..\Engine\math\vec2.hpp"
+#include "..\..\Engine\math\vec3.hpp"
+#include "..\..\Engine\math\vec4.hpp"
+#include "..\..\Engine\math\mat4.hpp"
 
 using namespace Renderer;
 

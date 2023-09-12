@@ -1,5 +1,5 @@
 ﻿#include <algorithm>
-#include "math_util.h"
+#include "math_util.hpp"
 
 using namespace Math;
 

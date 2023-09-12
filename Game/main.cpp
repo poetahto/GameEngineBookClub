@@ -3,16 +3,16 @@
 #include <SDL2/SDL.h>
 #undef main // lil bit of weirdness, thanks SDL. We don't want your custom entrypoint right now.
 #include <unordered_map>
-#include "math/mat4.h"
-#include "math/rect.h"
-#include "math/vec2.h"
-#include "math/vec4.h"
-#include "rendering/mesh.h"
-#include "rendering/renderer.h"
-#include "rendering/shader.h"
-#include "rendering/texture.h"
-#include "platform/application.h"
-#include "platform/custom_imgui.h"
+#include "..\Engine\math\mat4.hpp"
+#include "..\Engine\math\rect.hpp"
+#include "..\Engine\math\vec2.hpp"
+#include "..\Engine\math\vec4.hpp"
+#include "rendering\mesh.hpp"
+#include "rendering\renderer.hpp"
+#include "rendering\shader.hpp"
+#include "rendering\texture.hpp"
+#include "..\Engine\platform\application.hpp"
+#include "platform\custom_imgui.hpp"
 
 // todo: find better home for this logic, doesnt really need to be a class
 class Terrain

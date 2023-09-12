@@ -1,5 +1,5 @@
-﻿#include "vec4.h"
-#include "../string_util.h"
+﻿#include "vec4.hpp"
+#include "..\string_util.hpp"
 
 Vec4::Vec4(f32 x, f32 y, f32 z, f32 w) : x{x}, y{y}, z{z}, w{w}
 {

@@ -19,25 +19,28 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config.h" />
-    <ClInclude Include="containers\fixed_list.h" />
-    <ClInclude Include="math\mat4.h" />
-    <ClInclude Include="math\math_util.h" />
-    <ClInclude Include="math\rect.h" />
-    <ClInclude Include="math\vec2.h" />
-    <ClInclude Include="math\vec3.h" />
-    <ClInclude Include="math\vec4.h" />
+    <ClInclude Include="config.hpp" />
+    <ClInclude Include="containers\fixed_list.hpp" />
+    <ClInclude Include="enum_flags.hpp" />
+    <ClInclude Include="logger.hpp" />
+    <ClInclude Include="math\mat4.hpp" />
+    <ClInclude Include="math\math_util.hpp" />
+    <ClInclude Include="math\rect.hpp" />
+    <ClInclude Include="math\vec2.hpp" />
+    <ClInclude Include="math\vec3.hpp" />
+    <ClInclude Include="math\vec4.hpp" />
     <ClInclude Include="math\vector_base.h" />
-    <ClInclude Include="memory.h" />
-    <ClInclude Include="memory\heap_allocator.h" />
-    <ClInclude Include="memory\memory_util.h" />
-    <ClInclude Include="memory\pool_allocator.h" />
-    <ClInclude Include="memory\stack_allocator.h" />
-    <ClInclude Include="platform\application.h" />
-    <ClInclude Include="string_util.h" />
-    <ClInclude Include="types.h" />
+    <ClInclude Include="memory.hpp" />
+    <ClInclude Include="memory\heap_allocator.hpp" />
+    <ClInclude Include="memory\memory_util.hpp" />
+    <ClInclude Include="memory\pool_allocator.hpp" />
+    <ClInclude Include="memory\stack_allocator.hpp" />
+    <ClInclude Include="platform\application.hpp" />
+    <ClInclude Include="string_util.hpp" />
+    <ClInclude Include="types.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="logger.cpp" />
     <ClCompile Include="math\mat4.cpp" />
     <ClCompile Include="math\math_util.cpp" />
     <ClCompile Include="math\rect.cpp" />
@@ -367,6 +370,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories></AdditionalUsingDirectories>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(_ZVcpkgCurrentInstalledDir)include;.</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>

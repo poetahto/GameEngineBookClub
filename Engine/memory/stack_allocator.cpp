@@ -1,7 +1,7 @@
 #include <cassert>
 #include <cstdio>
-#include "memory_util.h"
-#include "stack_allocator.h"
+#include "memory_util.hpp"
+#include "stack_allocator.hpp"
 
 using namespace memory;
 

@@ -1,9 +1,9 @@
-﻿#include "../string_util.h"
-#include "mat4.h"
+﻿#include "..\string_util.hpp"
+#include "mat4.hpp"
 
 #include <complex>
 
-#include "math_util.h"
+#include "math_util.hpp"
 #include "vector_base.h"
 
 using namespace Math;
