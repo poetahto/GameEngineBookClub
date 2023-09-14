@@ -1,4 +1,4 @@
-﻿#include "..\string_util.hpp"
+﻿#include "../string_util.hpp"
 #include "mat4.hpp"
 
 #include <complex>

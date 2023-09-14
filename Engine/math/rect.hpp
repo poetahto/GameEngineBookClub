@@ -1,7 +1,7 @@
 ﻿#ifndef RECT_H
 #define RECT_H
 
-#include "..\types.hpp"
+#include "../types.hpp"
 
 struct Rect
 {

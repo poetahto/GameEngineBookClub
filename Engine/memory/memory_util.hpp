@@ -1,7 +1,7 @@
 ﻿#ifndef MEMORY_UTIL_H
 #define MEMORY_UTIL_H
 
-#include "..\types.hpp"
+#include "../types.hpp"
 
 namespace memory
 {

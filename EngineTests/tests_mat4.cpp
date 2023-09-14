@@ -1,6 +1,6 @@
 ﻿#include <gtest/gtest.h>
-#include "..\Engine\math\mat4.hpp"
-#include "..\Engine\math\math_util.hpp"
+#include "../Engine/math/mat4.hpp"
+#include "../Engine/math/math_util.hpp"
 #include "math/vector_base.h"
 
 using namespace Math;

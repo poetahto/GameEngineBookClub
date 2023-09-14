@@ -2,7 +2,7 @@
 #include <SDL2/SDL_video.h>
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
-#include "..\custom_imgui.hpp"
+#include "../custom_imgui.hpp"
 
 int processEvent(void*, SDL_Event* event)
 {

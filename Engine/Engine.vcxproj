@@ -36,6 +36,11 @@
     <ClInclude Include="memory\pool_allocator.hpp" />
     <ClInclude Include="memory\stack_allocator.hpp" />
     <ClInclude Include="platform\application.hpp" />
+    <ClInclude Include="platform\file_system.hpp" />
+    <ClInclude Include="resources\resource.hpp" />
+    <ClInclude Include="resources\resource_manager.hpp" />
+    <ClInclude Include="resources\texture.hpp" />
+    <ClInclude Include="string_name.hpp" />
     <ClInclude Include="string_util.hpp" />
     <ClInclude Include="types.hpp" />
   </ItemGroup>
@@ -270,6 +275,8 @@
       <AdditionalIncludeDirectories>;C:\Users\Daniel\Documents\Programming\C++\GameEngineBookClub\Engine\vcpkg_installed\x64-windows\x64-windows\include</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="platform\windows\windows_display.cpp" />
+    <ClCompile Include="resources\resource_manager.cpp" />
+    <ClCompile Include="resources\texture.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -323,7 +330,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>

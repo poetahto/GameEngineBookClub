@@ -1,4 +1,4 @@
-﻿#include "..\string_util.hpp"
+﻿#include "../string_util.hpp"
 #include "math_util.hpp"
 #include "vec3.hpp"
 

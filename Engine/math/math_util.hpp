@@ -1,7 +1,7 @@
 ﻿#ifndef MATH_UTIL_H
 #define MATH_UTIL_H
 
-#include "..\types.hpp"
+#include "../types.hpp"
 
 namespace Math
 {

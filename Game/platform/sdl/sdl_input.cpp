@@ -1,8 +1,8 @@
 ﻿#include <SDL2/SDL_events.h>
 
-#include "..\..\..\Engine\types.hpp"
-#include "..\..\..\Engine\math\vec2.hpp"
-#include "..\..\..\Engine\platform\application.hpp"
+#include "../../../Engine/types.hpp"
+#include "../../../Engine/math/vec2.hpp"
+#include "../../../Engine/platform/application.hpp"
 
 Input::ResizeHandler g_resizeHandler{};
 bool g_wantsToQuit{};

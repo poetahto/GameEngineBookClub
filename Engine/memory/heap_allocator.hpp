@@ -1,7 +1,7 @@
 ﻿#ifndef HEAP_ALLOCATOR_H
 #define HEAP_ALLOCATOR_H
 
-#include "..\types.hpp"
+#include "../types.hpp"
 #include "memory_util.hpp"
 #include "pool_allocator.hpp"
 

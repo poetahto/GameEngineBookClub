@@ -1,7 +1,7 @@
 ﻿#ifndef MATRIX_H
 #define MATRIX_H
 
-#include "..\types.hpp"
+#include "../types.hpp"
 #include "vec3.hpp"
 
 struct Mat4

@@ -2,9 +2,9 @@
 
 #include <unordered_map>
 
-#include "..\..\Engine\string_util.hpp"
+#include "../../Engine/string_util.hpp"
 #include "texture.hpp"
-#include "..\..\Engine\math\vec3.hpp"
+#include "../../Engine/math/vec3.hpp"
 
 Shader::Shader(const char* vertexSource, const char* fragmentSource) :
     handle{Renderer::uploadShader(vertexSource, fragmentSource)}

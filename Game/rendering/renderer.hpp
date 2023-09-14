@@ -1,8 +1,8 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "..\..\Engine\containers\fixed_list.hpp"
-#include "..\..\Engine\platform\application.hpp"
+#include "../../Engine/containers/fixed_list.hpp"
+#include "../../Engine/platform/application.hpp"
 
 struct Shader;
 struct Vec2;

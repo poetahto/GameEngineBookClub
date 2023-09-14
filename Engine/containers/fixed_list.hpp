@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "..\types.hpp"
+#include "../types.hpp"
 
 template <class T>
 struct FixedList

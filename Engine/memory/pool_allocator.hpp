@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <cassert>
-#include "..\types.hpp"
+#include "../types.hpp"
 #include "memory_util.hpp"
 
 template <class TIndex>

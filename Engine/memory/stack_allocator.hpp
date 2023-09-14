@@ -1,7 +1,7 @@
 #ifndef STACK_ALLOCATOR_H
 #define STACK_ALLOCATOR_H
 
-#include "..\types.hpp"
+#include "../types.hpp"
 #include "memory_util.hpp"
 
 /**

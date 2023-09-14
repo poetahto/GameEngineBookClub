@@ -1,7 +1,7 @@
 ﻿#ifndef VECTOR_H
 #define VECTOR_H
 
-#include "..\types.hpp"
+#include "../types.hpp"
 #include "math_util.hpp"
 
 /**

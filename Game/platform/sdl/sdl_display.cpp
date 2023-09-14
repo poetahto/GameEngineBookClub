@@ -1,9 +1,9 @@
-﻿#include "..\..\..\Engine\config.hpp"
+﻿#include "../../../Engine/config.hpp"
 #ifdef PLATFORM_SDL
 
 #include <SDL2/SDL.h>
-#include "..\..\..\Engine\math\vec2.hpp"
-#include "..\..\..\Engine\platform\application.hpp"
+#include "../../../Engine/math/vec2.hpp"
+#include "../../../Engine/platform/application.hpp"
 
 static SDL_Window* g_window{nullptr};
 

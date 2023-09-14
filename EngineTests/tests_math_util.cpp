@@ -1,5 +1,5 @@
 ﻿#include <gtest/gtest.h>
-#include "..\Engine\math\math_util.hpp"
+#include "../Engine/math/math_util.hpp"
 
 using namespace Math;
 

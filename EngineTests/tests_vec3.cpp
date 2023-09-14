@@ -1,5 +1,5 @@
 ﻿#include <gtest/gtest.h>
-#include "..\Engine\math\vec3.hpp"
+#include "../Engine/math/vec3.hpp"
 
 using namespace testing;
 
