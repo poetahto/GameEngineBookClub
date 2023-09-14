@@ -22,15 +22,20 @@ TextureWrapping parseTextureWrapping(std::string_view value);
 
 struct Texture : Resource
 {
-    TextureWrapping wrappingX;
-    TextureWrapping wrappingY;
-    TextureFiltering textureFiltering;
-    TextureFiltering mipmapFiltering;
-    ColorFormat format;
-    s32 width;
-    s32 height;
-    s32 channels;
-    u8* pixelData;
+    Texture()
+    {
+        type = "Texture";
+    }
+
+    TextureWrapping wrappingX {TextureWrapping::Repeat};
+    TextureWrapping wrappingY {TextureWrapping::Repeat};
+    TextureFiltering textureFiltering {TextureFiltering::Bilinear};
+    TextureFiltering mipmapFiltering {TextureFiltering::Bilinear};
+    ColorFormat format {ColorFormat::Rgba};
+    s32 width {};
+    s32 height {};
+    s32 channels {};
+    u8* pixelData {};
 
     [[nodiscard]] s32 pixelCount() const
     {

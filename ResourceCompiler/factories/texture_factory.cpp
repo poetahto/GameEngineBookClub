@@ -7,10 +7,10 @@ void TextureFactory::writeTexture(const Texture& texture, const char* fileName)
 {
     nlohmann::json settings{};
     writeResourceSettings(texture, settings);
-    settings["MipmapFiltering"] = getDisplayName(texture.mipmapFiltering);
+    settings["TextureMipmapFiltering"] = getDisplayName(texture.mipmapFiltering);
     settings["TextureFiltering"] = getDisplayName(texture.textureFiltering);
-    settings["WrappingX"] = getDisplayName(texture.wrappingX);
-    settings["WrappingY"] = getDisplayName(texture.wrappingY);
+    settings["TextureWrappingX"] = getDisplayName(texture.wrappingX);
+    settings["TextureWrappingY"] = getDisplayName(texture.wrappingY);
 
     std::fstream settingsFile = openSettingsFile(fileName);
     settingsFile << std::setw(4) << settings;
@@ -38,10 +38,10 @@ Texture* readTexture(const char* fileName)
     settingsFile.close();
 
     applyResourceSettings(texture, settings);
-    texture->mipmapFiltering = parseTextureFiltering(settings["MipmapFiltering"]);
+    texture->mipmapFiltering = parseTextureFiltering(settings["TextureMipmapFiltering"]);
     texture->textureFiltering = parseTextureFiltering(settings["TextureFiltering"]);
-    texture->wrappingX = parseTextureWrapping(settings["WrappingX"]);
-    texture->wrappingY = parseTextureWrapping(settings["WrappingY"]);
+    texture->wrappingX = parseTextureWrapping(settings["TextureWrappingX"]);
+    texture->wrappingY = parseTextureWrapping(settings["TextureWrappingY"]);
 
     std::fstream binaryFile = openBinaryFile(fileName);
 

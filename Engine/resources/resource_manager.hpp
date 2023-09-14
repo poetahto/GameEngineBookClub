@@ -22,26 +22,6 @@ struct ResourceHandle
     const T* data;
 };
 
-class AssetParser
-{
-    virtual bool canHandle(const char* extension) = 0;
-
-};
-
-struct AssetPackage
-{
-    void add();
-};
-
-struct AssetData
-{
-    std::string json;
-    std::vector<char> binaryBlob;
-
-    static AssetData find(const char* packagePath, StringName name);
-    static AssetData find(FileSystem::File file, StringName name);
-};
-
 /**
  * \brief An abstract template that can be specialized to define
  * strategies for resource creation and deletion.
