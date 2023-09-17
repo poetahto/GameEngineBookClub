@@ -8,7 +8,7 @@ std::filesystem::path BINARY_FILE_DIR = "resources/data";
 std::fstream openFile(std::string_view fileName, std::ios::openmode openMode)
 {
     std::fstream fileStream{};
-    fileStream.open(fileName, openMode | std::ios::in | std::ios::out | std::ios::trunc);
+    fileStream.open(fileName, openMode | std::ios::in | std::ios::out);
 
     if (!fileStream.is_open())
         std::cerr << "Failed to open file " << fileName << std::endl;
@@ -33,9 +33,14 @@ std::filesystem::path getBinaryFilePath(std::string_view fileName)
     return BINARY_FILE_DIR / path.filename() += ".bin";
 }
 
-std::fstream openBinaryFile(std::string_view fileName)
+std::fstream openBinaryFile(std::string_view fileName, bool isWriting)
 {
-    return openFile(getBinaryFilePath(fileName).string(), std::ios::binary);
+    std::ios::openmode openMode {std::ios::binary};
+
+    if (isWriting)
+        openMode |= std::ios::trunc;
+
+    return openFile(getBinaryFilePath(fileName).string(), openMode);
 }
 
 void applyResourceSettings(Resource* resource, const nlohmann::json& settings)

@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "asset_importer.h"
+#include "..\resource_importer.hpp"
 
-class StbImageImporter final : public AssetImporter
+class StbImageImporter final : public ResourceImporter
 {
 public:
     std::unordered_set<std::string_view> supportedExtensions() override;

@@ -113,6 +113,7 @@
       <AdditionalIncludeDirectories>.;C:\Users\Daniel\Documents\Programming\C++\GameEngineBookClub\Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

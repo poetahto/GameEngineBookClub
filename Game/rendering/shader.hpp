@@ -4,7 +4,7 @@
 #include "renderer.hpp"
 
 struct Vec2;
-struct Texture;
+struct GameTexture;
 
 struct Shader
 {
@@ -26,7 +26,7 @@ struct Shader
     void setVec3(const char* name, const Vec3& value);
     void setVec4(const char* name, const Vec4& value);
     void setMat4(const char* name, const Mat4& value);
-    void setTexture(const char* name, const Texture& value, int slot = 0);
+    void setTexture(const char* name, const GameTexture& value, int slot = 0);
     Renderer::ShaderHandle handle;
 };
 

@@ -14,7 +14,7 @@ std::filesystem::path getSettingsFilePath(std::string_view fileName);
 std::fstream openSettingsFile(std::string_view fileName);
 
 std::filesystem::path getBinaryFilePath(std::string_view fileName);
-std::fstream openBinaryFile(std::string_view fileName);
+std::fstream openBinaryFile(std::string_view fileName, bool isWriting);
 
 void applyResourceSettings(Resource* resource, const nlohmann::json& settings);
 void writeResourceSettings(const Resource& resource, nlohmann::json& settings);

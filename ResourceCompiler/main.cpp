@@ -1,13 +1,16 @@
 #include <iostream>
 #include <fstream>
-#include <unordered_set>
+#include <unordered_map>
 #include <nlohmann/json.hpp>
 #include <filesystem>
 #include "math/vec3.hpp"
-#include "resources/texture.hpp"
-#include "asset_importer.h"
+#include "resource_importer.hpp"
+#include "logger.hpp"
+#include "resource_factory.hpp"
 #include "factories/factory_util.h"
 #include "importers/stb_image_importer.h"
+#include "string_name.hpp"
+#include "factories/texture_factory.h"
 
 using namespace std;
 using namespace std::filesystem;
@@ -17,20 +20,76 @@ int main(int argc, char* argv[])
     // One arguments = build dir, build the package file
     if (argc == 2)
     {
-        path buildDir {argv[1]};
-        path settingsDir {buildDir / "settings"};
-        path binaryDir {buildDir / "data"};
+        path buildDir{argv[1]};
+        SETTINGS_FILE_DIR = buildDir / "settings";
+        BINARY_FILE_DIR = buildDir / "data";
+
+        std::vector<ResourceFactory*> factories{
+            new TextureFactory{},
+        };
 
         // desired output: one big package file. header = resource name hashes -> resource offset
         // step 1: calculate header size (key-values for each resource)
         //   - stringHash size (u64)
         //   - resource offset (size_t)
         //   - total header size = sizeof(stringHash + size_t struct) * resource files
+
+        std::unordered_map<StringName::Hash, size_t> hashToOffset;
+        size_t assetCount{};
+
+        for (directory_entry entry : recursive_directory_iterator{SETTINGS_FILE_DIR})
+            assetCount++;
+
+        size_t headerSize{(sizeof(StringName::Hash) + sizeof(size_t)) * assetCount + sizeof(size_t)};
+        Logger::log("{} bytes reserved for header.", headerSize);
+
         // step 2: loop through all settings + data files and create memory reps, and append to file (storing name hash -> pos in dict)
         //   - factories[RESOURCE_TYPE]->serialize(const char* fileName)
+
+        std::fstream packageFile{};
+        packageFile.open(buildDir / "resources.pak", std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc);
+        packageFile.seekg(static_cast<std::streamoff>(headerSize));
+
+        if (!packageFile.is_open())
+            Logger::log_error("Failed to open package file!");
+
+        for (const directory_entry& entry : recursive_directory_iterator{SETTINGS_FILE_DIR})
+        {
+            nlohmann::json settings{};
+            std::fstream settingsFile{};
+            settingsFile.open(entry.path());
+            settingsFile >> settings;
+            settingsFile.close();
+
+            for (ResourceFactory* factory : factories)
+            {
+                std::string type = settings["ResourceType"];
+                std::string name = settings["ResourceName"];
+
+                if (factory->canSerialize(type.c_str()))
+                {
+                    Logger::log("{} is being serialized", entry.path().string());
+                    StringName::Hash hash{StringName::createHash(name.c_str())};
+                    hashToOffset.emplace(hash, packageFile.tellg());
+                    factory->serialize(entry.path().stem().string().c_str(), packageFile);
+                }
+            }
+        }
+
         // step 3: insert the generated dict into the reserved header
-        // (runtime) step 4: at startup, load the dictionary into memory
-        // (runtime) step 5: when request comes in, look up offset in dict and return the resource from mem.
+        packageFile.seekg(0);
+        BinaryStreamBuilder builder{&packageFile};
+        builder.writeFixed(assetCount);
+
+        for (auto [hash, offset] : hashToOffset)
+        {
+            Logger::log("Hash: {}, Offset: {}", hash, offset);
+
+            builder.writeFixed(hash)
+                   .writeFixed(offset);
+        }
+
+        packageFile.close();
 
         return 0;
     }
@@ -38,20 +97,20 @@ int main(int argc, char* argv[])
     // Two arguments = source and build dir, create resource files
     if (argc == 3)
     {
-        path sourceDir {argv[1]};
-        path buildDir {argv[2]};
+        path sourceDir{argv[1]};
+        path buildDir{argv[2]};
         SETTINGS_FILE_DIR = buildDir / "settings";
         BINARY_FILE_DIR = buildDir / "data";
 
         cout << "source: " << sourceDir << ", build: " << buildDir << endl;
 
-        vector<AssetImporter*> importers {
-            new StbImageImporter {},
+        vector<ResourceImporter*> importers{
+            new StbImageImporter{},
         };
 
-        for (path file : directory_iterator{sourceDir})
+        for (path file : recursive_directory_iterator{sourceDir})
         {
-            for (AssetImporter* importer : importers)
+            for (ResourceImporter* importer : importers)
             {
                 if (importer->supportedExtensions().contains(file.extension().string()))
                 {
@@ -67,83 +126,3 @@ int main(int argc, char* argv[])
     cerr << "usage: [source dir] [build dir]";
     return 1;
 }
-
-namespace ResourceDatabase
-{
-    /* todo: types to support
-     * todo: should be extendable by the game?
-     * 1. shaders
-     * 2. textures
-     * 3. materials?
-     * 4. meshes
-     *
-     * # workflow:
-     * ## authoring time
-     * - preprocess (assets are given additional import setting files)
-     * ## compile time
-     * - export (many asset formats are converted into a binary blob that the engine can load without processing)
-     * ## runtime
-     * - lookup (create an in-memory representation of an asset from its unique id)
-     *
-     * preprocessing needs to know what additional settings the runtime env wants
-     * exporting needs to know how the runtime wants files layed out in memory
-     *
-     * need: memory layout for resource, deserialize from blob, serialize into blob
-     */
-
-    class ResourceLoader
-    {
-    public:
-        std::unordered_set<const char*> getSupportedExtensions();
-        void createDefaultImportSettings(nlohmann::json& settings);
-        void serialize(std::ostream stream, const nlohmann::json& settings);
-        void* deserialize(std::istream stream);
-    };
-
-    class ResourceDatabase
-    {
-        std::vector<ResourceLoader> m_resourceLoaders;
-
-    public:
-        void preprocess(const char* fileName)
-        {
-            const char* fileExtension;
-
-            for (ResourceLoader loader : m_resourceLoaders)
-            {
-                if (loader.getSupportedExtensions().contains(fileExtension))
-                {
-                    nlohmann::json settings;
-                    loader.createDefaultImportSettings(settings);
-                    std::ofstream settingsFile;
-                    settingsFile << settings;
-                    break;
-                }
-            }
-        }
-
-        void compile(const char* folderName, const char* outputName)
-        {
-            std::vector<const char*> filesToCompile;
-            std::ofstream outputStream;
-
-            for (const char* fileName : filesToCompile)
-            {
-                const char* fileExtension;
-
-                for (ResourceLoader loader : m_resourceLoaders)
-                {
-                    if (loader.getSupportedExtensions().contains(fileExtension))
-                    {
-                        std::ifstream settingsStream;
-                        nlohmann::json settings;
-                        settingsStream >> settings;
-                        break;
-                    }
-                }
-            }
-        }
-
-        void lookup(const char* packageName, u32 assetId);
-    };
-} // namespace ResourceDatabase

@@ -1,6 +1,9 @@
 ﻿#pragma once
 
+#include <string_view>
 #include <iostream>
+#include <fstream>
+#include <vector>
 
 /**
  * \brief A wrapper around a file stream that manages reading and writing of common data types.
@@ -14,7 +17,7 @@ public:
 
     explicit BinaryStreamBuilder(std::string_view fileName) : m_stream{new std::fstream{}}, m_managedStream{true}
     {
-        m_stream->open(fileName, std::ios::binary | std::ios::in | std::ios::out);
+        m_stream->open(fileName.data(), std::ios::binary | std::ios::in | std::ios::out);
 
         if (!m_stream->is_open())
             std::cerr << "Failed to open file " << fileName << "!" << std::endl;

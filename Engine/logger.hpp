@@ -4,6 +4,7 @@
 // Global logging utilities.
 // TODO: serialize logging info, like the masks, and write logs to a file? Also, provide dear ImGui integration for managing the masks, and viewing logs in-game
 // todo: i dont like having to leak all these headers in something as global as logging...
+#include <string_view>
 #include <unordered_map>
 #include <iostream>
 #include <format>

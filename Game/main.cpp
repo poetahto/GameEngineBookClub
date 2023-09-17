@@ -2,8 +2,9 @@
 #include <imgui.h>
 #include <SDL2/SDL.h>
 #include <unordered_map>
+
+#include "resource_manager.hpp"
 #include "math/mat4.hpp"
-#include "math/rect.hpp"
 #include "math/vec2.hpp"
 #include "math/vec4.hpp"
 #include "rendering/mesh.hpp"
@@ -12,13 +13,14 @@
 #include "rendering/texture.hpp"
 #include "platform/application.hpp"
 #include "platform/custom_imgui.hpp"
+#include "string_name.hpp"
 #undef main // lil bit of weirdness, thanks SDL. We don't want your custom entrypoint right now.
 
 // todo: find better home for this logic, doesnt really need to be a class
 class Terrain
 {
 public:
-    explicit Terrain(Texture* heightmap, f32 heightScale)
+    explicit Terrain(GameTexture* heightmap, f32 heightScale)
     {
         s32 width = heightmap->data.width;
         s32 height = heightmap->data.height;
@@ -89,12 +91,21 @@ int main()
     // === Game Loop ===
 
     // todo: stop loading everything directly from files on disk, need better asset pipeline
+    ResourceManager resourceManager {"resources.pak"};
+    ResourceHandle<Texture> test = resourceManager.load<Texture>("source\\terrain.ppm"_sn);
+    Renderer::TextureData testTexData {
+        .format = Renderer::TextureData::Rgb,
+        .width = test.data->width,
+        .height = test.data->height,
+        .stride = test.data->channels,
+        .data = test.data->pixelData
+    };
     Shader shader = Shader::fromMaterial("test.material");
     Mesh mesh = Mesh::quad();
     Shader terrainShader = Shader::fromFiles("terrain.vert", "terrain.frag");
-    Texture heightmap = Texture::fromFile("heightmap.ppm");
+    GameTexture heightmap = GameTexture::fromFile("heightmap.ppm");
     f32 terrain_height = 25;
-    Texture terrain_texture = Texture::fromFile("terrain.ppm");
+    GameTexture terrain_texture {testTexData};
     Terrain terrain{&heightmap, terrain_height};
 
     bool wantsToQuit{false};

@@ -3,13 +3,13 @@
 
 #include "renderer.hpp"
 
-struct Texture
+struct GameTexture
 {
-    Texture(const Renderer::TextureData& data, const Renderer::ImportSettings& settings);
-    explicit Texture(const Renderer::TextureData& data);
+    GameTexture(const Renderer::TextureData& data, const Renderer::ImportSettings& settings);
+    explicit GameTexture(const Renderer::TextureData& data);
     void free();
-    static Texture fromFile(const char* file, const Renderer::ImportSettings& settings);
-    static Texture fromFile(const char* file);
+    static GameTexture fromFile(const char* file, const Renderer::ImportSettings& settings);
+    static GameTexture fromFile(const char* file);
 
     Renderer::TextureHandle handle;
     Renderer::TextureData data;

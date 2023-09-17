@@ -3,26 +3,26 @@
 #include <fstream>
 #include <string>
 
-Texture::Texture(const Renderer::TextureData& data, const Renderer::ImportSettings& settings) :
+GameTexture::GameTexture(const Renderer::TextureData& data, const Renderer::ImportSettings& settings) :
     handle {uploadTexture(data, settings) },
     data {data},
     importSettings{settings}
 {
 }
 
-Texture::Texture(const Renderer::TextureData& data) :
+GameTexture::GameTexture(const Renderer::TextureData& data) :
     handle {uploadTexture(data, Renderer::ImportSettings{})},
     data {data},
     importSettings({Renderer::ImportSettings{}})
 {
 }
 
-void Texture::free()
+void GameTexture::free()
 {
     Renderer::deleteTexture(handle);
 }
 
-Texture Texture::fromFile(const char* file, const Renderer::ImportSettings& settings)
+GameTexture GameTexture::fromFile(const char* file, const Renderer::ImportSettings& settings)
 {
     std::ifstream fileStream {};
     fileStream.open(file, std::ifstream::in | std::ifstream::binary);
@@ -49,10 +49,10 @@ Texture Texture::fromFile(const char* file, const Renderer::ImportSettings& sett
     fileStream.read(dataBuffer, data.getDataLength());
     data.data = reinterpret_cast<u8*>(dataBuffer);
 
-    return Texture{data, settings};
+    return GameTexture{data, settings};
 }
 
-Texture Texture::fromFile(const char* file)
+GameTexture GameTexture::fromFile(const char* file)
 {
     auto settings = Renderer::ImportSettings{};
     return fromFile(file, settings);

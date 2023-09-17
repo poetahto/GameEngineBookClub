@@ -4,9 +4,13 @@
 // todo: support for async loading
 // todo: singleton might make multithreading bad? we do really only want one instance of stuff loaded though. just go async if you want to avoid blocking
 
+#include <unordered_map>
+
+#include "binary_stream_builder.h"
 #include "logger.hpp"
 #include "types.hpp"
 #include "string_name.hpp"
+#include "texture.hpp"
 #include "platform/file_system.hpp"
 
 class ResourceManager;
@@ -23,38 +27,31 @@ struct ResourceHandle
 };
 
 /**
- * \brief An abstract template that can be specialized to define
- * strategies for resource creation and deletion.
- * \tparam T The type of resource that is handled.
- */
-template <typename T>
-class ResourceFactory
-{
-    T* load(void* binaryData)
-    {
-        Logger::log_error("Failed to find resource specialization!");
-        return nullptr;
-    }
-
-    void unload(T* resource)
-    {
-        Logger::log_error("Failed to find resource specialization!");
-    }
-
-    static ResourceFactory getInstance()
-    {
-        Logger::log_error("Failed to find resource specialization!");
-        return nullptr;
-    }
-};
-
-/**
  * \brief A system that keeps track of loaded resources and
  * serves them by hashed string ID's.
  */
 class ResourceManager
 {
 public:
+    ResourceManager(const char* packageFile) : m_packageFile{packageFile}
+    {
+        std::fstream packageFileStream {};
+        packageFileStream.open(packageFile, std::ios::binary | std::ios::in);
+        size_t assetCount {};
+
+        BinaryStreamBuilder builder {&packageFileStream};
+        builder.readFixed(&assetCount);
+
+        for (size_t i {0}; i < assetCount; i++)
+        {
+            StringName::Hash hash {};
+            size_t offset {};
+            builder.readFixed(&hash);
+            builder.readFixed(&offset);
+            m_resourceOffsetLookup.emplace(hash, offset);
+        }
+    }
+
     template <typename T>
     ResourceHandle<T> load(StringName resourceName)
     {
@@ -65,15 +62,23 @@ public:
         if (m_loadedResourceTable.contains(resourceName))
         {
             // Someone else is already using this resource, so we can share it with them.
-            result.data = static_cast<T*>(m_loadedResourceTable[resourceName].data);
+            result.data = static_cast<const T*>(m_loadedResourceTable[resourceName].data);
             m_loadedResourceTable[resourceName].referenceCount++;
         }
         else
         {
             // We are the first user of this resource, so construct it and cache it.
-            ResourceFactory<T> factory = ResourceFactory<T>::getInstance();
-            T* resource = factory.load();
-            result.data = resource;
+            size_t offset = m_resourceOffsetLookup[resourceName.hash];
+            std::fstream packageFileStream {};
+            packageFileStream.open(m_packageFile, std::ios::binary | std::ios::in);
+            packageFileStream.seekg(offset);
+            result.data = readResourceFrom<T>(packageFileStream);
+            packageFileStream.close();
+
+            LoadedResource resource;
+            resource.data = result.data;
+            resource.referenceCount = 1;
+
             m_loadedResourceTable.emplace(resourceName, resource);
         }
 
@@ -90,8 +95,6 @@ public:
             if (m_loadedResourceTable[resourceName].referenceCount == 0)
             {
                 // Nobody else is using this resource, so fully unload it.
-                ResourceFactory<T> factory = ResourceFactory<T>::getInstance();
-                factory.unload(static_cast<T*>(m_loadedResourceTable[resourceName].data));
                 m_loadedResourceTable.erase(resourceName);
             }
         }
@@ -104,10 +107,12 @@ public:
 private:
     struct LoadedResource
     {
-        void* data;
+        const void* data;
         u32 referenceCount;
     };
 
+    const char* m_packageFile {};
+    std::unordered_map<StringName::Hash, size_t> m_resourceOffsetLookup{};
     std::unordered_map<StringName, LoadedResource> m_loadedResourceTable{};
 };
 

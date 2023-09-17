@@ -1,10 +1,20 @@
 ﻿#pragma once
 
+#include "resource_factory.hpp"
 #include "resources/texture.hpp"
 
-namespace TextureFactory
+class TextureFactory final : public ResourceFactory
 {
-    void writeTexture(const Texture& texture, const char* fileName);
-    Texture* readTexture(const char* fileName);
+public:
+    void serialize(const char* fileName, std::fstream& packageFile) override;
+    bool canSerialize(const char* type) override;
 
-} // namespace TextureFactory
+    static void writeTexture(const Texture& texture, const char* fileName);
+};
+
+// namespace TextureFactory
+// {
+//     void writeTexture(const Texture& texture, const char* fileName);
+//     Texture* readTexture(const char* fileName);
+//
+// } // namespace TextureFactory

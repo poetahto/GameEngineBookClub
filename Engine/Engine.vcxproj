@@ -37,6 +37,8 @@
     <ClInclude Include="memory\stack_allocator.hpp" />
     <ClInclude Include="platform\application.hpp" />
     <ClInclude Include="platform\file_system.hpp" />
+    <ClInclude Include="platform\windows\windows_util.hpp" />
+    <ClInclude Include="resources\binary_stream_builder.h" />
     <ClInclude Include="resources\resource.hpp" />
     <ClInclude Include="resources\resource_manager.hpp" />
     <ClInclude Include="resources\texture.hpp" />
@@ -275,8 +277,10 @@
       <AdditionalIncludeDirectories>;C:\Users\Daniel\Documents\Programming\C++\GameEngineBookClub\Engine\vcpkg_installed\x64-windows\x64-windows\include</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="platform\windows\windows_display.cpp" />
+    <ClCompile Include="platform\windows\windows_file_system.cpp" />
     <ClCompile Include="resources\resource_manager.cpp" />
     <ClCompile Include="resources\texture.cpp" />
+    <ClCompile Include="string_name.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

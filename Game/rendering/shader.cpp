@@ -49,7 +49,7 @@ void texturePropertyApplier(const char* name, const std::string& rawValue, Shade
     std::getline(stream, importFile, ' ');
     Renderer::ImportSettings settings = Renderer::ImportSettings::fromFile(importFile.c_str());
 
-    Texture texture = Texture::fromFile(textureFile.c_str(), settings);
+    GameTexture texture = GameTexture::fromFile(textureFile.c_str(), settings);
 
     std::string textureIndex;
     std::getline(stream, textureIndex);
@@ -183,7 +183,7 @@ void Shader::setMat4(const char* name, const Mat4& value)
     Renderer::setShaderMat4(handle, name, value);
 }
 
-void Shader::setTexture(const char* name, const Texture& value, int slot)
+void Shader::setTexture(const char* name, const GameTexture& value, int slot)
 {
     Renderer::setShaderTexture(handle, name, value.handle, slot);
 }
