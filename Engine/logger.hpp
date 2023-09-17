@@ -14,16 +14,19 @@ namespace Logger
 {
     // What the subject of this log message relates to. Messages can be filtered by this state.
     ENUM_FLAGS(Channel)
+
     enum class Channel
     {
         None = 0,
         All = INT_MAX,
         General = 1 << 0,
         Rendering = 1 << 1,
+        Resources = 1 << 2,
     };
 
     // The importance of this log message's visibility. Messages can be filtered by this state.
     ENUM_FLAGS(Severity)
+
     enum class Severity
     {
         None = 0,
@@ -65,75 +68,77 @@ namespace Logger
     Channel getDefaultChannel();
 
     // Core logging logic (everything else calls into this).
-    template<typename... Args>
+    template <typename... Args>
     void log(Channel channel, Severity severity, FormatString format, Args&&... args)
     {
-        static std::unordered_map<Severity, const char*> severityNameLookup {
-                {
-                        {Severity::Error, "Error"},
-                        {Severity::Warning, "Warning"},
-                        {Severity::Info, "Info"},
-                }
+        static std::unordered_map<Severity, const char*> severityNameLookup{
+            {
+                {Severity::Error, "Error"},
+                {Severity::Warning, "Warning"},
+                {Severity::Info, "Info"},
+            }
         };
 
-        static std::unordered_map<Channel, const char*> channelNameLookup {
-                {
-                        {Channel::General, "General"},
-                        {Channel::Rendering, "Rendering"},
-                }
+        static std::unordered_map<Channel, const char*> channelNameLookup{
+            {
+                {Channel::General, "General"},
+                {Channel::Rendering, "Rendering"},
+                {Channel::Resources, "Resources"}
+            }
         };
 
         if (shouldShow(channel) && shouldShow(severity))
         {
-            const char* severityName {severityNameLookup[severity]};
-            const char* channelName {channelNameLookup[channel]};
-            std::cout << std::format("[{}:{}] ", severityName, channelName) << std::vformat(format, std::make_format_args(args...)) << std::endl;
+            const char* severityName{severityNameLookup[severity]};
+            const char* channelName{channelNameLookup[channel]};
+            std::cout << std::format("[{}:{}] ", severityName, channelName) << std::vformat(
+                format, std::make_format_args(args...)) << std::endl;
         }
     }
 
-    template<typename... Args>
+    template <typename... Args>
     void log_info(Channel channel, FormatString format, Args&&... args)
     {
         log(channel, Severity::Info, format, args...);
     }
 
-    template<typename... Args>
+    template <typename... Args>
     void log_warning(Channel channel, FormatString format, Args&&... args)
     {
         log(channel, Severity::Warning, format, args...);
     }
 
-    template<typename... Args>
+    template <typename... Args>
     void log_error(Channel channel, FormatString format, Args&&... args)
     {
         log(channel, Severity::Error, format, args...);
     }
 
-    template<typename... Args>
+    template <typename... Args>
     void log(Severity severity, FormatString format, Args&&... args)
     {
         log(getDefaultChannel(), severity, format, args...);
     }
 
-    template<typename... Args>
+    template <typename... Args>
     void log_info(FormatString format, Args&&... args)
     {
         log(getDefaultChannel(), Severity::Info, format, args...);
     }
 
-    template<typename... Args>
+    template <typename... Args>
     void log_warning(FormatString format, Args&&... args)
     {
         log(getDefaultChannel(), Severity::Warning, format, args...);
     }
 
-    template<typename... Args>
+    template <typename... Args>
     void log_error(FormatString format, Args&&... args)
     {
         log(getDefaultChannel(), Severity::Error, format, args...);
     }
 
-    template<typename... Args>
+    template <typename... Args>
     void log(FormatString format, Args&&... args)
     {
         log(getDefaultChannel(), Severity::Info, format, args...);

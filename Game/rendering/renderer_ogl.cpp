@@ -1,77 +1,19 @@
 #include <GL/glew.h>
 #include <unordered_map>
 #include <cassert>
-#include <fstream>
-#include <string>
 
 #include "renderer.hpp"
-#include "../../Engine/math/vec2.hpp"
-#include "../../Engine/math/vec3.hpp"
-#include "../../Engine/math/vec4.hpp"
-#include "../../Engine/math/mat4.hpp"
+#include "resources/texture.hpp"
+#include "math/vec2.hpp"
+#include "math/vec3.hpp"
+#include "math/vec4.hpp"
+#include "math/mat4.hpp"
 
 using namespace Renderer;
 
 // OPENGL RENDERER - the only file here w/ a dependency on ogl
 
 void GLAPIENTRY messageCallback(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar*,const void*);
-
-s32 TextureData::getPixels() const
-{
-    return width * height;
-}
-
-s32 TextureData::getDataLength() const
-{
-    return getPixels() * stride;
-}
-
-std::unordered_map<std::string, ImportSettings::Wrapping> s_wrappingTable
-{
-    {
-        {"Repeat", ImportSettings::Wrapping::Repeat},
-        {"MirroredRepeat", ImportSettings::Wrapping::MirroredRepeat},
-        {"ClampEdge", ImportSettings::Wrapping::ClampEdge},
-        {"ClampBorder", ImportSettings::Wrapping::ClampBorder},
-    }
-};
-std::unordered_map<std::string, ImportSettings::Filtering> s_filterTable
-{
-    {
-        {"Point", ImportSettings::Filtering::Point},
-        {"Bilinear", ImportSettings::Filtering::Bilinear},
-    }
-};
-
-ImportSettings ImportSettings::fromFile(const char* fileName)
-{
-    std::ifstream stream{};
-    stream.open(fileName);
-
-    if (!stream.is_open())
-        printf("failed to open texture settings %s", fileName);
-
-    ImportSettings settings;
-
-    std::string wrappingX;
-    std::getline(stream, wrappingX);
-
-    std::string wrappingY;
-    std::getline(stream, wrappingY);
-
-    std::string textureFiltering;
-    std::getline(stream, textureFiltering);
-
-    std::string mipmapFiltering;
-    std::getline(stream, mipmapFiltering);
-
-    settings.wrappingX = s_wrappingTable[wrappingX];
-    settings.wrappingY = s_wrappingTable[wrappingY];
-    settings.textureFiltering = s_filterTable[textureFiltering];
-    settings.mipmapFiltering = s_filterTable[mipmapFiltering];
-
-    return settings;
-}
 
 void Renderer::init(s32 width, s32 height)
 {
@@ -119,22 +61,22 @@ void GLAPIENTRY messageCallback(GLenum, GLenum type, GLuint, GLenum severity, GL
 
 // Textures
 
-GLint getWrapping(ImportSettings::Wrapping wrapping)
+GLint getWrapping(TextureWrapping wrapping)
 {
     GLint result {};
 
     switch (wrapping)
     {
-    case ImportSettings::ClampBorder:
+    case TextureWrapping::ClampBorder:
         result = GL_CLAMP_TO_BORDER;
         break;
-    case ImportSettings::ClampEdge:
+    case TextureWrapping::ClampEdge:
         result = GL_CLAMP_TO_EDGE;
         break;
-    case ImportSettings::MirroredRepeat:
+    case TextureWrapping::MirroredRepeat:
         result = GL_MIRRORED_REPEAT;
         break;
-    case ImportSettings::Repeat:
+    case TextureWrapping::Repeat:
         result = GL_REPEAT;
         break;
     }
@@ -142,7 +84,7 @@ GLint getWrapping(ImportSettings::Wrapping wrapping)
     return result;
 }
 
-TextureHandle Renderer::uploadTexture(const TextureData& data, const ImportSettings& settings)
+TextureHandle Renderer::uploadTexture(const Texture& data)
 {
     TextureHandle result {};
     glGenTextures(1, &result);
@@ -151,29 +93,29 @@ TextureHandle Renderer::uploadTexture(const TextureData& data, const ImportSetti
 
     // Flip the image data, since ogl most of the time wants images to read from the bottom left
     // todo: cleanup logic here
-    u8* flippedData = new u8[data.getDataLength()];
+    u8* flippedData = new u8[data.pixelDataLength()];
 
     for (s32 row = 0; row < data.height; row++)
     {
         s32 unflippedRow = data.height - 1 - row;
 
-        for (s32 column = 0; column < data.width * data.stride; column++)
-            flippedData[row * data.width * data.stride + column] = data.data[unflippedRow * data.width * data.stride + column];
+        for (s32 column = 0; column < data.width * data.channels; column++)
+            flippedData[row * data.width * data.channels + column] = data.pixelData[unflippedRow * data.width * data.channels + column];
     }
 
     switch (data.format)
     {
-    case TextureData::R:
-        internalFormat = format = GL_RED;
+    case ColorFormat::GrayScale:
+        internalFormat = format = GL_R;
         break;
-    case TextureData::Rgb:
-        format = GL_RGB;
-        internalFormat = GL_RGB8;
+    case ColorFormat::GrayScaleAlpha:
+        format = GL_RG;
+        internalFormat = GL_RG;
         break;
-    case TextureData::Rgba:
-        internalFormat = format = GL_RGBA;
+    case ColorFormat::Rgb:
+        internalFormat = format = GL_RGB;
         break;
-    case TextureData::Rgba8:
+    case ColorFormat::Rgba:
         format = GL_RGBA8;
         internalFormat = GL_RGBA;
         break;
@@ -183,8 +125,8 @@ TextureHandle Renderer::uploadTexture(const TextureData& data, const ImportSetti
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internalFormat), data.width, data.height, 0, format, GL_UNSIGNED_BYTE, flippedData);
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    GLint wrappingX = getWrapping(settings.wrappingX);
-    GLint wrappingY = getWrapping(settings.wrappingY);
+    GLint wrappingX = getWrapping(data.wrappingX);
+    GLint wrappingY = getWrapping(data.wrappingY);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrappingX);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrappingY);
 
@@ -193,25 +135,25 @@ TextureHandle Renderer::uploadTexture(const TextureData& data, const ImportSetti
 
     { // Determining what the valid mipmap and texture filtering should be.
 
-        auto tf = settings.textureFiltering;
-        auto mf = settings.mipmapFiltering;
+        auto tf = data.textureFiltering;
+        auto mf = data.mipmapFiltering;
 
-        if (tf == ImportSettings::Point && mf == ImportSettings::Point)
+        if (tf == TextureFiltering::Point && mf == TextureFiltering::Point)
         {
             filterMin = GL_NEAREST_MIPMAP_NEAREST;
             filterMag = GL_NEAREST;
         }
-        else if (tf == ImportSettings::Point && mf == ImportSettings::Bilinear)
+        else if (tf == TextureFiltering::Point && mf == TextureFiltering::Bilinear)
         {
             filterMin = GL_NEAREST_MIPMAP_LINEAR;
             filterMag = GL_NEAREST;
         }
-        else if (tf == ImportSettings::Bilinear && mf == ImportSettings::Point)
+        else if (tf == TextureFiltering::Bilinear && mf == TextureFiltering::Point)
         {
             filterMin = GL_LINEAR_MIPMAP_NEAREST;
             filterMag = GL_LINEAR;
         }
-        else if (tf == ImportSettings::Bilinear && mf == ImportSettings::Bilinear)
+        else if (tf == TextureFiltering::Bilinear && mf == TextureFiltering::Bilinear)
         {
             filterMin = GL_LINEAR_MIPMAP_LINEAR;
             filterMag = GL_LINEAR;

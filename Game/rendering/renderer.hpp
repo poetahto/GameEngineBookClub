@@ -1,8 +1,9 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "../../Engine/containers/fixed_list.hpp"
-#include "../../Engine/platform/application.hpp"
+#include "containers/fixed_list.hpp"
+#include "platform/application.hpp"
+#include "texture.hpp"
 
 struct Shader;
 struct Vec2;
@@ -22,41 +23,6 @@ namespace Renderer
     typedef FixedList<s32> VertexFormat;
     typedef FixedList<u32> IndexList;
 
-    struct TextureData
-    {
-        enum Format { R, Rgb, Rgba, Rgba8 };
-
-        Format format{Rgba};
-        s32 width;
-        s32 height;
-        s32 stride;
-        u8* data;
-
-        template <typename T>
-        T* get(s32 x, s32 y) const
-        {
-            s32 index = y * (width * stride) + x * stride;
-            return reinterpret_cast<T*>(&data[index]);
-        }
-
-        s32 getPixels() const;
-        s32 getDataLength() const;
-    };
-
-    struct ImportSettings
-    {
-        enum Wrapping { Repeat, MirroredRepeat, ClampEdge, ClampBorder };
-
-        enum Filtering { Point, Bilinear };
-
-        Wrapping wrappingX{Repeat};
-        Wrapping wrappingY{Repeat};
-        Filtering textureFiltering{Bilinear};
-        Filtering mipmapFiltering{Bilinear};
-
-        static ImportSettings fromFile(const char* fileName);
-    };
-
     // General Functions.
 
     void init(s32 width = Application::Settings::DEFAULT_WIDTH, s32 height = Application::Settings::DEFAULT_HEIGHT);
@@ -66,7 +32,7 @@ namespace Renderer
 
     // Texture functions.
 
-    TextureHandle uploadTexture(const TextureData& data, const ImportSettings& settings);
+    TextureHandle uploadTexture(const Texture& data);
     void deleteTexture(TextureHandle handle);
 
     // Mesh functions.

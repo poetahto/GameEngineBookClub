@@ -38,7 +38,7 @@
     <ClInclude Include="platform\application.hpp" />
     <ClInclude Include="platform\file_system.hpp" />
     <ClInclude Include="platform\windows\windows_util.hpp" />
-    <ClInclude Include="resources\binary_stream_builder.h" />
+    <ClInclude Include="resources\binary_stream_builder.hpp" />
     <ClInclude Include="resources\resource.hpp" />
     <ClInclude Include="resources\resource_manager.hpp" />
     <ClInclude Include="resources\texture.hpp" />

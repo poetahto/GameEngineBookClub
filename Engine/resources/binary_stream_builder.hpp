@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <string_view>
+#include <forward_list>
 #include <iostream>
 #include <fstream>
 #include <vector>

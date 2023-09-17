@@ -5,13 +5,10 @@
 // todo: singleton might make multithreading bad? we do really only want one instance of stuff loaded though. just go async if you want to avoid blocking
 
 #include <unordered_map>
-
-#include "binary_stream_builder.h"
+#include "binary_stream_builder.hpp"
 #include "logger.hpp"
 #include "types.hpp"
 #include "string_name.hpp"
-#include "texture.hpp"
-#include "platform/file_system.hpp"
 
 class ResourceManager;
 
@@ -26,6 +23,21 @@ struct ResourceHandle
     const T* data;
 };
 
+// A template that should be specialized by each new resource type, so we know how to write it into a package.
+template <typename T>
+void writeResourceTo(T* resource, BinaryStreamBuilder& packageFile)
+{
+    log_error(Logger::Channel::Resources, "Failed to find specialization for writing resource {}!", typeid(T).name());
+};
+
+// A template that should be specialized by each new resource type, so we know how to read it from a package.
+template <typename T>
+T* readResourceFrom(BinaryStreamBuilder& packageFile)
+{
+    log_error(Logger::Channel::Resources, "Failed to find specialization for reading resource {}!", typeid(T).name());
+    return nullptr;
+}
+
 /**
  * \brief A system that keeps track of loaded resources and
  * serves them by hashed string ID's.
@@ -33,78 +45,15 @@ struct ResourceHandle
 class ResourceManager
 {
 public:
-    ResourceManager(const char* packageFile) : m_packageFile{packageFile}
-    {
-        std::fstream packageFileStream {};
-        packageFileStream.open(packageFile, std::ios::binary | std::ios::in);
-        size_t assetCount {};
-
-        BinaryStreamBuilder builder {&packageFileStream};
-        builder.readFixed(&assetCount);
-
-        for (size_t i {0}; i < assetCount; i++)
-        {
-            StringName::Hash hash {};
-            size_t offset {};
-            builder.readFixed(&hash);
-            builder.readFixed(&offset);
-            m_resourceOffsetLookup.emplace(hash, offset);
-        }
-    }
+    explicit ResourceManager(const char* packageFile);
 
     template <typename T>
-    ResourceHandle<T> load(StringName resourceName)
-    {
-        ResourceHandle<T> result{
-            .name = resourceName,
-        };
+    ResourceHandle<T> load(StringName resourceName);
 
-        if (m_loadedResourceTable.contains(resourceName))
-        {
-            // Someone else is already using this resource, so we can share it with them.
-            result.data = static_cast<const T*>(m_loadedResourceTable[resourceName].data);
-            m_loadedResourceTable[resourceName].referenceCount++;
-        }
-        else
-        {
-            // We are the first user of this resource, so construct it and cache it.
-            size_t offset = m_resourceOffsetLookup[resourceName.hash];
-            std::fstream packageFileStream {};
-            packageFileStream.open(m_packageFile, std::ios::binary | std::ios::in);
-            packageFileStream.seekg(offset);
-            result.data = readResourceFrom<T>(packageFileStream);
-            packageFileStream.close();
-
-            LoadedResource resource;
-            resource.data = result.data;
-            resource.referenceCount = 1;
-
-            m_loadedResourceTable.emplace(resourceName, resource);
-        }
-
-        return result;
-    }
-
-    template <typename T>
-    void unload(StringName resourceName)
-    {
-        if (m_loadedResourceTable.contains(resourceName))
-        {
-            m_loadedResourceTable[resourceName].referenceCount--;
-
-            if (m_loadedResourceTable[resourceName].referenceCount == 0)
-            {
-                // Nobody else is using this resource, so fully unload it.
-                m_loadedResourceTable.erase(resourceName);
-            }
-        }
-        else
-        {
-            Logger::log_error("Cannot unload a resource before it is loaded!");
-        }
-    }
+    void unload(StringName resourceName);
 
 private:
+    // Some resource that is currently loaded at runtime.
     struct LoadedResource
     {
         const void* data;
@@ -112,8 +61,46 @@ private:
     };
 
     const char* m_packageFile {};
+
+    // Every asset's GUID from the package file, associated with offsets in the package.
     std::unordered_map<StringName::Hash, size_t> m_resourceOffsetLookup{};
+
+    // Every resource that is currently being used at runtime.
     std::unordered_map<StringName, LoadedResource> m_loadedResourceTable{};
 };
+
+template <typename T>
+ResourceHandle<T> ResourceManager::load(StringName resourceName)
+{
+    ResourceHandle<T> result{
+        .name = resourceName,
+    };
+
+    if (m_loadedResourceTable.contains(resourceName))
+    {
+        // Someone else is already using this resource, so we can share it with them.
+        result.data = static_cast<const T*>(m_loadedResourceTable[resourceName].data);
+        m_loadedResourceTable[resourceName].referenceCount++;
+    }
+    else
+    {
+        // We are the first user of this resource, so construct it and cache it.
+        size_t offset = m_resourceOffsetLookup[resourceName.hash];
+        std::fstream packageFileStream {};
+        packageFileStream.open(m_packageFile, std::ios::binary | std::ios::in);
+        packageFileStream.seekg(offset);
+        BinaryStreamBuilder builder {&packageFileStream};
+        result.data = readResourceFrom<T>(builder);
+        packageFileStream.close();
+
+        LoadedResource resource;
+        resource.data = result.data;
+        resource.referenceCount = 1;
+
+        m_loadedResourceTable.emplace(resourceName, resource);
+    }
+
+    return result;
+}
 
 #endif // RESOURCE_MANAGER_HPP

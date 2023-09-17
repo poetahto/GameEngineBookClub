@@ -1,6 +1,53 @@
 ﻿#include "texture.hpp"
 #include "logger.hpp"
 
+const char* Texture::TYPE_NAME = "Texture";
+
+s32 Texture::pixelCount() const
+{
+    return width * height;
+}
+
+s32 Texture::pixelDataLength() const
+{
+    return pixelCount() * channels;
+}
+
+template <>
+void writeResourceTo<Texture>(Texture* resource, BinaryStreamBuilder& packageFile)
+{
+    packageFile.writeFixed(resource->wrappingX)
+               .writeFixed(resource->wrappingY)
+               .writeFixed(resource->textureFiltering)
+               .writeFixed(resource->mipmapFiltering)
+               .writeFixed(resource->format)
+               .writeFixed(resource->width)
+               .writeFixed(resource->height)
+               .writeFixed(resource->channels)
+               .write(resource->pixelData[0], resource->pixelDataLength());
+}
+
+template <>
+Texture* readResourceFrom<Texture>(BinaryStreamBuilder& packageFile)
+{
+    // todo: better allocation
+    Texture* resource = new Texture{};
+
+    packageFile.readFixed(&resource->wrappingX)
+               .readFixed(&resource->wrappingY)
+               .readFixed(&resource->textureFiltering)
+               .readFixed(&resource->mipmapFiltering)
+               .readFixed(&resource->format)
+               .readFixed(&resource->width)
+               .readFixed(&resource->height)
+               .readFixed(&resource->channels);
+
+    // todo: better allocation
+    resource->pixelData = new u8[resource->pixelDataLength()];
+    packageFile.read(resource->pixelData, resource->pixelDataLength());
+    return resource;
+}
+
 // Texture Wrapping
 
 const char* getDisplayName(TextureWrapping textureWrapping)

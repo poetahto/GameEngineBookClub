@@ -3,7 +3,7 @@
 #include <unordered_map>
 
 #include "../../Engine/string_util.hpp"
-#include "texture.hpp"
+#include "game_texture.hpp"
 #include "../../Engine/math/vec3.hpp"
 
 Shader::Shader(const char* vertexSource, const char* fragmentSource) :
@@ -47,15 +47,14 @@ void texturePropertyApplier(const char* name, const std::string& rawValue, Shade
 
     std::string importFile;
     std::getline(stream, importFile, ' ');
-    Renderer::ImportSettings settings = Renderer::ImportSettings::fromFile(importFile.c_str());
 
-    GameTexture texture = GameTexture::fromFile(textureFile.c_str(), settings);
+    // GameTexture texture = GameTexture::fromFile(textureFile.c_str(), settings);
 
     std::string textureIndex;
     std::getline(stream, textureIndex);
     s32 index = std::stoi(textureIndex);
 
-    shader.setTexture(name, texture, index);
+    // shader.setTexture(name, texture, index);
 }
 
 typedef void (*MaterialPropertyApplier)(const char* name, const std::string& rawInput, Shader shader);

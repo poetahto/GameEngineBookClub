@@ -1,4 +1,4 @@
-﻿#include "factory_util.h"
+﻿#include "factory_util.hpp"
 #include <fstream>
 #include <iostream>
 
@@ -22,9 +22,14 @@ std::filesystem::path getSettingsFilePath(std::string_view fileName)
     return SETTINGS_FILE_DIR / path.filename() += ".json";
 }
 
-std::fstream openSettingsFile(std::string_view fileName)
+std::fstream openSettingsFile(std::string_view fileName, bool isWriting)
 {
-    return openFile(getSettingsFilePath(fileName).string(), 0);
+    std::ios::openmode openMode {0};
+
+    if (isWriting)
+        openMode |= std::ios::trunc;
+
+    return openFile(getSettingsFilePath(fileName).string(), openMode);
 }
 
 std::filesystem::path getBinaryFilePath(std::string_view fileName)

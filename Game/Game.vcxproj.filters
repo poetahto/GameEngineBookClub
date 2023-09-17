@@ -18,9 +18,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sdl_imgui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="rendering\mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,27 +27,33 @@
     <ClCompile Include="rendering\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="rendering\texture.cpp">
+    <ClCompile Include="platform\sdl\sdl_display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sdl_display.cpp">
+    <ClCompile Include="platform\sdl\sdl_imgui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="platform\sdl\sdl_input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering\game_texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="rendering\mesh.h">
+    <ClInclude Include="platform\custom_imgui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rendering\renderer.h">
+    <ClInclude Include="rendering\mesh.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rendering\shader.h">
+    <ClInclude Include="rendering\renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rendering\texture.h">
+    <ClInclude Include="rendering\shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sdl_imgui.h">
+    <ClInclude Include="rendering\game_texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

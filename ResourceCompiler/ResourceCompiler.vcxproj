@@ -242,9 +242,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource_importer.hpp" />
-    <ClInclude Include="factories\factory_util.h" />
-    <ClInclude Include="factories\texture_factory.h" />
-    <ClInclude Include="importers\stb_image_importer.h" />
+    <ClInclude Include="factories\factory_util.hpp" />
+    <ClInclude Include="factories\texture_factory.hpp" />
+    <ClInclude Include="importers\stb_image_importer.hpp" />
     <ClInclude Include="resource_factory.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

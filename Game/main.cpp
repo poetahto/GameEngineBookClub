@@ -10,7 +10,7 @@
 #include "rendering/mesh.hpp"
 #include "rendering/renderer.hpp"
 #include "rendering/shader.hpp"
-#include "rendering/texture.hpp"
+#include "rendering/game_texture.hpp"
 #include "platform/application.hpp"
 #include "platform/custom_imgui.hpp"
 #include "string_name.hpp"
@@ -22,8 +22,8 @@ class Terrain
 public:
     explicit Terrain(GameTexture* heightmap, f32 heightScale)
     {
-        s32 width = heightmap->data.width;
-        s32 height = heightmap->data.height;
+        s32 width = heightmap->texture->width;
+        s32 height = heightmap->texture->height;
 
         std::vector<f32> vertices;
 
@@ -32,7 +32,7 @@ public:
         {
             for (s32 y = 0; y < height; y++)
             {
-                u8* pixel = heightmap->data.get<u8>(x, y);
+                u8* pixel = heightmap->texture->get<u8>(x, y);
                 // Points
                 vertices.push_back(static_cast<f32>(x));
                 vertices.push_back(static_cast<f32>(*pixel) / 255.0f * heightScale);
@@ -57,7 +57,7 @@ public:
             indices.push_back(UINT_MAX);
         }
 
-        auto vertexFormat = std::vector<s32>{3, 2};
+        auto vertexFormat = std::vector{3, 2};
 
         m_mesh = new Mesh{
             Renderer::VertexList::fromList(vertices),
@@ -92,20 +92,11 @@ int main()
 
     // todo: stop loading everything directly from files on disk, need better asset pipeline
     ResourceManager resourceManager {"resources.pak"};
-    ResourceHandle<Texture> test = resourceManager.load<Texture>("source\\terrain.ppm"_sn);
-    Renderer::TextureData testTexData {
-        .format = Renderer::TextureData::Rgb,
-        .width = test.data->width,
-        .height = test.data->height,
-        .stride = test.data->channels,
-        .data = test.data->pixelData
-    };
-    Shader shader = Shader::fromMaterial("test.material");
     Mesh mesh = Mesh::quad();
     Shader terrainShader = Shader::fromFiles("terrain.vert", "terrain.frag");
-    GameTexture heightmap = GameTexture::fromFile("heightmap.ppm");
+    GameTexture heightmap {resourceManager.load<Texture>(R"(source\heightmap.ppm)"_sn).data};
     f32 terrain_height = 25;
-    GameTexture terrain_texture {testTexData};
+    GameTexture terrain_texture {resourceManager.load<Texture>("TerrainTest"_sn).data};
     Terrain terrain{&heightmap, terrain_height};
 
     bool wantsToQuit{false};
@@ -204,9 +195,9 @@ int main()
             ImGui::DragFloat2("UV Offset", &offset.data, 0.001f);
             ImGui::End();
 
-            shader.use();
-            shader.setVec2("uv_offset", offset);
-            shader.setMat4("model_to_world", Mat4::trs(position, rotation * Math::DEG2RAD, scale));
+            // shader.use();
+            // shader.setVec2("uv_offset", offset);
+            // shader.setMat4("model_to_world", Mat4::trs(position, rotation * Math::DEG2RAD, scale));
         }
 
         // Rendering Logic
@@ -263,12 +254,12 @@ int main()
         }
 
         // Probably submit this to a rendering queue so it can be batched?
-        shader.use();
+        // shader.use();
         // todo: these should be a uniform block because this stuff is pretty common?
-        shader.setFloat("time", elapsedTime);
-        shader.setMat4("world_to_view", world_to_view);
-        shader.setMat4("view_to_clip", view_to_clip);
-        mesh.draw(Renderer::Triangles);
+        // shader.setFloat("time", elapsedTime);
+        // shader.setMat4("world_to_view", world_to_view);
+        // shader.setMat4("view_to_clip", view_to_clip);
+        // mesh.draw(Renderer::Triangles);
 
         terrainShader.use();
         terrainShader.setFloat("uvScale", terrain_uv_scale);
@@ -299,7 +290,7 @@ int main()
     // === CLEANUP ===
 
     CustomImGui::free();
-    shader.free(); // todo: this shouldn't happen here.
+    // shader.free(); // todo: this shouldn't happen here.
     mesh.free();
     Application::free();
     return 0;

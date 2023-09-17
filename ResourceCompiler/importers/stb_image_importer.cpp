@@ -1,6 +1,6 @@
-﻿#include "stb_image_importer.h"
+﻿#include "stb_image_importer.hpp"
 #include "resources/texture.hpp"
-#include "factories/texture_factory.h"
+#include "../factories/texture_factory.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

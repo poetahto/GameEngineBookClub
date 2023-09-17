@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "..\resource_importer.hpp"
+#include "../resource_importer.hpp"
 
 class StbImageImporter final : public ResourceImporter
 {
